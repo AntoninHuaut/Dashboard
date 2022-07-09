@@ -14,6 +14,9 @@ export const enum HttpMethod {
   TRACE = "TRACE",
 }
 
+// TODO
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const useFetch = () => {
   const [data, setData] = useState<any>();
   const [error, setError] = useState<Error | null>();
@@ -33,6 +36,7 @@ export const useFetch = () => {
     setLoading(true);
     setData(null);
     setError(null);
+    await wait(1500);
 
     try {
       const response = await fetch(url, { ...options, signal: freshAbortController.signal, });
