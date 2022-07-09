@@ -79,18 +79,30 @@ const createUser = async (email: string, username: string, hashPassword: string,
     return result && result.lastInsertId ? await getUserById(result.lastInsertId) : null;
 };
 
-const updateUser = async (id: number, hashPassword: string) => {
+const updateUserField = async (id: number, field: string, value: string) => {
     const result = await runExecute(
         `
     UPDATE users SET
-      password = ?,
+      ${field} = ?,
       updated_at = ?
     WHERE id = ?;
     `,
-        [hashPassword, new Date(), id]
+        [value, new Date(), id]
     );
 
     return result && result.affectedRows;
+};
+
+const updateUserPassword = (id: number, hashPassword: string) => {
+    return updateUserField(id, 'password', hashPassword);
+};
+
+const updateUserEmail = (id: number, email: string) => {
+    return updateUserField(id, 'email', email);
+};
+
+const updateUserUsername = (id: number, username: string) => {
+    return updateUserField(id, 'username', username);
 };
 
 const deleteUser = async (id: number) => {
@@ -105,4 +117,4 @@ const deleteUser = async (id: number) => {
     return result && result.affectedRows;
 };
 
-export { createUser, deleteUser, getUserByEmail, getUserById, getUserPassword, getUsers, updateUser };
+export { createUser, deleteUser, getUserByEmail, getUserById, getUserPassword, getUsers, updateUserPassword, updateUserEmail, updateUserUsername };

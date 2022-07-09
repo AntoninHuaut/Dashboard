@@ -10,6 +10,13 @@ export const sessionRequest = () => {
     };
 };
 
+export const refreshRequest = () => {
+    return {
+        url: `${AUTH_API_URL}/refresh`,
+        options: mergeFetchOptions({ method: HttpMethod.POST }),
+    };
+};
+
 export const loginRequest = (loginRequest: ILoginRequest) => {
     return {
         url: `${AUTH_API_URL}/login`,

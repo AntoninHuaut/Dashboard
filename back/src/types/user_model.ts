@@ -17,3 +17,19 @@ export interface User extends ContextUser {
     created_at: Date;
     updated_at: Date;
 }
+
+interface IUpdateUserPassword {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+interface IUpdateUserEmail {
+    email: string;
+}
+
+interface IUpdateUserUsername {
+    username: string;
+}
+
+export type IUpdateUser = IUpdateUserPassword | IUpdateUserEmail | IUpdateUserUsername;

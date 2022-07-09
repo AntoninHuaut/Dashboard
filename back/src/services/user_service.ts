@@ -1,7 +1,7 @@
 import { httpErrors } from 'oak';
 import * as userRepo from '/repositories/user_repository.ts';
-import { UserRole } from '/types/user_model.ts';
-import { hash } from '/utils/hash_helper.ts';
+import { UserRole, IUpdateUser } from '/types/user_model.ts';
+import { hash, compare } from '/utils/hash_helper.ts';
 
 const getUsers = async () => {
     return await userRepo.getUsers();
@@ -36,14 +36,31 @@ const createUser = async (email: string, username: string, password: string) => 
     return await userRepo.createUser(email, username, hashPassword, [UserRole.USER]);
 };
 
-const updateUser = async (id: number, password: string) => {
-    const testUser = await userRepo.getUserById(id);
-    if (!testUser) {
+const updateUser = async (id: number, updateUser: IUpdateUser) => {
+    const hashCurrentPassword = await userRepo.getUserPassword(id);
+    if (!hashCurrentPassword) {
         throw new httpErrors.NotFound('User not found');
     }
 
-    const hashPassword = await hash(password);
-    return await userRepo.updateUser(id, hashPassword);
+    if ('currentPassword' in updateUser && 'newPassword' in updateUser && 'confirmPassword' in updateUser) {
+        if (updateUser.newPassword !== updateUser.confirmPassword) {
+            throw new httpErrors.BadRequest("Passwords don't match");
+        }
+
+        const isValidPassword = compare(updateUser.currentPassword, hashCurrentPassword);
+        if (!isValidPassword) {
+            throw new httpErrors.BadRequest('Invalid password');
+        }
+
+        const hashNewPassword = await hash(updateUser.newPassword);
+        return await userRepo.updateUserPassword(id, hashNewPassword);
+    } else if ('email' in updateUser) {
+        return await userRepo.updateUserEmail(id, updateUser.email);
+    } else if ('username' in updateUser) {
+        return await userRepo.updateUserUsername(id, updateUser.username);
+    } else {
+        throw new httpErrors.BadRequest('Invalid body');
+    }
 };
 
 const deleteUser = async (id: number) => {

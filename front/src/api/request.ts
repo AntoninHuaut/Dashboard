@@ -38,7 +38,9 @@ export const useFetch = () => {
             const response = await fetch(url, { ...options, signal: freshAbortController.signal });
 
             if (response.ok) {
-                setData(await response.json());
+                if (response.status !== 204) {
+                    setData(await response.json());
+                }
             } else {
                 try {
                     const body = await response.json();
