@@ -10,7 +10,7 @@ export function LogoutPage() {
 
     return (
         <>
-            <Text size='xl'>Logout</Text>
+            <Text size="xl">Logout</Text>
             <Space />
             <Text color="gray">You are going to be redirected...</Text>
         </>

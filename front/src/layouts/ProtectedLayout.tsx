@@ -12,11 +12,11 @@ export const ProtectedLayout = () => {
     }
 
     return (
-        <AppShell fixed navbar={<AppNavbar />} >
+        <AppShell fixed navbar={<AppNavbar />}>
             <Container fluid>
                 <Space h="xl" />
                 <Outlet />
             </Container>
         </AppShell>
-    )
+    );
 };
