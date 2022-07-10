@@ -15,10 +15,11 @@ const validCreateUser = z.object({
     email: validEmail,
     username: validUsername,
     password: validPassword,
+    confirmPassword: validPassword,
 });
 
 const validUpdateUser = z
-    .object({ currentPassword: z.string(), newPassword: validPassword, confirmPassword: z.string() })
+    .object({ currentPassword: z.string(), newPassword: validPassword, confirmPassword: validPassword })
     .or(z.object({ email: validEmail }))
     .or(z.object({ username: validUsername }));
 
@@ -38,9 +39,15 @@ const getUserById = async (ctx: Context) => {
 
 const createUser = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
-    const createUser = validCreateUser.parse(body);
+    const userToCreate = validCreateUser.parse(body);
 
-    ctx.response.body = await userService.createUser(createUser.email, createUser.username, createUser.password);
+    const createdUser = await userService.createUser(userToCreate);
+    if (createdUser) {
+        ctx.response.status = Status.Created;
+        ctx.response.body = createdUser;
+    } else {
+        throw new httpErrors.InternalServerError('User creation failed');
+    }
 };
 
 const updateUser = async (ctx: Context) => {

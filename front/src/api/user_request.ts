@@ -1,3 +1,4 @@
+import { IRegisterRequest } from '../types/LoginType';
 import { BASE_API_URL, HttpMethod, mergeFetchOptions } from './request';
 
 const URL_API_URL = `${BASE_API_URL}/user`;
@@ -8,6 +9,16 @@ export const updateRequest = (userId: number, fieldUpdate: { [key: string]: stri
         options: mergeFetchOptions({
             method: HttpMethod.PUT,
             body: JSON.stringify(fieldUpdate),
+        }),
+    };
+};
+
+export const registerRequest = (body: IRegisterRequest) => {
+    return {
+        url: `${URL_API_URL}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.POST,
+            body: JSON.stringify(body),
         }),
     };
 };

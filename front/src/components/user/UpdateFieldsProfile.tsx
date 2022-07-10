@@ -37,7 +37,12 @@ export function UpdateFieldProfile() {
             return (
                 <>
                     {editFieldName !== fieldName && (
-                        <ActionIcon color={theme.primaryColor} variant="filled" size="md" onClick={() => setEditFieldName(fieldName)} disabled={editFieldName.length > 0}>
+                        <ActionIcon
+                            color={theme.primaryColor}
+                            variant="filled"
+                            size="md"
+                            onClick={() => setEditFieldName(fieldName)}
+                            disabled={editFieldName.length > 0}>
                             <Edit />
                         </ActionIcon>
                     )}

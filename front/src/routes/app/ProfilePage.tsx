@@ -2,6 +2,7 @@ import { Avatar, Badge, Button, Container, Group, LoadingOverlay, MantineColor, 
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useFetch } from '../../api/request';
 import { deleteRequest } from '../../api/user_request';
@@ -9,7 +10,6 @@ import { UpdateFieldProfile } from '../../components/user/UpdateFieldsProfile';
 import { UpdatePasswordProfile } from '../../components/user/UpdatePasswordProfile';
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
-import { useNavigate } from 'react-router-dom';
 
 const ROLES_COLOR: { [key: string]: MantineColor } = {
     USER: 'blue',
@@ -57,6 +57,7 @@ export function ProfilePage() {
                 title: 'Your account has been deleted',
                 message: 'You will be redirected to the login page',
                 color: 'green',
+                autoClose: 3000,
             });
 
             setTimeout(() => navigate('/app/logout'), 3000);

@@ -9,6 +9,7 @@ import { ProfilePage } from '../routes/app/ProfilePage';
 import { IndexPage } from '../routes/IndexPage';
 import { LoginPage } from '../routes/LoginPage';
 import { PageNotFound } from '../routes/PageNotFound';
+import { RegisterPage } from '../routes/RegisterPage';
 
 export function AppRouter() {
     const { isLoadingUser, loadingElement } = useAuth();
@@ -19,6 +20,7 @@ export function AppRouter() {
             children: [
                 { path: '/', element: <IndexPage /> },
                 { path: '/login', element: <LoginPage /> },
+                { path: '/register', element: <RegisterPage /> },
             ],
         },
         {
