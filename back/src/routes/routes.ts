@@ -1,9 +1,9 @@
-import { Router } from 'oak';
+import { oak } from '../../deps.ts';
 import userRouter from './user_route.ts';
 import authRouter from './auth_route.ts';
 
-const router = new Router();
-const api = new Router();
+const router = new oak.Router();
+const api = new oak.Router();
 
 api.get('/', (ctx) => {
     ctx.response.body = 'UP';

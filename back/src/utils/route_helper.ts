@@ -1,11 +1,11 @@
-import { Context, httpErrors } from 'oak';
+import { oak } from '../../deps.ts';
 
-const safeParseBody = async (ctx: Context) => {
+const safeParseBody = async (ctx: oak.Context) => {
     try {
         const { value } = ctx.request.body({ type: 'json' });
         return await value;
     } catch (_err) {
-        throw new httpErrors.BadRequest('Invalid body');
+        throw new oak.httpErrors.BadRequest('Invalid body');
     }
 };
 

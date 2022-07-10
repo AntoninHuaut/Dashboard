@@ -1,8 +1,8 @@
-import { create, getNumericDate, Header, Payload, verify } from 'djwt';
-import config from '/config.ts';
-import { JWTUser } from '/types/auth_model.ts';
-import { User } from '/types/user_model.ts';
-import { TokenProperty } from '/types/auth_model.ts';
+import { djwt } from '../../deps.ts';
+import config from '../config.ts';
+import { JWTUser } from '../types/auth_model.ts';
+import { User } from '../types/user_model.ts';
+import { TokenProperty } from '../types/auth_model.ts';
 
 export const { JWT_ACCESS_TOKEN_EXP, JWT_REFRESH_TOKEN_EXP } = config;
 
@@ -11,7 +11,7 @@ if (isNaN(+JWT_ACCESS_TOKEN_EXP) || isNaN(+JWT_REFRESH_TOKEN_EXP)) {
     Deno.exit(3);
 }
 
-const header: Header = {
+const header: djwt.Header = {
     alg: 'HS512',
     typ: 'JWT',
 };
@@ -46,37 +46,37 @@ async function loadKey() {
 await loadKey();
 
 const getAuthToken = async (user: User): Promise<TokenProperty> => {
-    const payload: Payload = {
+    const payload: djwt.Payload = {
         iss: 'learningreact-api',
         id: user.id,
         email: user.email,
         username: user.username,
         roles: user.roles.join(','),
-        exp: getNumericDate(new Date().getTime() + +JWT_ACCESS_TOKEN_EXP),
+        exp: djwt.getNumericDate(new Date().getTime() + +JWT_ACCESS_TOKEN_EXP),
     };
 
     return {
-        value: await create(header, payload, key),
+        value: await djwt.create(header, payload, key),
         maxAge: +JWT_ACCESS_TOKEN_EXP,
     };
 };
 
 const getRefreshToken = async (user: User): Promise<TokenProperty> => {
-    const payload: Payload = {
+    const payload: djwt.Payload = {
         iss: 'deno-api',
         id: user.id,
-        exp: getNumericDate(new Date().getTime() + +JWT_REFRESH_TOKEN_EXP),
+        exp: djwt.getNumericDate(new Date().getTime() + +JWT_REFRESH_TOKEN_EXP),
     };
 
     return {
-        value: await create(header, payload, key),
+        value: await djwt.create(header, payload, key),
         maxAge: +JWT_REFRESH_TOKEN_EXP,
     };
 };
 
 const getJwtPayload = async (token: string): Promise<JWTUser | null> => {
     try {
-        const payload: JWTUser = (await verify(token, key)) as unknown as JWTUser;
+        const payload: JWTUser = (await djwt.verify(token, key)) as unknown as JWTUser;
         return payload;
     } catch (_err) {
         return null;

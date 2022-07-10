@@ -1,5 +1,5 @@
-import { Client, configLogger, ExecuteResult } from 'mysql';
-import config from '/config.ts';
+import { mysql } from '../../deps.ts';
+import config from '../config.ts';
 
 const { DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD } = config;
 
@@ -8,7 +8,7 @@ if (!DB_HOST || isNaN(+DB_PORT) || !DB_DATABASE || !DB_USER || !DB_PASSWORD) {
     Deno.exit(2);
 }
 
-configLogger({
+mysql.configLogger({
     level: 'WARNING',
 });
 
@@ -26,7 +26,7 @@ runQuery(`
 `);
 
 function getClient() {
-    return new Client().connect({
+    return new mysql.Client().connect({
         port: +DB_PORT,
         hostname: DB_HOST,
         db: DB_DATABASE,
@@ -35,7 +35,7 @@ function getClient() {
     });
 }
 
-async function run(func: (client: Client) => Promise<any | null>) {
+async function run(func: (client: mysql.Client) => Promise<any | null>) {
     const client = await getClient();
     try {
         return await func(client);
@@ -50,7 +50,7 @@ async function runQuery(query: string, args?: any[]): Promise<any | null> {
     return await run(async (client) => await client.query(query, args));
 }
 
-async function runExecute(query: string, args?: any[]): Promise<ExecuteResult | null> {
+async function runExecute(query: string, args?: any[]): Promise<mysql.ExecuteResult | null> {
     return await run(async (client) => await client.execute(query, args));
 }
 

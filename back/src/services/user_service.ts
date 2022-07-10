@@ -1,7 +1,7 @@
-import { httpErrors } from 'oak';
-import * as userRepo from '/repositories/user_repository.ts';
-import { UserRole, IUpdateUser } from '/types/user_model.ts';
-import { hash, compare } from '/utils/hash_helper.ts';
+import { oak } from '../../deps.ts';
+import * as userRepo from '../repositories/user_repository.ts';
+import { UserRole, IUpdateUser } from '../types/user_model.ts';
+import { hash, compare } from '../utils/hash_helper.ts';
 
 const getUsers = async () => {
     return await userRepo.getUsers();
@@ -10,7 +10,7 @@ const getUsers = async () => {
 const getUserById = async (id: number) => {
     const user = await userRepo.getUserById(id);
     if (!user) {
-        throw new httpErrors.NotFound('User not found');
+        throw new oak.httpErrors.NotFound('User not found');
     }
 
     return user;
@@ -19,7 +19,7 @@ const getUserById = async (id: number) => {
 const getUserByEmail = async (email: string) => {
     const user = await userRepo.getUserByEmail(email);
     if (!user) {
-        throw new httpErrors.NotFound('User not found');
+        throw new oak.httpErrors.NotFound('User not found');
     }
 
     return user;
@@ -27,12 +27,12 @@ const getUserByEmail = async (email: string) => {
 
 const createUser = async ({ email, username, password, confirmPassword }: { email: string; username: string; password: string; confirmPassword: string }) => {
     if (password !== confirmPassword) {
-        throw new httpErrors.BadRequest("Passwords don't match");
+        throw new oak.httpErrors.BadRequest("Passwords don't match");
     }
 
     const testUser = await userRepo.getUserByEmail(email);
     if (testUser) {
-        throw new httpErrors.BadRequest('An account is already associated with this email');
+        throw new oak.httpErrors.BadRequest('An account is already associated with this email');
     }
 
     const hashPassword = await hash(password);
@@ -43,17 +43,17 @@ const createUser = async ({ email, username, password, confirmPassword }: { emai
 const updateUser = async (id: number, updateUser: IUpdateUser) => {
     const hashCurrentPassword = await userRepo.getUserPassword(id);
     if (!hashCurrentPassword) {
-        throw new httpErrors.NotFound('User not found');
+        throw new oak.httpErrors.NotFound('User not found');
     }
 
     if ('currentPassword' in updateUser && 'newPassword' in updateUser && 'confirmPassword' in updateUser) {
         if (updateUser.newPassword !== updateUser.confirmPassword) {
-            throw new httpErrors.BadRequest("Passwords don't match");
+            throw new oak.httpErrors.BadRequest("Passwords don't match");
         }
 
         const isValidPassword = await compare(updateUser.currentPassword, hashCurrentPassword);
         if (!isValidPassword) {
-            throw new httpErrors.BadRequest('Invalid current password');
+            throw new oak.httpErrors.BadRequest('Invalid current password');
         }
 
         const hashNewPassword = await hash(updateUser.newPassword);
@@ -63,14 +63,14 @@ const updateUser = async (id: number, updateUser: IUpdateUser) => {
     } else if ('username' in updateUser) {
         return await userRepo.updateUserUsername(id, updateUser.username);
     } else {
-        throw new httpErrors.BadRequest('Invalid body');
+        throw new oak.httpErrors.BadRequest('Invalid body');
     }
 };
 
 const deleteUser = async (id: number) => {
     const testUser = await userRepo.getUserById(id);
     if (!testUser) {
-        throw new httpErrors.NotFound('User not found');
+        throw new oak.httpErrors.NotFound('User not found');
     }
 
     return await userRepo.deleteUser(id);

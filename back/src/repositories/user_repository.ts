@@ -1,5 +1,5 @@
-import { runExecute, runQuery } from '/db/db.ts';
-import { User, UserRole } from '/types/user_model.ts';
+import { runExecute, runQuery } from '../db/db.ts';
+import { User, UserRole } from '../types/user_model.ts';
 
 function toUser(user: any) {
     if (!Array.isArray(user.roles)) {

@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     build: ./back
     volumes:
-      - ./back/jwk.json:/app/jwk.json
+      - ./data:/app/
     ports:
       - "4009:8000"
     environment:

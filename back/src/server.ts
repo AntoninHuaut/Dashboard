@@ -1,10 +1,10 @@
-import { Application } from 'oak';
-import { router } from '/routes/routes.ts';
-import setupMiddlewares from '/middlewares/middlewares.ts';
+import { oak } from '../deps.ts';
+import { router } from './routes/routes.ts';
+import setupMiddlewares from './middlewares/middlewares.ts';
 
 const PORT = 8000;
 
-const app = new Application();
+const app = new oak.Application();
 
 setupMiddlewares(app);
 app.use(router.routes());
