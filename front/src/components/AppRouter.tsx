@@ -12,25 +12,29 @@ import { PageNotFound } from '../routes/PageNotFound';
 
 export function AppRouter() {
     const { isLoadingUser, loadingElement } = useAuth();
-    const routes = useRoutes([{
-        path: "/",
-        element: <UnProtectedLayout />,
-        children: [
-            { path: "/", element: <IndexPage /> },
-            { path: "/login", element: <LoginPage /> },
-        ]
-    }, {
-        path: "/app",
-        element: <ProtectedLayout />,
-        children: [
-            { path: "/app/home", element: <HomePage /> },
-            { path: "/app/profile", element: <ProfilePage /> },
-            { path: "/app/logout", element: <LogoutPage /> }
-        ]
-    }, {
-        path: "*",
-        element: <PageNotFound />
-    }]);
+    const routes = useRoutes([
+        {
+            path: '/',
+            element: <UnProtectedLayout />,
+            children: [
+                { path: '/', element: <IndexPage /> },
+                { path: '/login', element: <LoginPage /> },
+            ],
+        },
+        {
+            path: '/app',
+            element: <ProtectedLayout />,
+            children: [
+                { path: '/app/home', element: <HomePage /> },
+                { path: '/app/profile', element: <ProfilePage /> },
+                { path: '/app/logout', element: <LogoutPage /> },
+            ],
+        },
+        {
+            path: '*',
+            element: <PageNotFound />,
+        },
+    ]);
 
     return isLoadingUser ? loadingElement() : routes;
 }

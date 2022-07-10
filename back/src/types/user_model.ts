@@ -1,22 +1,35 @@
 export enum UserRole {
-  "USER" = "USER",
-  "ADMIN" = "ADMIN",
+    'USER' = 'USER',
+    'ADMIN' = 'ADMIN',
 }
 
-export const UserRoles = [
-  UserRole.ADMIN,
-  UserRole.USER,
-];
+export const UserRoles = [UserRole.ADMIN, UserRole.USER];
 
 export interface ContextUser {
-  id: number;
-  email: string;
-  username: string;
-  roles: UserRole[];
+    id: number;
+    email: string;
+    username: string;
+    roles: UserRole[];
 }
 
 export interface User extends ContextUser {
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
 }
+
+interface IUpdateUserPassword {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+interface IUpdateUserEmail {
+    email: string;
+}
+
+interface IUpdateUserUsername {
+    username: string;
+}
+
+export type IUpdateUser = IUpdateUserPassword | IUpdateUserEmail | IUpdateUserUsername;

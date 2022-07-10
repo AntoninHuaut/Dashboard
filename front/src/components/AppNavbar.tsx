@@ -12,15 +12,13 @@ const useStyles = createStyles((theme, _params, getRef) => {
         header: {
             paddingBottom: theme.spacing.md,
             marginBottom: theme.spacing.md * 1.5,
-            borderBottom: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
-                }`,
+            borderBottom: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]}`,
         },
 
         footer: {
             paddingTop: theme.spacing.md,
             marginTop: theme.spacing.md,
-            borderTop: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
-                }`,
+            borderTop: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]}`,
         },
 
         link: {
@@ -52,10 +50,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
         linkActive: {
             '&, &:hover': {
-                backgroundColor:
-                    theme.colorScheme === 'dark'
-                        ? theme.fn.rgba(theme.colors[theme.primaryColor][8], 0.25)
-                        : theme.colors[theme.primaryColor][0],
+                backgroundColor: theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors[theme.primaryColor][8], 0.25) : theme.colors[theme.primaryColor][0],
                 color: theme.colorScheme === 'dark' ? theme.white : theme.colors[theme.primaryColor][7],
                 [`& .${icon}`]: {
                     color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 5 : 7],
@@ -75,14 +70,14 @@ export function AppNavbar() {
     const navigate = useNavigate();
     const location = useLocation();
     const { classes, cx } = useStyles();
-    const [active, setActive] = useState("");
+    const [active, setActive] = useState('');
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     useEffect(() => {
         const path = location.pathname;
         const active = data.find(({ link }) => link === path);
-        setActive(active ? active.label : "");
-    }, [location.pathname])
+        setActive(active ? active.label : '');
+    }, [location.pathname]);
 
     const links = data.map((item) => (
         <a
@@ -92,15 +87,14 @@ export function AppNavbar() {
             onClick={(evt) => {
                 evt.preventDefault();
                 navigate(item.link);
-            }}
-        >
+            }}>
             <item.icon className={classes.linkIcon} />
             <span>{item.label}</span>
         </a>
     ));
 
     return (
-        <Navbar height={"100vh"} width={{ sm: 200 }} p="md">
+        <Navbar height={'100vh'} width={{ sm: 225 }} p="md">
             <Navbar.Section grow>
                 <Group className={classes.header} position="apart">
                     <Avatar size={48} src={getGravatarUrl(user.email)} radius={48} />
@@ -110,25 +104,33 @@ export function AppNavbar() {
             </Navbar.Section>
 
             <Navbar.Section className={classes.footer}>
-                <a href="#" className={classes.link} onClick={(event) => {
-                    event.preventDefault();
-                    toggleColorScheme();
-                }}>
-                    {colorScheme === 'dark' ?
+                <a
+                    href="#"
+                    className={classes.link}
+                    onClick={(event) => {
+                        event.preventDefault();
+                        toggleColorScheme();
+                    }}>
+                    {colorScheme === 'dark' ? (
                         <>
                             <Sun className={classes.linkIcon} />
                             <span>Light</span>
-                        </> : <>
+                        </>
+                    ) : (
+                        <>
                             <Moon className={classes.linkIcon} />
                             <span>Dark</span>
                         </>
-                    }
+                    )}
                 </a>
 
-                <a href="/app/logout" className={classes.link} onClick={(event) => {
-                    event.preventDefault();
-                    navigate("/app/logout");
-                }}>
+                <a
+                    href="/app/logout"
+                    className={classes.link}
+                    onClick={(event) => {
+                        event.preventDefault();
+                        navigate('/app/logout');
+                    }}>
                     <Logout className={classes.linkIcon} />
                     <span>Logout</span>
                 </a>

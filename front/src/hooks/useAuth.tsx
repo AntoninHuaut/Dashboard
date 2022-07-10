@@ -2,7 +2,7 @@ import { Center, Loader, Stack } from '@mantine/core';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useFetch } from '../api/request';
-import { logoutRequest, sessionRequest } from '../api/user_request';
+import { logoutRequest, refreshRequest, sessionRequest } from '../api/auth_request';
 import { IUser } from '../types/LoginType';
 
 const AuthContext = createContext<any>(null);
@@ -12,28 +12,32 @@ export interface MemoType {
     login: (user: IUser) => Promise<void>;
     logout: () => any;
     isLoadingUser: boolean;
+    refreshUser: () => Promise<void>;
     loadingElement: () => JSX.Element;
 }
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const AuthProvider = ({ children }: { children: React.ReactNode | React.ReactNode[] }) => {
     const [user, setUser] = useState<IUser>();
     const [isLoadingUser, setLoadingUser] = useState<boolean>(true);
     const userFetch = useFetch();
 
-    const login = async (user: IUser) => setUser(user)
+    const login = async (user: IUser) => setUser(user);
 
     const logout = () => {
-        userFetch
-            .makeRequest(logoutRequest())
-            .finally(() => setUser(null as unknown as IUser))
+        userFetch.makeRequest(logoutRequest()).finally(() => setUser(null as unknown as IUser));
     };
 
-    const loadingElement = () => <Center style={{ "height": "75vh" }}>
-        <Stack>
-            <Loader size={192} variant="dots" />
-            {/* <Text weight={500} size="xl" align="center">Session recovery...</Text> */}
-        </Stack>
-    </Center>
+    const loadingElement = () => (
+        <Center style={{ height: '75vh' }}>
+            <Stack>
+                <Loader size={192} variant="dots" />
+            </Stack>
+        </Center>
+    );
+
+    const refreshUser = () => userFetch.makeRequest(refreshRequest());
 
     const value = useMemo(
         (): MemoType => ({
@@ -41,7 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode | React.R
             login,
             logout,
             isLoadingUser,
-            loadingElement
+            refreshUser,
+            loadingElement,
         }),
         [user, isLoadingUser]
     );

@@ -9,7 +9,5 @@ export const UnProtectedLayout = () => {
         return <Navigate to="/app/home" />;
     }
 
-    return (
-        <Outlet />
-    )
+    return <Outlet />;
 };

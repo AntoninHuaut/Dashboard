@@ -4,5 +4,5 @@ interface LogoProps {
 }
 
 export function Logo(props: LogoProps) {
-    return <img src="/logo.svg" height={props.height} width={props.width} alt="Application logo" />
+    return <img src="/logo.svg" height={props.height} width={props.width} alt="Application logo" />;
 }
