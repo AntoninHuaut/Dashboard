@@ -37,7 +37,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode | React.R
         </Center>
     );
 
-    const refreshUser = () => userFetch.makeRequest(refreshRequest());
+    const fetchUser = () => userFetch.makeRequest(sessionRequest());
+
+    const refreshUser = async () => {
+        await userFetch.makeRequest(refreshRequest());
+        await fetchUser();
+    };
 
     const value = useMemo(
         (): MemoType => ({
