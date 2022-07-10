@@ -6,7 +6,7 @@ services:
     volumes:
       - ./back/jwk.json:/app/jwk.json
     ports:
-      - "4008:8000"
+      - "4009:8000"
     environment:
       - ENV=prod
       - DB_HOST=
