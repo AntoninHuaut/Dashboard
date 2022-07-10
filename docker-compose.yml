@@ -25,4 +25,4 @@ services:
       args:
         VITE_BASE_API_URL: 
     ports:
-      - "4009:8080"
+      - "4010:8080"
