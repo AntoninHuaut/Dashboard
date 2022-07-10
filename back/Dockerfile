@@ -9,4 +9,6 @@ RUN deno cache --import-map=import_map.json /app/src/server.ts
 
 COPY deno.json deno.json
 
+EXPOSE 8000
+
 CMD [ "task", "start" ]
