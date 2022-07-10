@@ -63,14 +63,19 @@ const deleteUser = async (ctx: Context) => {
     const { userIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const userId: number = validUserId.parse(+userIdStr);
 
-    await userService.deleteUser(userId);
-    ctx.response.status = Status.NoContent;
+    const user = ctx.state.me;
+    if (user.id == userId || hasUserRole(user, [UserRole.ADMIN])) {
+        await userService.deleteUser(userId);
+        ctx.response.status = Status.NoContent;
+    } else {
+        throw new httpErrors.Forbidden('Forbidden user role');
+    }
 };
 
 userRouter.get('/', userGuard([UserRole.ADMIN]), getUsers);
 userRouter.get('/:userIdStr', userGuard([UserRole.ADMIN]), getUserById);
 userRouter.post('/', createUser);
 userRouter.put('/:userIdStr', userGuard([UserRole.USER]), updateUser);
-userRouter.delete('/:userIdStr', userGuard([UserRole.ADMIN]), deleteUser);
+userRouter.delete('/:userIdStr', userGuard([UserRole.USER]), deleteUser);
 
 export default userRouter;

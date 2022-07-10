@@ -11,3 +11,12 @@ export const updateRequest = (userId: number, fieldUpdate: { [key: string]: stri
         }),
     };
 };
+
+export const deleteRequest = (userId: number) => {
+    return {
+        url: `${URL_API_URL}/${userId}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.DELETE,
+        }),
+    };
+};
