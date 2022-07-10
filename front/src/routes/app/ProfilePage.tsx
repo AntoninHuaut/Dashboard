@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button, Container, Group, LoadingOverlay, MantineColor, Paper, Stack, Text, Title } from '@mantine/core';
+import { Avatar, Badge, Button, Group, LoadingOverlay, MantineColor, Paper, Stack, Text, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo, useState } from 'react';
@@ -70,54 +70,45 @@ export function ProfilePage() {
                 Information about you
             </Title>
 
-            <Container>
-                <Paper
-                    style={{ width: 350, position: 'relative' }}
-                    radius="xl"
-                    p="lg"
-                    shadow="xl"
-                    sx={(theme) => ({
-                        backgroundColor: theme.colorScheme === 'light' ? theme.white : theme.colors.dark[8],
-                    })}>
-                    <LoadingOverlay visible={deleteFetch.isLoading} />
+            <Paper style={{ width: 300, position: 'relative' }} radius="xl" p="lg" mx="auto" shadow="xl">
+                <LoadingOverlay visible={deleteFetch.isLoading} />
 
-                    <Stack spacing="sm">
-                        <Avatar size={128} src={avatar} radius={128} mt="md" mx="auto" mb="sm" />
-                        <Text align="center" size="xl" weight={700}>
-                            {user.username}
-                        </Text>
+                <Stack spacing="sm">
+                    <Avatar size={128} src={avatar} radius={128} mt="md" mx="auto" mb="sm" />
+                    <Text align="center" size="xl" weight={700}>
+                        {user.username}
+                    </Text>
 
-                        <Group spacing="xs" mb="md" align="center" mx="auto">
-                            {user.roles.length > 0 &&
-                                user.roles.sort().map((role: string) => (
-                                    <Badge key={role} color={getRoleColor(role)}>
-                                        {role}
-                                    </Badge>
-                                ))}
-                        </Group>
+                    <Group spacing="xs" mb="md" align="center" mx="auto">
+                        {user.roles.length > 0 &&
+                            user.roles.sort().map((role: string) => (
+                                <Badge key={role} color={getRoleColor(role)}>
+                                    {role}
+                                </Badge>
+                            ))}
+                    </Group>
 
-                        {!isDeleted && !displayPasswordUpdate && (
-                            <>
-                                <UpdateFieldProfile />
+                    {!isDeleted && !displayPasswordUpdate && (
+                        <>
+                            <UpdateFieldProfile />
 
-                                <Group mt="md" position="center">
-                                    <Button onClick={() => setDisplayPasswordUpdate((v) => !v)}>Update password</Button>
+                            <Group mt="md" position="center">
+                                <Button onClick={() => setDisplayPasswordUpdate((v) => !v)}>Update password</Button>
 
-                                    <Button color="red" onClick={openDeleteModal}>
-                                        Delete account
-                                    </Button>
-                                </Group>
-                            </>
-                        )}
+                                <Button color="red" onClick={openDeleteModal}>
+                                    Delete account
+                                </Button>
+                            </Group>
+                        </>
+                    )}
 
-                        {!isDeleted && displayPasswordUpdate && (
-                            <>
-                                <UpdatePasswordProfile closePasswordForm={() => setDisplayPasswordUpdate(false)} />
-                            </>
-                        )}
-                    </Stack>
-                </Paper>
-            </Container>
+                    {!isDeleted && displayPasswordUpdate && (
+                        <>
+                            <UpdatePasswordProfile closePasswordForm={() => setDisplayPasswordUpdate(false)} />
+                        </>
+                    )}
+                </Stack>
+            </Paper>
         </Stack>
     );
 }
