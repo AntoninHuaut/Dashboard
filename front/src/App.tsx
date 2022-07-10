@@ -1,5 +1,5 @@
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import { useColorScheme, useLocalStorage } from '@mantine/hooks';
+import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -13,6 +13,8 @@ function App() {
         defaultValue: preferredColorScheme,
     });
     const toggleColorScheme = (value?: ColorScheme) => setColorScheme(value ?? (colorScheme === 'dark' ? 'light' : 'dark'));
+
+    useHotkeys([['mod+J', () => toggleColorScheme()]]);
 
     return (
         <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
