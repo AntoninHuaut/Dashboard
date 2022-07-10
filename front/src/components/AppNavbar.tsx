@@ -1,4 +1,4 @@
-import { Avatar, Code, createStyles, Group, Navbar, useMantineColorScheme } from '@mantine/core';
+import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar, useMantineColorScheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, Logout, Moon, Sun, UserCircle } from 'tabler-icons-react';
@@ -65,7 +65,15 @@ const data = [
     { link: '/app/profile', label: 'Profile', icon: UserCircle },
 ];
 
-export function AppNavbar() {
+interface AppNavbarProps {
+    setOpened: (v: boolean) => any;
+    opened: boolean;
+    hiddenBreakpoint: MantineNumberSize;
+}
+
+export function AppNavbar(props: AppNavbarProps) {
+    const { setOpened, opened, hiddenBreakpoint } = props;
+
     const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -86,6 +94,7 @@ export function AppNavbar() {
             key={item.label}
             onClick={(evt) => {
                 evt.preventDefault();
+                setOpened(false);
                 navigate(item.link);
             }}>
             <item.icon className={classes.linkIcon} />
@@ -94,9 +103,9 @@ export function AppNavbar() {
     ));
 
     return (
-        <Navbar height={'100vh'} width={{ sm: 225 }} p="md">
+        <Navbar width={{ sm: 200, lg: 300 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
             <Navbar.Section grow>
-                <Group className={classes.header} position="apart">
+                <Group className={classes.header} position="left">
                     <Avatar size={48} src={getGravatarUrl(user.email)} radius={48} />
                     <Code sx={{ fontWeight: 700 }}>{user.username}</Code>
                 </Group>
@@ -109,6 +118,7 @@ export function AppNavbar() {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
+                        setOpened(false);
                         toggleColorScheme();
                     }}>
                     {colorScheme === 'dark' ? (
@@ -129,6 +139,7 @@ export function AppNavbar() {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
+                        setOpened(false);
                         navigate('/app/logout');
                     }}>
                     <Logout className={classes.linkIcon} />

@@ -74,14 +74,7 @@ export function RegisterPage() {
                 </Anchor>
             </Text>
 
-            <Paper
-                mt={30}
-                radius="xl"
-                p="lg"
-                shadow="xl"
-                sx={(theme) => ({
-                    backgroundColor: theme.colorScheme === 'light' ? theme.white : theme.colors.dark[8],
-                })}>
+            <Paper mt={30} radius="xl" p="lg" shadow="xl">
                 <EmailInput
                     value={register.email}
                     disabled={registerFetch.isLoading || isAccountCreated}
