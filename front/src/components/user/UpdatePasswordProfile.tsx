@@ -1,13 +1,14 @@
 import { Button, Group, PasswordInput } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { CircleCheck, Key, Lock, Check, X } from 'tabler-icons-react';
-import { handleInputChange } from '../../services/form.service';
-import { IUpdatePasswordRequest } from '../../types/LoginType';
-import { PasswordStrength, isValidPassword } from '../form/PasswordStength';
+import { Check, CircleCheck, Key, Lock, X } from 'tabler-icons-react';
+
 import { useFetch } from '../../api/request';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
-import { showNotification } from '@mantine/notifications';
+import { handleInputChange } from '../../services/form.service';
+import { IUpdatePasswordRequest } from '../../types/LoginType';
+import { isValidPassword, PasswordStrength } from '../form/PasswordStength';
 
 interface UpdatePasswordProfileProps {
     closePasswordForm: () => any;
