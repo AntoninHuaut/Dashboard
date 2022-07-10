@@ -70,7 +70,20 @@ export function ProfilePage() {
                 Information about you
             </Title>
 
-            <Paper style={{ width: 300, position: 'relative' }} radius="xl" p="lg" mx="auto" shadow="xl">
+            <Paper
+                style={{ position: 'relative' }}
+                radius="xl"
+                p="lg"
+                mx="auto"
+                shadow="xl"
+                sx={(theme) => ({
+                    '@media (max-width: 755px)': {
+                        width: 300,
+                    },
+                    '@media (min-width: 756px)': {
+                        width: 600,
+                    },
+                })}>
                 <LoadingOverlay visible={deleteFetch.isLoading} />
 
                 <Stack spacing="sm">
