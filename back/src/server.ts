@@ -2,12 +2,23 @@ import { Application } from 'oak';
 import { oakCors } from 'oakCors';
 import { router } from '/routes/routes.ts';
 import setupMiddlewares from '/middlewares/middlewares.ts';
+import config from '/config.ts';
 
 const PORT = 8000;
+const ENV = config.ENV;
+
+if (ENV !== 'dev' && !config.CORS_ORIGIN) {
+    console.error('Invalid CORS_ORIGIN');
+    Deno.exit(1);
+}
 
 const app = new Application();
 
-app.use(oakCors());
+const corsConfig = {
+    origin: ENV === 'dev' ? '*' : config.CORS_ORIGIN,
+};
+
+app.use(oakCors(corsConfig));
 setupMiddlewares(app);
 app.use(router.routes());
 app.use(router.allowedMethods());
