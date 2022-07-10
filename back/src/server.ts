@@ -14,11 +14,12 @@ if (ENV !== 'dev' && !config.CORS_ORIGIN) {
 
 const app = new Application();
 
-const corsConfig = {
-    origin: ENV === 'dev' ? '*' : config.CORS_ORIGIN,
-};
-
-app.use(oakCors(corsConfig));
+app.use(
+    oakCors({
+        origin: ENV === 'dev' ? '*' : config.CORS_ORIGIN,
+        credentials: true,
+    })
+);
 setupMiddlewares(app);
 app.use(router.routes());
 app.use(router.allowedMethods());
