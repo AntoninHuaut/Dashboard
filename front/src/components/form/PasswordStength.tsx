@@ -1,11 +1,11 @@
 import { ChangeEventHandler, useState } from 'react';
 import { PasswordInput, Progress, Text, Popover, Box, PasswordInputProps } from '@mantine/core';
-import { Check, Cross } from 'tabler-icons-react';
+import { Check, X } from 'tabler-icons-react';
 
 function PasswordRequirement({ meets, label }: { meets: boolean; label: string }) {
     return (
         <Text color={meets ? 'teal' : 'red'} sx={{ display: 'flex', alignItems: 'center' }} mt={7} size="sm">
-            {meets ? <Check /> : <Cross />} <Box ml={10}>{label}</Box>
+            {meets ? <Check /> : <X />} <Box ml={10}>{label}</Box>
         </Text>
     );
 }
