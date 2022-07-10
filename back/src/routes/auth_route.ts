@@ -25,7 +25,7 @@ function getPathCookie(key: string): { path?: string } {
 function setCookie(ctx: Context, key: string, tokenProp: TokenProperty) {
     return ctx.cookies.set(key, tokenProp.value, {
         maxAge: tokenProp.maxAge,
-        secure: config.ENV !== 'dev',
+        secure: false,
         sameSite: 'strict',
         httpOnly: true,
         ...getPathCookie(key),
