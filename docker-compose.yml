@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     build: ./back
     volumes:
-      - ./data:/app/
+      - ./data-back:/app/
     ports:
       - "4009:8000"
     environment:
