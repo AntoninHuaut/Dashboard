@@ -65,7 +65,14 @@ export function LoginPage() {
                 Welcome back!
             </Title>
 
-            <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+            <Paper
+                mt={30}
+                radius="xl"
+                p="lg"
+                shadow="xl"
+                sx={(theme) => ({
+                    backgroundColor: theme.colorScheme === 'light' ? theme.white : theme.colors.dark[8],
+                })}>
                 <EmailInput value={login.email} onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)} />
 
                 <PasswordInput
