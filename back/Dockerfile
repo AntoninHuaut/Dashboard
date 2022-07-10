@@ -1,13 +1,11 @@
 FROM denoland/deno:alpine-1.23.3
 
+EXPOSE 8000
+
 WORKDIR /app
 
-COPY ./src /app/src
-COPY ./import_map.json /app/import_map.json
-COPY deno.json /app/deno.json
+ADD . .
 
-RUN deno cache --import-map=import_map.json /app/src/server.ts
-
-EXPOSE 8000
+RUN deno cache ./src/server.ts
 
 CMD [ "task", "start" ]
