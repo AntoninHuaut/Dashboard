@@ -1,5 +1,6 @@
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { ModalsProvider } from '@mantine/modals';
 import { NotificationsProvider } from '@mantine/notifications';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -26,13 +27,15 @@ function App() {
                     primaryColor: 'yellow',
                     defaultRadius: 'lg',
                 }}>
-                <NotificationsProvider position="top-center" transitionDuration={500} autoClose={7500}>
-                    <BrowserRouter>
-                        <AuthProvider>
-                            <AppRouter />
-                        </AuthProvider>
-                    </BrowserRouter>
-                </NotificationsProvider>
+                <ModalsProvider>
+                    <NotificationsProvider position="top-center" transitionDuration={500} autoClose={7500}>
+                        <BrowserRouter>
+                            <AuthProvider>
+                                <AppRouter />
+                            </AuthProvider>
+                        </BrowserRouter>
+                    </NotificationsProvider>
+                </ModalsProvider>
             </MantineProvider>
         </ColorSchemeProvider>
     );
