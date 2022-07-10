@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { Context, httpErrors, Router } from 'oak';
+
 import * as authService from '/services/auth_service.ts';
 import { TokenProperty } from '/types/auth_model.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 import * as userService from '/services/user_service.ts';
-import config from '../config.ts';
 import { getAuthRoute } from './routes.ts';
 import userGuard from '../middlewares/userguard_middleware.ts';
 import { UserRole } from '../types/user_model.ts';
@@ -25,7 +25,7 @@ function getPathCookie(key: string): { path?: string } {
 function setCookie(ctx: Context, key: string, tokenProp: TokenProperty) {
     return ctx.cookies.set(key, tokenProp.value, {
         maxAge: tokenProp.maxAge,
-        secure: config.ENV !== 'dev',
+        secure: false,
         sameSite: 'strict',
         httpOnly: true,
         ...getPathCookie(key),

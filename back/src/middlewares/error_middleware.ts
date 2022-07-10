@@ -20,6 +20,8 @@ const error: Middleware = async (ctx: Context, next: () => Promise<unknown>) => 
 
         if (ENV === 'dev') {
             console.error(status, ctx.request.url.href, err);
+        } else if (status > 499) {
+            await Deno.writeTextFile('./data/error.log', `${status} ${ctx.request.url.href}\n${err}\n`);
         }
 
         ctx.response.status = status;
