@@ -1,56 +1,57 @@
-import { zod, oak } from '../../deps.ts';
-import * as userService from '../services/user_service.ts';
-import userGuard from '../middlewares/userguard_middleware.ts';
-import { UserRole } from '../types/user_model.ts';
-import { hasUserRole } from '../utils/role_helper.ts';
-import { safeParseBody } from '../utils/route_helper.ts';
+import { z } from 'zod';
+import { Context, helpers, httpErrors, Router, Status } from 'oak';
+import * as userService from '/services/user_service.ts';
+import userGuard from '/middlewares/userguard_middleware.ts';
+import { UserRole } from '/types/user_model.ts';
+import { hasUserRole } from '/utils/role_helper.ts';
+import { safeParseBody } from '/utils/route_helper.ts';
 
-const validUserId = zod.number().min(1);
-const validEmail = zod.string().trim().email();
-const validUsername = zod.string().trim().min(3);
-const validPassword = zod.string().min(8);
+const validUserId = z.number().min(1);
+const validEmail = z.string().trim().email();
+const validUsername = z.string().trim().min(3);
+const validPassword = z.string().min(8);
 
-const validCreateUser = zod.object({
+const validCreateUser = z.object({
     email: validEmail,
     username: validUsername,
     password: validPassword,
     confirmPassword: validPassword,
 });
 
-const validUpdateUser = zod
-    .object({ currentPassword: zod.string(), newPassword: validPassword, confirmPassword: validPassword })
-    .or(zod.object({ email: validEmail }))
-    .or(zod.object({ username: validUsername }));
+const validUpdateUser = z
+    .object({ currentPassword: z.string(), newPassword: validPassword, confirmPassword: validPassword })
+    .or(z.object({ email: validEmail }))
+    .or(z.object({ username: validUsername }));
 
-const userRouter = new oak.Router();
+const userRouter = new Router();
 
-const getUsers = async (ctx: oak.Context) => {
+const getUsers = async (ctx: Context) => {
     ctx.response.body = await userService.getUsers();
 };
 
-const getUserById = async (ctx: oak.Context) => {
-    const { userIdStr } = oak.helpers.getQuery(ctx, { mergeParams: true });
+const getUserById = async (ctx: Context) => {
+    const { userIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const userId: number = validUserId.parse(+userIdStr);
 
     const user = await userService.getUserById(userId);
     ctx.response.body = user;
 };
 
-const createUser = async (ctx: oak.Context) => {
+const createUser = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
     const userToCreate = validCreateUser.parse(body);
 
     const createdUser = await userService.createUser(userToCreate);
     if (createdUser) {
-        ctx.response.status = oak.Status.Created;
+        ctx.response.status = Status.Created;
         ctx.response.body = createdUser;
     } else {
-        throw new oak.httpErrors.InternalServerError('User creation failed');
+        throw new httpErrors.InternalServerError('User creation failed');
     }
 };
 
-const updateUser = async (ctx: oak.Context) => {
-    const { userIdStr } = oak.helpers.getQuery(ctx, { mergeParams: true });
+const updateUser = async (ctx: Context) => {
+    const { userIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const userId: number = validUserId.parse(+userIdStr);
 
     const body = await safeParseBody(ctx);
@@ -59,22 +60,22 @@ const updateUser = async (ctx: oak.Context) => {
     const user = ctx.state.me;
     if (user.id == userId || hasUserRole(user, [UserRole.ADMIN])) {
         await userService.updateUser(userId, updatedUser);
-        ctx.response.status = oak.Status.NoContent;
+        ctx.response.status = Status.NoContent;
     } else {
-        throw new oak.httpErrors.Forbidden('Forbidden user role');
+        throw new httpErrors.Forbidden('Forbidden user role');
     }
 };
 
-const deleteUser = async (ctx: oak.Context) => {
-    const { userIdStr } = oak.helpers.getQuery(ctx, { mergeParams: true });
+const deleteUser = async (ctx: Context) => {
+    const { userIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const userId: number = validUserId.parse(+userIdStr);
 
     const user = ctx.state.me;
     if (user.id == userId || hasUserRole(user, [UserRole.ADMIN])) {
         await userService.deleteUser(userId);
-        ctx.response.status = oak.Status.NoContent;
+        ctx.response.status = Status.NoContent;
     } else {
-        throw new oak.httpErrors.Forbidden('Forbidden user role');
+        throw new httpErrors.Forbidden('Forbidden user role');
     }
 };
 

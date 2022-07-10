@@ -1,9 +1,9 @@
-import { oak } from '../../deps.ts';
-import * as userRepo from '../repositories/user_repository.ts';
-import { User } from '../types/user_model.ts';
-import { GeneratedToken, JWTUser } from '../types/auth_model.ts';
-import { compare } from '../utils/hash_helper.ts';
-import { getAuthToken, getJwtPayload, getRefreshToken } from '../utils/jwt_helper.ts';
+import { httpErrors } from 'oak';
+import * as userRepo from '/repositories/user_repository.ts';
+import { User } from '/types/user_model.ts';
+import { GeneratedToken, JWTUser } from '/types/auth_model.ts';
+import { compare } from '/utils/hash_helper.ts';
+import { getAuthToken, getJwtPayload, getRefreshToken } from '/utils/jwt_helper.ts';
 
 export const loginUser = async (email: string, password: string): Promise<GeneratedToken> => {
     const user: User | null = await userRepo.getUserByEmail(email);
@@ -23,7 +23,7 @@ export const loginUser = async (email: string, password: string): Promise<Genera
         }
     }
 
-    throw new oak.httpErrors.Unauthorized('Wrong credentials');
+    throw new httpErrors.Unauthorized('Wrong credentials');
 };
 
 export const refreshToken = async (token: string) => {
@@ -35,7 +35,7 @@ export const refreshToken = async (token: string) => {
 
             if (user) {
                 if (!user.is_active) {
-                    throw new oak.httpErrors.Unauthorized('Inactive user status');
+                    throw new httpErrors.Unauthorized('Inactive user status');
                 }
 
                 return {
@@ -47,6 +47,6 @@ export const refreshToken = async (token: string) => {
 
         throw new Error();
     } catch (_err) {
-        throw new oak.httpErrors.Unauthorized('Invalid token');
+        throw new httpErrors.Unauthorized('Invalid token');
     }
 };

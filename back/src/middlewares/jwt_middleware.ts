@@ -1,9 +1,9 @@
-import { oak } from '../../deps.ts';
-import { getJwtPayload } from '../utils/jwt_helper.ts';
-import { JWTUser } from '../types/auth_model.ts';
-import { ContextUser, UserRole } from '../types/user_model.ts';
+import { getJwtPayload } from '/utils/jwt_helper.ts';
+import { Context, Middleware } from 'oak';
+import { JWTUser } from '/types/auth_model.ts';
+import { ContextUser, UserRole } from '/types/user_model.ts';
 
-const jwt: oak.Middleware = async (ctx: oak.Context, next: () => Promise<unknown>) => {
+const jwt: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     try {
         const access_token = await ctx.cookies.get('access_token');
         if (access_token) {
