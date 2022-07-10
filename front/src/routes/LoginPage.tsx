@@ -9,7 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 import { handleInputChange } from '../services/form.service';
 import { ILoginRequest } from '../types/LoginType';
 import { Key } from 'tabler-icons-react';
-import { EmailInput } from '../components/form/EmailInput';
+import { EmailInput, isValidEmail } from '../components/form/EmailInput';
 
 export function LoginPage() {
     const auth = useAuth();
@@ -21,7 +21,7 @@ export function LoginPage() {
 
     useEffect(() => setLogin((v) => ({ ...v, email: loginRemember.email })), []);
 
-    useEffect(() => setSignInEnable(login.email.length > 0 && login.password.length > 0), [login]);
+    useEffect(() => setSignInEnable(isValidEmail(login.email) && login.password.length > 0), [login]);
 
     useEffect(() => {
         if (!loginRemember.checked) {
@@ -76,6 +76,7 @@ export function LoginPage() {
                     placeholder="Your password"
                     value={login.password}
                     onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)}
+                    required
                 />
 
                 <Group position="apart" mt="md">
