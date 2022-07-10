@@ -1,4 +1,4 @@
-import { Button, Checkbox, Container, Group, Paper, PasswordInput, TextInput, Title } from '@mantine/core';
+import { Button, Checkbox, Container, Group, Paper, Title, PasswordInput } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useState } from 'react';
@@ -8,6 +8,8 @@ import { loginRequest } from '../api/auth_request';
 import { useAuth } from '../hooks/useAuth';
 import { handleInputChange } from '../services/form.service';
 import { ILoginRequest } from '../types/LoginType';
+import { Key } from 'tabler-icons-react';
+import { EmailInput } from '../components/form/EmailInput';
 
 export function LoginPage() {
     const auth = useAuth();
@@ -15,7 +17,11 @@ export function LoginPage() {
 
     const [loginRemember, setLoginRemember] = useLocalStorage({ key: 'loginRemember', defaultValue: { checked: false, email: '' } });
     const [login, setLogin] = useState<ILoginRequest>({ email: '', password: '' });
+    const [isSignInEnable, setSignInEnable] = useState(false);
+
     useEffect(() => setLogin((v) => ({ ...v, email: loginRemember.email })), []);
+
+    useEffect(() => setSignInEnable(login.email.length > 0 && login.password.length > 0), [login]);
 
     useEffect(() => {
         if (!loginRemember.checked) {
@@ -60,15 +66,18 @@ export function LoginPage() {
             </Title>
 
             <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-                <TextInput
-                    label="Email"
-                    name="email"
-                    placeholder="you@provider.com"
-                    value={login.email}
+                <EmailInput value={login.email} onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)} />
+
+                <PasswordInput
+                    mt="md"
+                    label="Password"
+                    name="password"
+                    icon={<Key />}
+                    placeholder="Your password"
+                    value={login.password}
                     onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)}
-                    required
                 />
-                <PasswordInput mt="md" name="password" label="Password" placeholder="Your password" onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)} required />
+
                 <Group position="apart" mt="md">
                     <Checkbox
                         label="Remember me"
@@ -78,7 +87,7 @@ export function LoginPage() {
                         }}
                     />
                 </Group>
-                <Button fullWidth mt="xl" onClick={onSubmit} loading={loginFetch.isLoading}>
+                <Button fullWidth mt="xl" onClick={onSubmit} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
                     Sign in
                 </Button>
             </Paper>
