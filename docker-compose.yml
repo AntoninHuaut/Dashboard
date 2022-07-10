@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     build: ./back
     volumes:
-      - ./data-back:/app/
+      - ./data-back:/app/data
     ports:
       - "4009:8000"
     environment:
@@ -20,9 +20,9 @@ services:
   learning-react-build-front:
     container_name: clearning-react-build-front
     restart: unless-stopped
-    build: 
+    build:
       context: ./front
       args:
-        VITE_BASE_API_URL: 
+        VITE_BASE_API_URL:
     ports:
       - "4010:8080"
