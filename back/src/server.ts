@@ -1,4 +1,5 @@
 import { Application } from 'oak';
+import { oakCors } from 'oakCors';
 import { router } from '/routes/routes.ts';
 import setupMiddlewares from '/middlewares/middlewares.ts';
 
@@ -6,6 +7,7 @@ const PORT = 8000;
 
 const app = new Application();
 
+app.use(oakCors());
 setupMiddlewares(app);
 app.use(router.routes());
 app.use(router.allowedMethods());
