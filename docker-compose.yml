@@ -16,6 +16,7 @@ services:
       - DB_PASSWORD=
       - JWT_ACCESS_TOKEN_EXP=600000
       - JWT_REFRESH_TOKEN_EXP=3600000
+      - CORS_ORIGIN=
 
   learning-react-build-front:
     container_name: clearning-react-build-front
