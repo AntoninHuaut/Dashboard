@@ -1,0 +1,28 @@
+services:
+  learning-react-back:
+    container_name: clearning-react-back
+    restart: unless-stopped
+    build: ./back
+    volumes:
+      - ./back/jwk.json:/app/jwk.json
+    ports:
+      - "4008:8000"
+    environment:
+      - ENV=prod
+      - DB_HOST=
+      - DB_PORT=3306
+      - DB_DATABASE=
+      - DB_USER=
+      - DB_PASSWORD=
+      - JWT_ACCESS_TOKEN_EXP=600000
+      - JWT_REFRESH_TOKEN_EXP=3600000
+
+  learning-react-build-front:
+    container_name: clearning-react-build-front
+    restart: unless-stopped
+    build: 
+      context: ./front
+      args:
+        VITE_BASE_API_URL: 
+    ports:
+      - "4009:8080"

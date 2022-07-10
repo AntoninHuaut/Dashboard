@@ -1,13 +1,8 @@
 import { Application } from 'oak';
-import config from '/config.ts';
 import { router } from '/routes/routes.ts';
 import setupMiddlewares from '/middlewares/middlewares.ts';
 
-const PORT = parseInt(config.PORT);
-if (isNaN(PORT)) {
-    console.error('Invalid port');
-    Deno.exit(1);
-}
+const PORT = 8000;
 
 const app = new Application();
 
