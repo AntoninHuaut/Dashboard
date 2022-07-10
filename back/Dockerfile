@@ -6,6 +6,6 @@ WORKDIR /app
 
 ADD . .
 
-RUN deno cache ./src/server.ts
+RUN deno cache --import-map=./import_map.json ./src/server.ts
 
 CMD [ "task", "start" ]
