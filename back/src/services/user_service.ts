@@ -25,7 +25,11 @@ const getUserByEmail = async (email: string) => {
     return user;
 };
 
-const createUser = async (email: string, username: string, password: string) => {
+const createUser = async ({ email, username, password, confirmPassword }: { email: string; username: string; password: string; confirmPassword: string }) => {
+    if (password !== confirmPassword) {
+        throw new httpErrors.BadRequest("Passwords don't match");
+    }
+
     const testUser = await userRepo.getUserByEmail(email);
     if (testUser) {
         throw new httpErrors.BadRequest('An account is already associated with this email');

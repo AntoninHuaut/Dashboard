@@ -41,7 +41,7 @@ const createUser = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
     const userToCreate = validCreateUser.parse(body);
 
-    const createdUser = await userService.createUser(userToCreate.email, userToCreate.username, userToCreate.password);
+    const createdUser = await userService.createUser(userToCreate);
     if (createdUser) {
         ctx.response.status = Status.Created;
         ctx.response.body = createdUser;
