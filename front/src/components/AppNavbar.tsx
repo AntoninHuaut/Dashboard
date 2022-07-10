@@ -94,7 +94,7 @@ export function AppNavbar() {
     ));
 
     return (
-        <Navbar height={'100vh'} width={{ sm: 200 }} p="md">
+        <Navbar height={'100vh'} width={{ sm: 225 }} p="md">
             <Navbar.Section grow>
                 <Group className={classes.header} position="apart">
                     <Avatar size={48} src={getGravatarUrl(user.email)} radius={48} />

@@ -16,3 +16,9 @@ export interface ILoginRequest {
 }
 
 export type ILoginResponse = IUser;
+
+export interface IUpdatePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}

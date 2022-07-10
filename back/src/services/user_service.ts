@@ -49,7 +49,7 @@ const updateUser = async (id: number, updateUser: IUpdateUser) => {
 
         const isValidPassword = await compare(updateUser.currentPassword, hashCurrentPassword);
         if (!isValidPassword) {
-            throw new httpErrors.BadRequest('Invalid password');
+            throw new httpErrors.BadRequest('Invalid current password');
         }
 
         const hashNewPassword = await hash(updateUser.newPassword);
