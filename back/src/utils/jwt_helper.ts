@@ -18,7 +18,7 @@ const header: djwt.Header = {
 let key: CryptoKey;
 
 async function loadKey() {
-    const fileName = 'jwk.json';
+    const fileName = './data/jwk.json';
     try {
         const jwk = JSON.parse(await Deno.readTextFile(fileName));
 

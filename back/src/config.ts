@@ -1,4 +1,5 @@
 import { isDocker, dotenv } from '../deps.ts';
 
-const config = (await isDocker.isDocker()) ? dotenv.config() : Deno.env.toObject();
+const config = (await isDocker.isDocker()) ? Deno.env.toObject() : dotenv.config();
+
 export default config;
