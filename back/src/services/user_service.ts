@@ -47,7 +47,7 @@ const updateUser = async (id: number, updateUser: IUpdateUser) => {
             throw new httpErrors.BadRequest("Passwords don't match");
         }
 
-        const isValidPassword = compare(updateUser.currentPassword, hashCurrentPassword);
+        const isValidPassword = await compare(updateUser.currentPassword, hashCurrentPassword);
         if (!isValidPassword) {
             throw new httpErrors.BadRequest('Invalid password');
         }
