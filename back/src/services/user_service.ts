@@ -28,7 +28,7 @@ const getUserByEmail = async (email: string) => {
 const createUser = async (email: string, username: string, password: string) => {
     const testUser = await userRepo.getUserByEmail(email);
     if (testUser) {
-        throw new httpErrors.BadRequest('User already exists');
+        throw new httpErrors.BadRequest('An account is already associated with this email');
     }
 
     const hashPassword = await hash(password);

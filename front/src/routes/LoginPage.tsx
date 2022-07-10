@@ -1,18 +1,20 @@
-import { Button, Checkbox, Container, Group, Paper, Title, PasswordInput } from '@mantine/core';
+import { Anchor, Button, Checkbox, Container, Group, Paper, PasswordInput, Text, Title } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Key } from 'tabler-icons-react';
 
-import { useFetch } from '../api/request';
 import { loginRequest } from '../api/auth_request';
+import { useFetch } from '../api/request';
+import { EmailInput, isValidEmail } from '../components/form/EmailInput';
 import { useAuth } from '../hooks/useAuth';
 import { handleInputChange } from '../services/form.service';
 import { ILoginRequest } from '../types/LoginType';
-import { Key } from 'tabler-icons-react';
-import { EmailInput, isValidEmail } from '../components/form/EmailInput';
 
 export function LoginPage() {
     const auth = useAuth();
+    const navigate = useNavigate();
     const loginFetch = useFetch();
 
     const [loginRemember, setLoginRemember] = useLocalStorage({ key: 'loginRemember', defaultValue: { checked: false, email: '' } });
@@ -64,6 +66,18 @@ export function LoginPage() {
             <Title align="center" sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}>
                 Welcome back!
             </Title>
+            <Text color="dimmed" size="sm" align="center" mt={5}>
+                Do not have an account yet?{' '}
+                <Anchor<'a'>
+                    href="/register"
+                    size="sm"
+                    onClick={(evt) => {
+                        evt.preventDefault();
+                        navigate('/register');
+                    }}>
+                    Create account
+                </Anchor>
+            </Text>
 
             <Paper
                 mt={30}
@@ -73,7 +87,7 @@ export function LoginPage() {
                 sx={(theme) => ({
                     backgroundColor: theme.colorScheme === 'light' ? theme.white : theme.colors.dark[8],
                 })}>
-                <EmailInput value={login.email} onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)} />
+                <EmailInput value={login.email} disabled={loginFetch.isLoading} onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)} />
 
                 <PasswordInput
                     mt="md"
@@ -82,6 +96,7 @@ export function LoginPage() {
                     icon={<Key />}
                     placeholder="Your password"
                     value={login.password}
+                    disabled={loginFetch.isLoading}
                     onChange={(evt) => handleInputChange<ILoginRequest>(evt, setLogin)}
                     required
                 />
@@ -90,6 +105,7 @@ export function LoginPage() {
                     <Checkbox
                         label="Remember me"
                         checked={loginRemember.checked}
+                        disabled={loginFetch.isLoading}
                         onChange={() => {
                             setLoginRemember((v) => ({ ...v, checked: !v.checked }));
                         }}

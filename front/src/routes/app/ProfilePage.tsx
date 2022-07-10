@@ -57,6 +57,7 @@ export function ProfilePage() {
                 title: 'Your account has been deleted',
                 message: 'You will be redirected to the login page',
                 color: 'green',
+                autoClose: 3000,
             });
 
             setTimeout(() => navigate('/app/logout'), 3000);

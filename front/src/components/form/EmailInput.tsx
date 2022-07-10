@@ -8,7 +8,7 @@ interface EmailInputProps extends TextInputProps {
 }
 
 export function isValidEmail(value: string) {
-    return /^[a-z0-9.]{1,64}@[a-z0-9.]{1,64}$/i.test(value);
+    return /[a-z0-9]+@[a-z]+\.[a-z]/i.test(value);
 }
 
 export function EmailInput(props: EmailInputProps) {
