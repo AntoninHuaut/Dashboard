@@ -117,6 +117,7 @@ export function UpdateFieldProfile() {
             showNotification({
                 message: 'Your data has been updated',
                 color: 'green',
+                autoClose: 3000,
             });
         }
     }, [isLoading]);

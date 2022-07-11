@@ -54,6 +54,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
             showNotification({
                 message: 'Your password has been updated',
                 color: 'green',
+                autoClose: 3000,
             });
             props.closePasswordForm();
         }
