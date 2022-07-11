@@ -9,7 +9,7 @@ const JWT_REFRESH_TOKEN_EXP = get('JWT_REFRESH_TOKEN_EXP') ?? '';
 
 if (isNaN(+JWT_ACCESS_TOKEN_EXP) || isNaN(+JWT_REFRESH_TOKEN_EXP)) {
     console.error('Invalid JWT configuration');
-    Deno.exit(3);
+    Deno.exit(2);
 }
 
 const header: Header = {
