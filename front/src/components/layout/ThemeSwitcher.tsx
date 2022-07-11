@@ -1,4 +1,4 @@
-import { createStyles, UnstyledButton, Text, Center, useMantineColorScheme, Group } from '@mantine/core';
+import { createStyles, UnstyledButton, Text, Center, useMantineColorScheme, Group, MediaQuery, ActionIcon } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { Moon, Sun } from 'tabler-icons-react';
 
@@ -35,15 +35,31 @@ export function ThemeSwitcher() {
 
     return (
         <Group position="center" my="xl">
-            <UnstyledButton aria-label="Toggle theme" className={classes.control} onClick={() => toggleColorScheme()} title="Ctrl + J">
-                <Text size="sm" className={classes.value}>
-                    {upperFirst(colorScheme === 'light' ? 'dark' : 'light')} theme
-                </Text>
+            <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
+                <UnstyledButton aria-label="Toggle theme" className={classes.control} onClick={() => toggleColorScheme()} title="Ctrl + J">
+                    <Text size="sm" className={classes.value}>
+                        {upperFirst(colorScheme === 'light' ? 'dark' : 'light')} theme
+                    </Text>
 
-                <Center className={classes.iconWrapper}>
-                    <Icon size={18} />
-                </Center>
-            </UnstyledButton>
+                    <Center className={classes.iconWrapper}>
+                        <Icon size={18} />
+                    </Center>
+                </UnstyledButton>
+            </MediaQuery>
+
+            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+                <Group position="center" my="xl">
+                    <ActionIcon
+                        onClick={() => toggleColorScheme()}
+                        size="lg"
+                        sx={(theme) => ({
+                            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+                            color: theme.colorScheme === 'dark' ? theme.colors.yellow[4] : theme.colors.blue[6],
+                        })}>
+                        <Icon size={18} />
+                    </ActionIcon>
+                </Group>
+            </MediaQuery>
         </Group>
     );
 }

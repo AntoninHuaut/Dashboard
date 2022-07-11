@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button, Group, LoadingOverlay, MantineColor, Paper, Stack, Text, Title } from '@mantine/core';
+import { Avatar, Badge, Button, Group, LoadingOverlay, MantineColor, Paper, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useMemo, useState } from 'react';
@@ -22,6 +22,7 @@ function getRoleColor(role: string): MantineColor {
 
 export function ProfilePage() {
     const { user } = useAuth();
+    const theme = useMantineTheme();
     const navigate = useNavigate();
     const deleteFetch = useFetch();
     const modals = useModals();
@@ -70,20 +71,7 @@ export function ProfilePage() {
                 Information about you
             </Title>
 
-            <Paper
-                style={{ position: 'relative' }}
-                radius="xl"
-                p="lg"
-                mx="auto"
-                shadow="xl"
-                sx={(theme) => ({
-                    '@media (max-width: 755px)': {
-                        width: 300,
-                    },
-                    '@media (min-width: 756px)': {
-                        width: 600,
-                    },
-                })}>
+            <Paper style={{ position: 'relative' }} radius="xl" p="lg" mx="auto" shadow="xl" styles={{ width: theme.fn.largerThan('sm') ? '600px' : '300px' }}>
                 <LoadingOverlay visible={deleteFetch.isLoading} />
 
                 <Stack spacing="sm">
