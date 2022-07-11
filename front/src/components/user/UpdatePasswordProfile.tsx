@@ -24,14 +24,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
     });
 
     const updatePasswordFetch = useFetch();
-
     const onSubmit = () => updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass));
-
-    const [errorConfirm, setErrorConfirm] = useState('');
-    useEffect(
-        () => setErrorConfirm(updatePass.newPassword === updatePass.confirmPassword ? '' : 'Passwords do not match'),
-        [updatePass.newPassword, updatePass.confirmPassword]
-    );
 
     const [isValidForm, setIsValidForm] = useState(false);
     useEffect(
@@ -64,6 +57,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
     return (
         <>
             <PasswordInput
+                mt="sm"
                 label="Current password"
                 name="currentPassword"
                 icon={<Lock />}

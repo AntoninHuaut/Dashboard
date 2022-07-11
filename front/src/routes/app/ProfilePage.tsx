@@ -71,7 +71,23 @@ export function ProfilePage() {
                 Information about you
             </Title>
 
-            <Paper style={{ position: 'relative' }} radius="xl" p="lg" mx="auto" shadow="xl" styles={{ width: theme.fn.largerThan('sm') ? '600px' : '300px' }}>
+            <Paper
+                style={{ position: 'relative' }}
+                radius="xl"
+                p="lg"
+                mx="auto"
+                shadow="xl"
+                sx={(theme) => ({
+                    [theme.fn.largerThan('md')]: {
+                        width: 600,
+                    },
+                    [theme.fn.smallerThan('md')]: {
+                        width: 450,
+                    },
+                    [theme.fn.smallerThan('xs')]: {
+                        width: 300,
+                    },
+                })}>
                 <LoadingOverlay visible={deleteFetch.isLoading} />
 
                 <Stack spacing="sm">
