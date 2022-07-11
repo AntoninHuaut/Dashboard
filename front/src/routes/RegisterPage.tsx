@@ -1,8 +1,8 @@
-import { Anchor, Button, Container, Paper, PasswordInput, Text, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Container, Paper, Text, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CircleCheck, Key, User } from 'tabler-icons-react';
+import { Key } from 'tabler-icons-react';
 
 import { useFetch } from '../api/request';
 import { registerRequest } from '../api/user_request';
@@ -11,6 +11,7 @@ import { isValidPassword, PasswordStrength } from '../components/form/PasswordSt
 import { handleInputChange } from '../services/form.service';
 import { IRegisterRequest } from '../types/LoginType';
 import { ConfirmPassword } from '../components/form/ConfirmPassword';
+import { UsernameInput, isValidUsername } from '../components/form/UsernameInput';
 
 export function RegisterPage() {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ export function RegisterPage() {
         () =>
             setRegisterEnable(
                 isValidEmail(register.email) &&
-                    register.username.trim().length > 0 &&
+                    isValidUsername(register.username) &&
                     isValidPassword(register.password) &&
                     register.password === register.confirmPassword
             ),
@@ -82,12 +83,8 @@ export function RegisterPage() {
                     onChange={(evt) => handleInputChange<IRegisterRequest>(evt, setRegister)}
                 />
 
-                <TextInput
+                <UsernameInput
                     mt="md"
-                    label="Username"
-                    name="username"
-                    icon={<User />}
-                    placeholder="Your username"
                     value={register.username}
                     disabled={registerFetch.isLoading || isAccountCreated}
                     onChange={(evt) => handleInputChange<IRegisterRequest>(evt, setRegister)}
