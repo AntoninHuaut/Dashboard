@@ -1,10 +1,11 @@
 import { create, getNumericDate, Header, Payload, verify } from 'djwt';
-import config from '/config.ts';
+import { get } from '/config.ts';
 import { JWTUser } from '/types/auth_model.ts';
 import { User } from '/types/user_model.ts';
 import { TokenProperty } from '/types/auth_model.ts';
 
-export const { JWT_ACCESS_TOKEN_EXP, JWT_REFRESH_TOKEN_EXP } = config;
+const JWT_ACCESS_TOKEN_EXP = get('JWT_ACCESS_TOKEN_EXP') ?? '';
+const JWT_REFRESH_TOKEN_EXP = get('JWT_REFRESH_TOKEN_EXP') ?? '';
 
 if (isNaN(+JWT_ACCESS_TOKEN_EXP) || isNaN(+JWT_REFRESH_TOKEN_EXP)) {
     console.error('Invalid JWT configuration');

@@ -1,7 +1,7 @@
 import { Context, Middleware } from 'oak';
-import config from '/config.ts';
+import { get } from '/config.ts';
 
-const ENV = config.ENV;
+const ENV = get('ENV');
 
 const timing: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     const start = Date.now();
