@@ -1,1 +1,2 @@
-.docker.env
+/data-*
+back.env
