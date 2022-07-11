@@ -4,7 +4,7 @@ import { ModalsProvider } from '@mantine/modals';
 import { NotificationsProvider } from '@mantine/notifications';
 import { BrowserRouter } from 'react-router-dom';
 
-import { AppRouter } from './components/AppRouter';
+import { AppRouter } from './components/layout/AppRouter';
 import { AuthProvider } from './hooks/useAuth';
 
 function App() {

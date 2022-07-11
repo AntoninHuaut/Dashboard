@@ -1,10 +1,10 @@
-import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar, useMantineColorScheme } from '@mantine/core';
+import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Logout, Moon, Sun, UserCircle } from 'tabler-icons-react';
+import { Home, Logout, UserCircle } from 'tabler-icons-react';
 
-import { useAuth } from '../hooks/useAuth';
-import { getGravatarUrl } from '../services/form.service';
+import { useAuth } from '../../hooks/useAuth';
+import { getGravatarUrl } from '../../services/form.service';
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon = getRef('icon');
@@ -79,7 +79,6 @@ export function AppNavbar(props: AppNavbarProps) {
     const location = useLocation();
     const { classes, cx } = useStyles();
     const [active, setActive] = useState('');
-    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     useEffect(() => {
         const path = location.pathname;
@@ -103,7 +102,7 @@ export function AppNavbar(props: AppNavbarProps) {
     ));
 
     return (
-        <Navbar width={{ sm: 200, lg: 300 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
+        <Navbar width={{ sm: 200, lg: 250 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
             <Navbar.Section grow>
                 <Group className={classes.header} position="left">
                     <Avatar size={48} src={getGravatarUrl(user.email)} radius={48} />
@@ -113,27 +112,6 @@ export function AppNavbar(props: AppNavbarProps) {
             </Navbar.Section>
 
             <Navbar.Section className={classes.footer}>
-                <a
-                    href="#"
-                    className={classes.link}
-                    onClick={(event) => {
-                        event.preventDefault();
-                        setOpened(false);
-                        toggleColorScheme();
-                    }}>
-                    {colorScheme === 'dark' ? (
-                        <>
-                            <Sun className={classes.linkIcon} />
-                            <span>Light</span>
-                        </>
-                    ) : (
-                        <>
-                            <Moon className={classes.linkIcon} />
-                            <span>Dark</span>
-                        </>
-                    )}
-                </a>
-
                 <a
                     href="/app/logout"
                     className={classes.link}
