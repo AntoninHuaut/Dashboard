@@ -8,6 +8,7 @@ import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { handleInputChange } from '../../services/form.service';
 import { IUpdatePasswordRequest } from '../../types/LoginType';
+import { ConfirmPassword } from '../form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../form/PasswordStength';
 
 interface UpdatePasswordProfileProps {
@@ -84,16 +85,11 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
                 onChange={(evt) => handleInputChange<IUpdatePasswordRequest>(evt, setUpdatePass)}
             />
 
-            <PasswordInput
-                label="Confirm password"
-                name="confirmPassword"
-                icon={<CircleCheck />}
-                placeholder="Confirm your password"
-                value={updatePass.confirmPassword}
-                disabled={updatePasswordFetch.isLoading}
+            <ConfirmPassword
+                password={updatePass.newPassword}
+                confirmPassword={updatePass.confirmPassword}
                 onChange={(evt) => handleInputChange<IUpdatePasswordRequest>(evt, setUpdatePass)}
-                error={errorConfirm}
-                required
+                disabled={updatePasswordFetch.isLoading}
             />
 
             <Group mt="md" position="center">

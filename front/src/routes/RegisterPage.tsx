@@ -10,6 +10,7 @@ import { EmailInput, isValidEmail } from '../components/form/EmailInput';
 import { isValidPassword, PasswordStrength } from '../components/form/PasswordStength';
 import { handleInputChange } from '../services/form.service';
 import { IRegisterRequest } from '../types/LoginType';
+import { ConfirmPassword } from '../components/form/ConfirmPassword';
 
 export function RegisterPage() {
     const navigate = useNavigate();
@@ -103,16 +104,12 @@ export function RegisterPage() {
                     onChange={(evt) => handleInputChange<IRegisterRequest>(evt, setRegister)}
                 />
 
-                <PasswordInput
+                <ConfirmPassword
                     mt="md"
-                    label="Confirm password"
-                    name="confirmPassword"
-                    icon={<CircleCheck />}
-                    placeholder="Confirm your password"
-                    value={register.confirmPassword}
+                    password={register.password}
+                    confirmPassword={register.confirmPassword}
                     onChange={(evt) => handleInputChange<IRegisterRequest>(evt, setRegister)}
                     disabled={registerFetch.isLoading || isAccountCreated}
-                    required
                 />
 
                 <Button fullWidth mt="xl" onClick={onSubmit} loading={registerFetch.isLoading} disabled={!isRegisterEnable || isAccountCreated}>
