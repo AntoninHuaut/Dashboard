@@ -16,7 +16,7 @@ const getUsers = async (): Promise<User[]> => {
     FROM users;
     `;
 
-    return result.map((user) => toUser(user));
+    return result.map((user: any) => toUser(user));
 };
 
 const getUserById = async (id: number): Promise<User | null> => {

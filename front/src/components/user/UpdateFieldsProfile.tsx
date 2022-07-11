@@ -1,12 +1,13 @@
-import { ActionIcon, TextInput, useMantineTheme } from '@mantine/core';
+import { ActionIcon, useMantineTheme } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { ChangeEvent, useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { Check, Edit, Mail, User, X } from 'tabler-icons-react';
+import { Check, Edit, X } from 'tabler-icons-react';
 
 import { useFetch } from '../../api/request';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { EmailInput, isValidEmail } from '../form/EmailInput';
+import { UsernameInput, isValidUsername } from '../form/UsernameInput';
 
 type FieldNameType = 'email' | 'username';
 
@@ -74,9 +75,8 @@ export function UpdateFieldProfile() {
     );
 
     const createTextInput = useCallback(
-        (icon: JSX.Element, fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => any) => {
+        (fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => any) => {
             const config = {
-                icon,
                 placeholder: `Your ${fieldName}`,
                 value: fieldValue,
                 rightSection: editButton(fieldName, fieldValue, setFieldValue),
@@ -90,17 +90,18 @@ export function UpdateFieldProfile() {
             if (fieldName === 'email') {
                 return <EmailInput {...config} />;
             } else {
-                return <TextInput {...config} label="Username" />;
+                return <UsernameInput {...config} />;
             }
         },
         [editButton, updateFetch]
     );
 
     useEffect(() => {
-        if (editFieldName === 'email') {
-            setValidInput(isValidEmail(email));
-        } else if (editFieldName === 'username') {
-            setValidInput(username.length > 0);
+        switch (editFieldName) {
+            case 'email':
+                return setValidInput(isValidEmail(email));
+            case 'username':
+                return setValidInput(isValidUsername(username));
         }
     }, [email, username]);
 
@@ -109,7 +110,8 @@ export function UpdateFieldProfile() {
 
         if (updateFetch.error) {
             showNotification({
-                message: 'An error occurred while updating your data',
+                title: 'An error occurred while updating your data',
+                message: updateFetch.error.message,
                 color: 'red',
             });
         } else {
@@ -124,8 +126,8 @@ export function UpdateFieldProfile() {
 
     return (
         <>
-            {createTextInput(<Mail size={16} />, 'email', email, setEmail)}
-            {createTextInput(<User size={16} />, 'username', username, setUsername)}
+            {createTextInput('email', email, setEmail)}
+            {createTextInput('username', username, setUsername)}
         </>
     );
 }
