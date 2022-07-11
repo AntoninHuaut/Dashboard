@@ -9,7 +9,11 @@ import { getAuthToken, getJwtPayload, getRefreshToken } from '/utils/jwt_helper.
 export const loginUser = async (email: string, password: string): Promise<GeneratedToken> => {
     const user: User | null = await userRepo.getUserByEmail(email);
 
-    if (user && user.is_active) {
+    if (user) {
+        if (!user.is_active) {
+            throw new httpErrors.Unauthorized('Inactive user status');
+        }
+
         const hashPassword = await userRepo.getUserPassword(user.id);
 
         if (hashPassword) {

@@ -1,5 +1,8 @@
 import { config as loadEnv } from 'dotenv';
 
-const config = { ...Deno.env.toObject(), ...loadEnv() };
+loadEnv({
+    export: true,
+    path: `.env.${Deno.env.get('ENV')}`,
+});
 
-export default config;
+export const get = (field: string) => Deno.env.get(field);

@@ -1,8 +1,8 @@
 import { ZodError } from 'zod';
 import { Context, isHttpError, Middleware, Status } from 'oak';
-import config from '/config.ts';
+import { get } from '/config.ts';
 
-const ENV = config.ENV;
+const ENV = get('ENV');
 
 const error: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     try {
