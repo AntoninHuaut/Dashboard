@@ -6,8 +6,8 @@ import { TokenProperty } from '/types/auth_model.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 import * as userService from '/services/user_service.ts';
 import { getAuthRoute } from './routes.ts';
-import userGuard from '../middlewares/userguard_middleware.ts';
-import { UserRole } from '../types/user_model.ts';
+import userGuard from '/middlewares/userguard_middleware.ts';
+import { UserRole } from '/types/user_model.ts';
 
 const validAuthFormUser = z.object({
     email: z.string(),

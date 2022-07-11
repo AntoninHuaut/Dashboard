@@ -9,15 +9,17 @@ api.get('/', (ctx) => {
     ctx.response.body = 'UP';
 });
 
-const API_ROUTE = '/api/v1';
+export const API_ROUTE = '/api';
+
+const API_ROUTE_v1 = `${API_ROUTE}/v1`;
 const AUTH_ROUTE = '/auth';
 const USER_ROUTE = '/user';
 
-export const getAuthRoute = () => `${API_ROUTE}${AUTH_ROUTE}`;
+export const getAuthRoute = () => `${API_ROUTE_v1}${AUTH_ROUTE}`;
 
 api.use(`${AUTH_ROUTE}`, authRouter.routes());
 api.use(`${USER_ROUTE}`, userRouter.routes());
 
-router.use(`${API_ROUTE}`, api.routes());
+router.use(`${API_ROUTE_v1}`, api.routes());
 
 export { router };
