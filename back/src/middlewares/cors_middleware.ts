@@ -12,7 +12,8 @@ if (!CORS_ORIGIN) {
 const cors: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     if (ctx.request.url.pathname.startsWith(API_ROUTE)) {
         ctx.response.headers.set('Access-Control-Allow-Credentials', 'true');
-        ctx.response.headers.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        ctx.response.headers.set('Access-Control-Allow-Headers', 'DELETE, GET, OPTIONS, POST, PUT');
+        ctx.response.headers.set('Access-Control-Allow-Methods', 'Origin, X-Requested-With, Content-Type, Accept');
         ctx.response.headers.set('Access-Control-Allow-Origin', CORS_ORIGIN);
     }
 
