@@ -45,7 +45,12 @@ export const useFetch = () => {
                 try {
                     const body = await response.json();
                     if (body && body.status === response.status && body.message) {
-                        setError(new Error(body.message));
+                        let message = body.message;
+                        if (Array.isArray(body.message)) {
+                            message = body.message.map((e: { message: string }) => e.message).join(', ');
+                        }
+
+                        setError(new Error(message));
                     } else {
                         throw new Error();
                     }
