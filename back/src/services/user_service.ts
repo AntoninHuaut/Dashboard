@@ -1,8 +1,10 @@
 import { httpErrors } from 'oak';
 
 import * as userRepo from '/repositories/user_repository.ts';
-import { UserRole, IUpdateUser } from '/types/user_model.ts';
+import { UserRole, IUpdateUser, ICreateUser } from '/types/user_model.ts';
 import { hash, compare } from '/utils/hash_helper.ts';
+import { getRegistrationToken } from '/utils/db_helper.ts';
+import { sendRegistrationEmail } from '/external/smtp.ts';
 
 const getUsers = async () => {
     return await userRepo.getUsers();
@@ -26,19 +28,23 @@ const getUserByEmail = async (email: string) => {
     return user;
 };
 
-const createUser = async ({ email, username, password, confirmPassword }: { email: string; username: string; password: string; confirmPassword: string }) => {
-    if (password !== confirmPassword) {
+const createUser = async (createUserForm: ICreateUser) => {
+    if (createUserForm.password !== createUserForm.confirmPassword) {
         throw new httpErrors.BadRequest("Passwords don't match");
     }
 
-    const testUser = await userRepo.getUserByEmail(email);
+    const testUser = await userRepo.getUserByEmail(createUserForm.email);
     if (testUser) {
         throw new httpErrors.BadRequest('An account is already associated with this email');
     }
 
-    const hashPassword = await hash(password);
+    const hashPassword = await hash(createUserForm.password);
+    const registrationToken = getRegistrationToken();
 
-    return await userRepo.createUser(email, username, hashPassword, [UserRole.USER]);
+    const createUser = await userRepo.createUser(createUserForm.email, createUserForm.username, registrationToken, hashPassword, [UserRole.USER]);
+
+    await sendRegistrationEmail(createUserForm.email, registrationToken.value);
+    return createUser;
 };
 
 const updateUser = async (id: number, updateUser: IUpdateUser) => {

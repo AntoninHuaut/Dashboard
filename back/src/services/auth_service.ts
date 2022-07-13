@@ -4,7 +4,7 @@ import * as userRepo from '/repositories/user_repository.ts';
 import { User } from '/types/user_model.ts';
 import { GeneratedToken, JWTUser } from '/types/auth_model.ts';
 import { compare } from '/utils/hash_helper.ts';
-import { getAuthToken, getJwtPayload, getRefreshToken } from '/utils/jwt_helper.ts';
+import { getAuthToken, getJWTUser, getRefreshToken } from '/utils/jwt_helper.ts';
 
 export const loginUser = async (email: string, password: string): Promise<GeneratedToken> => {
     const user: User | null = await userRepo.getUserByEmail(email);
@@ -33,7 +33,7 @@ export const loginUser = async (email: string, password: string): Promise<Genera
 
 export const refreshToken = async (token: string) => {
     try {
-        const payload: JWTUser | null = await getJwtPayload(token);
+        const payload: JWTUser | null = await getJWTUser(token);
         if (payload) {
             const userId: number = payload.id;
             const user: User | null = await userRepo.getUserById(userId);
@@ -54,4 +54,17 @@ export const refreshToken = async (token: string) => {
     } catch (_err) {
         throw new httpErrors.Unauthorized('Invalid token');
     }
+};
+
+export const verifyUser = async (token: string) => {
+    const tokenExpDate = await userRepo.getRegistrationTokenExpDate(token);
+    if (!tokenExpDate) throw new httpErrors.Unauthorized('Invalid token');
+
+    const now = new Date();
+    if (now > tokenExpDate) {
+        await userRepo.deleteUserByRegistrationToken(token);
+        throw new httpErrors.Unauthorized('Token expired');
+    }
+
+    return await userRepo.setVerifiedUser(token);
 };

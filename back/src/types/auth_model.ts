@@ -1,8 +1,15 @@
+import { id, email, username, rolesStr } from './user_model.ts';
+
 export interface JWTUser {
-    id: number;
-    email: string;
-    username: string;
-    roles: string;
+    id: id;
+    email: email;
+    username: username;
+    rolesStr: rolesStr;
+}
+
+export interface JWTRegistrationUser {
+    email: email;
+    username: username;
 }
 
 export interface RefreshToken {

@@ -52,7 +52,7 @@ const getAuthToken = async (user: User): Promise<TokenProperty> => {
         id: user.id,
         email: user.email,
         username: user.username,
-        roles: user.roles.join(','),
+        rolesStr: user.roles.join(','),
         exp: getNumericDate(new Date().getTime() + +JWT_ACCESS_TOKEN_EXP),
     };
 
@@ -75,13 +75,17 @@ const getRefreshToken = async (user: User): Promise<TokenProperty> => {
     };
 };
 
-const getJwtPayload = async (token: string): Promise<JWTUser | null> => {
+const getJWTUser = async (token: string): Promise<JWTUser | null> => {
+    const payload: Payload | null = await verifyJWT(token);
+    return payload ? (payload as unknown as JWTUser) : null;
+};
+
+const verifyJWT = async (token: string): Promise<Payload | null> => {
     try {
-        const payload: JWTUser = (await verify(token, key)) as unknown as JWTUser;
-        return payload;
+        return await verify(token, key);
     } catch (_err) {
         return null;
     }
 };
 
-export { getAuthToken, getJwtPayload, getRefreshToken };
+export { getAuthToken, getJWTUser, getRefreshToken };

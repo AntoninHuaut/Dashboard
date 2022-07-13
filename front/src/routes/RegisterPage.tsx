@@ -41,7 +41,7 @@ export function RegisterPage() {
             setAccountCreated(true);
             showNotification({
                 title: 'Your account has been created!',
-                message: 'You will be redirected to the login page',
+                message: "You will be redirected to the login page. Don't forget to check your email to activate your account.",
                 color: 'green',
                 autoClose: 3000,
             });

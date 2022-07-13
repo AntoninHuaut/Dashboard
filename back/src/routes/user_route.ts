@@ -3,7 +3,7 @@ import { Context, helpers, httpErrors, Router, Status } from 'oak';
 
 import * as userService from '/services/user_service.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
-import { UserRole } from '/types/user_model.ts';
+import { ICreateUser, IUpdateUser, UserRole } from '/types/user_model.ts';
 import { hasUserRole } from '/utils/role_helper.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 
@@ -12,14 +12,14 @@ const validEmail = z.string().trim().email();
 const validUsername = z.string().trim().min(3);
 const validPassword = z.string().min(8);
 
-const validCreateUser = z.object({
+const validCreateUser: z.ZodType<ICreateUser> = z.object({
     email: validEmail,
     username: validUsername,
     password: validPassword,
     confirmPassword: validPassword,
 });
 
-const validUpdateUser = z
+const validUpdateUser: z.ZodType<IUpdateUser> = z
     .object({ currentPassword: z.string(), newPassword: validPassword, confirmPassword: validPassword })
     .or(z.object({ email: validEmail }))
     .or(z.object({ username: validUsername }));
