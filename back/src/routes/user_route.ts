@@ -3,7 +3,7 @@ import { Context, helpers, httpErrors, Router, Status } from 'oak';
 
 import * as userService from '/services/user_service.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
-import { ICreateUser, IUpdateUser, UserRole } from '/types/user_model.ts';
+import { ICreateUser, IForgotPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
 import { hasUserRole } from '/utils/role_helper.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 
@@ -23,6 +23,10 @@ const validUpdateUser: z.ZodType<IUpdateUser> = z
     .object({ currentPassword: z.string(), newPassword: validPassword, confirmPassword: validPassword })
     .or(z.object({ email: validEmail }))
     .or(z.object({ username: validUsername }));
+
+const validForgotPassword: z.ZodType<IForgotPassword> = z.object({
+    email: validEmail,
+});
 
 const userRouter = new Router();
 
@@ -49,6 +53,13 @@ const createUser = async (ctx: Context) => {
     } else {
         throw new httpErrors.InternalServerError('User creation failed');
     }
+};
+
+const forgotPassword = async (ctx: Context) => {
+    const body = await safeParseBody(ctx);
+    const { email } = validForgotPassword.parse(body);
+
+    // TODO
 };
 
 const updateUser = async (ctx: Context) => {
