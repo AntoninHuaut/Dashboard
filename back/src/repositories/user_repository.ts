@@ -1,4 +1,4 @@
-import { sql } from '/db/db.ts';
+import { sql } from '/external/db.ts';
 import { User, UserRole } from '/types/user_model.ts';
 import { IRegistrationToken } from '/utils/db_helper.ts';
 

@@ -4,6 +4,7 @@ import * as userRepo from '/repositories/user_repository.ts';
 import { UserRole, IUpdateUser, ICreateUser } from '/types/user_model.ts';
 import { hash, compare } from '/utils/hash_helper.ts';
 import { getRegistrationToken } from '/utils/db_helper.ts';
+import { sendRegistrationEmail } from '/external/smtp.ts';
 
 const getUsers = async () => {
     return await userRepo.getUsers();
@@ -42,8 +43,7 @@ const createUser = async (createUserForm: ICreateUser) => {
 
     const createUser = await userRepo.createUser(createUserForm.email, createUserForm.username, registrationToken, hashPassword, [UserRole.USER]);
 
-    // TODO send email with registration token
-
+    await sendRegistrationEmail(createUserForm.email, registrationToken.value);
     return createUser;
 };
 
