@@ -1,7 +1,9 @@
 import { deleteToken, insertToken } from './user_token_repository.ts';
 import { sql } from '/external/db.ts';
 import { User, UserRole } from '/types/user_model.ts';
-import { IRegistrationToken } from '/utils/db_helper.ts';
+import { IToken } from '/utils/db_helper.ts';
+
+type TOKEN_TYPE = 'registration' | 'forgot_password';
 
 function toUser(user: any) {
     if (!Array.isArray(user.roles)) {
@@ -11,7 +13,7 @@ function toUser(user: any) {
     return user;
 }
 
-const getUsers = async (): Promise<User[]> => {
+export const getUsers = async (): Promise<User[]> => {
     const result = await sql`
     SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
     FROM "users";
@@ -20,30 +22,30 @@ const getUsers = async (): Promise<User[]> => {
     return result.map((user: any) => toUser(user));
 };
 
-const getUserById = async (id: number): Promise<User | null> => {
+export const getUserById = async (id: number): Promise<User | null> => {
     const result = await sql` SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
         FROM "users" WHERE "id" = ${id}; `;
 
     return result.length ? toUser(result[0]) : null;
 };
 
-const getUserByEmail = async (email: string): Promise<User | null> => {
+export const getUserByEmail = async (email: string): Promise<User | null> => {
     const result = await sql` SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
         FROM "users" WHERE "email" = ${email}; `;
 
     return result.length ? toUser(result[0]) : null;
 };
 
-const getUserPassword = async (id: number): Promise<string | null> => {
+export const getUserPassword = async (id: number): Promise<string | null> => {
     const result = await sql` SELECT "password" FROM "users" WHERE "id" = ${id}; `;
 
     return result.length ? result[0].password : null;
 };
 
-const createUser = async (
+export const createUser = async (
     email: string,
     username: string,
-    registrationToken: IRegistrationToken | null,
+    registrationToken: IToken | null,
     hashPassword: string,
     rolesArray: UserRole[]
 ): Promise<User | null> => {
@@ -67,35 +69,76 @@ const createUser = async (
     return result.length && result[0].id ? await getUserById(result[0].id) : null;
 };
 
-const getRegistrationTokenExpDate = async (token: string): Promise<Date | null> => {
-    const result = await sql` SELECT "token_exp" FROM "users_token" ut
-        JOIN "users" u on ut.token_id = u.registration_token_id 
-        WHERE "token_value" = ${token}; `;
+const getTokenByTokenTypeAndUserId = async (userId: number, tokenType: TOKEN_TYPE): Promise<IToken | null> => {
+    const result = await sql` SELECT * FROM "users_token" ut
+        JOIN "users" u on ut.token_id = ${sql([`u.${getTokenColumnByType(tokenType)}`])} 
+        WHERE "id" = ${userId} `;
 
-    return result.length ? result[0].token_exp : null;
+    return result.length
+        ? {
+              value: result[0].token_value,
+              exp: result[0].token_exp,
+          }
+        : null;
 };
 
-const setVerifiedUser = async (token: string) => {
+export const getTokenByTokenValueAndType = async (tokenValue: string, tokenType: TOKEN_TYPE): Promise<IToken | null> => {
+    const result = await sql` SELECT * FROM "users_token" ut
+        JOIN "users" u on ut.token_id = ${sql([`u.${getTokenColumnByType(tokenType)}`])}
+        WHERE "token_value" = ${tokenValue}; `;
+
+    return result.length
+        ? {
+              value: result[0].token_value,
+              exp: result[0].token_exp,
+          }
+        : null;
+};
+
+export const setVerifiedUser = async (tokenValue: string): Promise<boolean> => {
     const resultUserId = await sql` SELECT id FROM "users" u
         JOIN "users_token" ut on u.registration_token_id = ut.token_id
-        WHERE "token_value" = ${token}; `;
+        WHERE "token_value" = ${tokenValue}; `;
 
     if (resultUserId.length) {
-        const userId = resultUserId[0].id;
-
-        const result = await sql`
-            UPDATE "users" SET "registration_token_id" = ${null}, "is_active" = ${true}
-            WHERE "id" = ${userId}; `;
-
-        await deleteToken(token);
-
-        return result.count > 0;
+        return await removeUserTokenId(resultUserId[0].id, tokenValue, 'registration');
     }
 
     return false;
 };
 
-const updateUserField = async (id: number, field: string, value: string) => {
+export const setForgotPasswordToken = async (email: string, forgotPasswordToken: IToken): Promise<boolean> => {
+    const user = await getUserByEmail(email);
+    if (user) {
+        const existingForgotPasswordToken = await getTokenByTokenTypeAndUserId(user.id, 'forgot_password');
+        if (existingForgotPasswordToken) {
+            await removeUserTokenId(user.id, existingForgotPasswordToken.value, 'forgot_password');
+        }
+
+        const insertedTokenId = await insertToken(forgotPasswordToken.value, forgotPasswordToken.exp);
+        if (insertedTokenId) {
+            return await updateUserField(user.id, `"forgot_password_token_id"`, insertedTokenId);
+        }
+    }
+
+    return false;
+};
+
+const removeUserTokenId = async (userId: number, tokenValue: string, tokenType: TOKEN_TYPE): Promise<boolean> => {
+    const result = await sql`
+            UPDATE "users" SET ${sql(getTokenColumnByType(tokenType))} = ${null}, "is_active" = ${true}
+            WHERE "id" = ${userId}; `;
+
+    await deleteToken(tokenValue);
+
+    return result.count > 0;
+};
+
+function getTokenColumnByType(tokenType: TOKEN_TYPE) {
+    return { registration: 'registration_token_id', forgot_password: 'forgot_password_token_id' }[tokenType];
+}
+
+const updateUserField = async (id: number, field: string, value: string | number | boolean): Promise<boolean> => {
     const user = { [field]: value, updated_at: new Date() };
 
     const result = await sql` UPDATE "users" SET ${sql(user, field, 'updated_at')} WHERE "id" = ${id}; `;
@@ -103,41 +146,26 @@ const updateUserField = async (id: number, field: string, value: string) => {
     return result.count > 0;
 };
 
-const updateUserPassword = (id: number, hashPassword: string) => {
+export const updateUserPassword = (id: number, hashPassword: string): Promise<boolean> => {
     return updateUserField(id, `"password"`, hashPassword);
 };
 
-const updateUserEmail = (id: number, email: string) => {
+export const updateUserEmail = (id: number, email: string): Promise<boolean> => {
     return updateUserField(id, `"email"`, email);
 };
 
-const updateUserUsername = (id: number, username: string) => {
+export const updateUserUsername = (id: number, username: string): Promise<boolean> => {
     return updateUserField(id, `"username"`, username);
 };
 
-const deleteUser = async (id: number) => {
+export const deleteUser = async (id: number): Promise<boolean> => {
     const result = await sql` DELETE FROM "users" WHERE "id" = ${id}; `;
 
     return result.count > 0;
 };
 
-const deleteUserByRegistrationToken = async (token: string) => {
+export const deleteUserByRegistrationToken = async (token: string): Promise<boolean> => {
     const result = await sql` DELETE FROM "users" WHERE "registration_token" = ${token}; `;
 
     return result.count > 0;
-};
-
-export {
-    createUser,
-    deleteUser,
-    deleteUserByRegistrationToken,
-    setVerifiedUser,
-    getUserByEmail,
-    getUserById,
-    getUserPassword,
-    getRegistrationTokenExpDate,
-    getUsers,
-    updateUserPassword,
-    updateUserEmail,
-    updateUserUsername,
 };

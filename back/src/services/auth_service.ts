@@ -57,11 +57,11 @@ export const refreshToken = async (token: string) => {
 };
 
 export const verifyUser = async (token: string) => {
-    const tokenExpDate = await userRepo.getRegistrationTokenExpDate(token);
-    if (!tokenExpDate) throw new httpErrors.Unauthorized('Invalid token');
+    const tokenInfo = await userRepo.getTokenByTokenValueAndType(token, 'registration');
+    if (!tokenInfo) throw new httpErrors.Unauthorized('Invalid token');
 
     const now = new Date();
-    if (now > tokenExpDate) {
+    if (now > tokenInfo.exp) {
         await userRepo.deleteUserByRegistrationToken(token);
         throw new httpErrors.Unauthorized('Token expired');
     }

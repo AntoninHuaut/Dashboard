@@ -3,7 +3,7 @@ import { httpErrors } from 'oak';
 import * as userRepo from '/repositories/user_repository.ts';
 import { UserRole, IUpdateUser, ICreateUser } from '/types/user_model.ts';
 import { hash, compare } from '/utils/hash_helper.ts';
-import { getRegistrationToken } from '/utils/db_helper.ts';
+import { getToken } from '/utils/db_helper.ts';
 import { sendRegistrationEmail } from '/external/smtp.ts';
 
 const getUsers = async () => {
@@ -39,7 +39,7 @@ const createUser = async (createUserForm: ICreateUser) => {
     }
 
     const hashPassword = await hash(createUserForm.password);
-    const registrationToken = getRegistrationToken();
+    const registrationToken = getToken();
 
     const createUser = await userRepo.createUser(createUserForm.email, createUserForm.username, registrationToken, hashPassword, [UserRole.USER]);
 
