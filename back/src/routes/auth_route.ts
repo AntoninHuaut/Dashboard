@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context, httpErrors, Router } from 'oak';
+import { Context, helpers, httpErrors, Router, Status } from 'oak';
 
 import * as authService from '/services/auth_service.ts';
 import { TokenProperty } from '/types/auth_model.ts';
@@ -12,6 +12,10 @@ import { UserRole } from '/types/user_model.ts';
 const validAuthFormUser = z.object({
     email: z.string(),
     password: z.string(),
+});
+
+const validVerifyToken = z.object({
+    token: z.string(),
 });
 
 const authRouter = new Router();
@@ -61,8 +65,7 @@ const logout = async (ctx: Context) => {
     }
 
     await Promise.all([ctx.cookies.delete('access_token'), ctx.cookies.delete('refresh_token')]);
-
-    ctx.response.status = 204;
+    ctx.response.status = Status.NoContent;
 };
 
 const refreshToken = async (ctx: Context) => {
@@ -74,13 +77,21 @@ const refreshToken = async (ctx: Context) => {
     const token = await authService.refreshToken(refresh_token);
 
     await Promise.all([setCookie(ctx, 'access_token', token.access_token), setCookie(ctx, 'refresh_token', token.refresh_token)]);
+    ctx.response.status = Status.NoContent;
+};
 
-    ctx.response.status = 204;
+const verifyUser = async (ctx: Context) => {
+    const body = await safeParseBody(ctx);
+    const verifyToken = validVerifyToken.parse(body);
+
+    await authService.verifyUser(verifyToken.token);
+    ctx.response.status = Status.NoContent;
 };
 
 authRouter.post('/login', login);
 authRouter.get('/me', userGuard([UserRole.USER]), getSession);
-authRouter.post('/logout', logout);
-authRouter.post(`/refresh`, refreshToken);
+authRouter.post('/logout', userGuard([UserRole.USER]), logout);
+authRouter.post(`/refresh`, userGuard([UserRole.USER]), refreshToken);
+authRouter.post('/verify', verifyUser);
 
 export default authRouter;

@@ -35,15 +35,16 @@ const sql = postgres({
 
 await sql`  
   CREATE TABLE IF NOT EXISTS "users" (
-    "id"                 BIGSERIAL    PRIMARY KEY,
-    "email"              VARCHAR(255) NOT NULL UNIQUE,
-    "username"           VARCHAR(64)  NOT NULL,
-    "password"           VARCHAR(255) NOT NULL,
-    "roles"              VARCHAR(128) NOT NULL,
-    "is_active"          BOOLEAN      NOT NULL,
-    "registration_token" TEXT         NULL,
-    "created_at"         TIMESTAMPTZ  DEFAULT NOW() NOT NULL,
-    "updated_at"         TIMESTAMPTZ  DEFAULT NOW() NOT NULL
+    "id"                     BIGSERIAL    PRIMARY KEY,
+    "email"                  VARCHAR(255) NOT NULL  UNIQUE,
+    "username"               VARCHAR(64)  NOT NULL,
+    "password"               VARCHAR(255) NOT NULL,
+    "roles"                  VARCHAR(128) NOT NULL,
+    "is_active"              BOOLEAN      NOT NULL,
+    "registration_token"     TEXT         NULL      UNIQUE,
+    "registration_token_exp" TIMESTAMPTZ  NULL,
+    "created_at"             TIMESTAMPTZ  DEFAULT NOW() NOT NULL,
+    "updated_at"             TIMESTAMPTZ  DEFAULT NOW() NOT NULL
   );
 `;
 

@@ -10,7 +10,7 @@ const jwt: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
             const jwtUser: JWTUser | null = await getJWTUser(access_token);
 
             if (jwtUser) {
-                const roles: UserRole[] = jwtUser.roles.split(',') as UserRole[];
+                const roles: UserRole[] = jwtUser.rolesStr.split(',') as UserRole[];
 
                 const ctxUser: ContextUser = {
                     id: jwtUser.id,

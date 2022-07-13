@@ -1,14 +1,13 @@
 import { create, getNumericDate, Header, Payload, verify } from 'djwt';
 import { get } from '/config.ts';
 import { JWTUser } from '/types/auth_model.ts';
-import { User, ICreateUser } from '/types/user_model.ts';
+import { User } from '/types/user_model.ts';
 import { TokenProperty } from '/types/auth_model.ts';
 
 const JWT_ACCESS_TOKEN_EXP = get('JWT_ACCESS_TOKEN_EXP') ?? '';
 const JWT_REFRESH_TOKEN_EXP = get('JWT_REFRESH_TOKEN_EXP') ?? '';
-const JWT_REGISTRATION_TOKEN_EXP = get('JWT_REGISTRATION_TOKEN_EXP') ?? '';
 
-if (isNaN(+JWT_ACCESS_TOKEN_EXP) || isNaN(+JWT_REFRESH_TOKEN_EXP) || isNaN(+JWT_REGISTRATION_TOKEN_EXP)) {
+if (isNaN(+JWT_ACCESS_TOKEN_EXP) || isNaN(+JWT_REFRESH_TOKEN_EXP)) {
     console.error('Invalid JWT configuration');
     Deno.exit(2);
 }
@@ -47,27 +46,13 @@ async function loadKey() {
 
 await loadKey();
 
-const getRegistrationToken = async (user: ICreateUser): Promise<TokenProperty> => {
-    const payload: Payload = {
-        iss: 'learningreact-api-registration',
-        email: user.email,
-        username: user.username,
-        exp: getNumericDate(new Date().getTime() + +JWT_REGISTRATION_TOKEN_EXP),
-    };
-
-    return {
-        value: await create(header, payload, key),
-        maxAge: +JWT_REGISTRATION_TOKEN_EXP,
-    };
-};
-
 const getAuthToken = async (user: User): Promise<TokenProperty> => {
     const payload: Payload = {
         iss: 'learningreact-api',
         id: user.id,
         email: user.email,
         username: user.username,
-        roles: user.roles.join(','),
+        rolesStr: user.roles.join(','),
         exp: getNumericDate(new Date().getTime() + +JWT_ACCESS_TOKEN_EXP),
     };
 
@@ -91,12 +76,8 @@ const getRefreshToken = async (user: User): Promise<TokenProperty> => {
 };
 
 const getJWTUser = async (token: string): Promise<JWTUser | null> => {
-    try {
-        const payload: JWTUser = (await verifyJWT(token)) as unknown as JWTUser;
-        return payload;
-    } catch (_err) {
-        return null;
-    }
+    const payload: Payload | null = await verifyJWT(token);
+    return payload ? (payload as unknown as JWTUser) : null;
 };
 
 const verifyJWT = async (token: string): Promise<Payload | null> => {
@@ -107,4 +88,4 @@ const verifyJWT = async (token: string): Promise<Payload | null> => {
     }
 };
 
-export { getRegistrationToken, getAuthToken, getJWTUser, getRefreshToken };
+export { getAuthToken, getJWTUser, getRefreshToken };
