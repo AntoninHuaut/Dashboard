@@ -1,5 +1,6 @@
 import { Avatar, Burger, Group, Header, MediaQuery, Title, useMantineTheme } from '@mantine/core';
 import { Dispatch, SetStateAction } from 'react';
+import { Link } from 'react-router-dom';
 import { ThemeSwitcher } from './ThemeSwitcher';
 
 interface AppHeaderProps {
@@ -20,14 +21,18 @@ export function AppHeader(props: AppHeaderProps) {
 
                 <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
                     <Group position="apart">
-                        <Avatar size={32} radius={32} src={'/logo.svg'} />
+                        <Link to={'/'}>
+                            <Avatar size={32} radius={32} src={'/logo.svg'} />
+                        </Link>
                         <Title order={4}>LearningReact</Title>
                     </Group>
                 </MediaQuery>
 
                 <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
                     <Group position="apart">
-                        <Avatar size={42} radius={42} src={'/logo.svg'} />
+                        <Link to={'/'}>
+                            <Avatar size={42} radius={42} src={'/logo.svg'} />
+                        </Link>
                         <Title order={2}>LearningReact</Title>
                     </Group>
                 </MediaQuery>

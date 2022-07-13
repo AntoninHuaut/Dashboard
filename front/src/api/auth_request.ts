@@ -27,6 +27,18 @@ export const loginRequest = (loginRequest: ILoginRequest) => {
     };
 };
 
+export const verifyRequest = (token: string) => {
+    return {
+        url: `${AUTH_API_URL}/verify`,
+        options: mergeFetchOptions({
+            method: HttpMethod.POST,
+            body: JSON.stringify({
+                token: token,
+            }),
+        }),
+    };
+};
+
 export const logoutRequest = () => {
     return {
         url: `${AUTH_API_URL}/logout`,

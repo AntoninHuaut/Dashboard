@@ -10,6 +10,7 @@ import { IndexPage } from '../../routes/IndexPage';
 import { LoginPage } from '../../routes/LoginPage';
 import { PageNotFound } from '../../routes/PageNotFound';
 import { RegisterPage } from '../../routes/RegisterPage';
+import { VerifyPage } from '../../routes/VerifyPage';
 
 export function AppRouter() {
     const { isLoadingUser, loadingElement } = useAuth();
@@ -21,6 +22,7 @@ export function AppRouter() {
                 { path: '/', element: <IndexPage /> },
                 { path: '/login', element: <LoginPage /> },
                 { path: '/register', element: <RegisterPage /> },
+                { path: '/verify/:token', element: <VerifyPage /> },
             ],
         },
         {
