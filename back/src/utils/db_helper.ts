@@ -14,5 +14,5 @@ export interface IRegistrationToken {
 
 export const getRegistrationToken = (): IRegistrationToken => ({
     value: `${crypto.randomUUID()}-${crypto.randomUUID()}`,
-    exp: new Date(new Date().getTime() + 0),
+    exp: new Date(new Date().getTime() + +REGISTRATION_TOKEN_EXP * 1000),
 });
