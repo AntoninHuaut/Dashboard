@@ -18,6 +18,13 @@ export interface User extends ContextUser {
     updated_at: Date;
 }
 
+export interface ICreateUser {
+    email: string;
+    username: string;
+    password: string;
+    confirmPassword: string;
+}
+
 interface IUpdateUserPassword {
     currentPassword: string;
     newPassword: string;

@@ -11,43 +11,49 @@ function toUser(user: any) {
 
 const getUsers = async (): Promise<User[]> => {
     const result = await sql`
-    SELECT 
-      id, email, username, roles, is_active, created_at, updated_at
-    FROM users;
+    SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
+    FROM "users";
     `;
 
     return result.map((user: any) => toUser(user));
 };
 
 const getUserById = async (id: number): Promise<User | null> => {
-    const result = await sql` SELECT id, email, username, roles, is_active, created_at, updated_at
-        FROM users WHERE id = ${id};`;
+    const result = await sql` SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
+        FROM "users" WHERE "id" = ${id}; `;
 
     return result.length ? toUser(result[0]) : null;
 };
 
 const getUserByEmail = async (email: string): Promise<User | null> => {
-    const result = await sql` SELECT id, email, username, roles, is_active, created_at, updated_at
-        FROM users WHERE email = ${email};`;
+    const result = await sql` SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
+        FROM "users" WHERE "email" = ${email}; `;
 
     return result.length ? toUser(result[0]) : null;
 };
 
 const getUserPassword = async (id: number): Promise<string | null> => {
-    const result = await sql` SELECT password FROM users WHERE id = ${id}; `;
+    const result = await sql` SELECT "password" FROM "users" WHERE "id" = ${id}; `;
 
     return result.length ? result[0].password : null;
 };
 
-const createUser = async (email: string, username: string, hashPassword: string, rolesArray: UserRole[]): Promise<User | null> => {
+const createUser = async (
+    email: string,
+    username: string,
+    registrationToken: string | null,
+    hashPassword: string,
+    rolesArray: UserRole[]
+): Promise<User | null> => {
     const rolesStr = rolesArray.join(',');
+    const isActive = registrationToken === null;
 
     const result = await sql`
-    INSERT INTO users (
-      email, username, password, roles, is_active
+    INSERT INTO "users" (
+      "email", "username", "password", "roles", "registration_token", "is_active"
     ) VALUES (
-        ${email}, ${username}, ${hashPassword}, ${rolesStr}, true
-    ) RETURNING id;`;
+        ${email}, ${username}, ${hashPassword}, ${rolesStr}, ${registrationToken}, ${isActive}
+    ) RETURNING "id";`;
 
     return result.length && result[0].id ? await getUserById(result[0].id) : null;
 };
@@ -55,27 +61,25 @@ const createUser = async (email: string, username: string, hashPassword: string,
 const updateUserField = async (id: number, field: string, value: string) => {
     const user = { [field]: value, updated_at: new Date() };
 
-    const result = await sql` UPDATE users SET 
-        ${sql(user, field, 'updated_at')}
-        WHERE id = ${id};`;
+    const result = await sql` UPDATE "users" SET ${sql(user, field, 'updated_at')} WHERE "id" = ${id}; `;
 
     return result.count > 0;
 };
 
 const updateUserPassword = (id: number, hashPassword: string) => {
-    return updateUserField(id, 'password', hashPassword);
+    return updateUserField(id, `"password"`, hashPassword);
 };
 
 const updateUserEmail = (id: number, email: string) => {
-    return updateUserField(id, 'email', email);
+    return updateUserField(id, `"email"`, email);
 };
 
 const updateUserUsername = (id: number, username: string) => {
-    return updateUserField(id, 'username', username);
+    return updateUserField(id, `"username"`, username);
 };
 
 const deleteUser = async (id: number) => {
-    const result = await sql` DELETE FROM users WHERE id = ${id}; `;
+    const result = await sql` DELETE FROM "users" WHERE "id" = ${id}; `;
 
     return result.count > 0;
 };

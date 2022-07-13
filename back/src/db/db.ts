@@ -34,22 +34,23 @@ const sql = postgres({
 });
 
 await sql`  
-  CREATE TABLE IF NOT EXISTS users (
-    id         BIGSERIAL    PRIMARY KEY,
-    email      VARCHAR(255) NOT NULL UNIQUE,
-    username   VARCHAR(64)  NOT NULL,
-    password   VARCHAR(255) NOT NULL,
-    roles      VARCHAR(128) NOT NULL,
-    is_active  BOOLEAN      NOT NULL,
-    created_at TIMESTAMPTZ  DEFAULT NOW() NOT NULL,
-    updated_at TIMESTAMPTZ  DEFAULT NOW() NOT NULL
+  CREATE TABLE IF NOT EXISTS "users" (
+    "id"                 BIGSERIAL    PRIMARY KEY,
+    "email"              VARCHAR(255) NOT NULL UNIQUE,
+    "username"           VARCHAR(64)  NOT NULL,
+    "password"           VARCHAR(255) NOT NULL,
+    "roles"              VARCHAR(128) NOT NULL,
+    "is_active"          BOOLEAN      NOT NULL,
+    "registration_token" TEXT         NULL,
+    "created_at"         TIMESTAMPTZ  DEFAULT NOW() NOT NULL,
+    "updated_at"         TIMESTAMPTZ  DEFAULT NOW() NOT NULL
   );
 `;
 
 const createDefaultAdmin = async () => {
     try {
         const hashPassword = await hash(DEFAULT_ADMIN_PASSWORD);
-        await createUser(DEFAULT_ADMIN_EMAIL, 'DefaultAdmin', hashPassword, [UserRole.USER, UserRole.ADMIN]);
+        await createUser(DEFAULT_ADMIN_EMAIL, 'DefaultAdmin', null, hashPassword, [UserRole.USER, UserRole.ADMIN]);
     } catch (err) {
         if (err instanceof postgres.PostgresError && err.message.startsWith('duplicate key')) {
             // Ignore
