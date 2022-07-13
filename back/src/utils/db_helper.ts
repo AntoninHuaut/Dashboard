@@ -12,7 +12,7 @@ export interface IToken {
     exp: Date;
 }
 
-export const getToken = (): IToken => ({
+export const createToken = (): IToken => ({
     value: `${crypto.randomUUID()}-${crypto.randomUUID()}`,
     exp: new Date(new Date().getTime() + +TOKEN_EXP * 1000),
 });

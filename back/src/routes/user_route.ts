@@ -3,7 +3,7 @@ import { Context, helpers, httpErrors, Router, Status } from 'oak';
 
 import * as userService from '/services/user_service.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
-import { ICreateUser, IForgotPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
+import { ICreateUser, IResetUserPassword, IForgotUserPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
 import { hasUserRole } from '/utils/role_helper.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 
@@ -24,8 +24,14 @@ const validUpdateUser: z.ZodType<IUpdateUser> = z
     .or(z.object({ email: validEmail }))
     .or(z.object({ username: validUsername }));
 
-const validForgotPassword: z.ZodType<IForgotPassword> = z.object({
+const validForgotPassword: z.ZodType<IForgotUserPassword> = z.object({
     email: validEmail,
+});
+
+const validResetPassword: z.ZodType<IResetUserPassword> = z.object({
+    token: z.string().min(1),
+    newPassword: validPassword,
+    confirmPassword: validPassword,
 });
 
 const userRouter = new Router();
@@ -55,11 +61,20 @@ const createUser = async (ctx: Context) => {
     }
 };
 
-const forgotPassword = async (ctx: Context) => {
+const askForgotPassword = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
     const { email } = validForgotPassword.parse(body);
 
-    // TODO
+    await userService.askForgotPassword(email);
+    ctx.response.status = Status.NoContent;
+};
+
+const resetPassword = async (ctx: Context) => {
+    const body = await safeParseBody(ctx);
+    const resetPasswordForm = validResetPassword.parse(body);
+
+    await userService.resetPassword(resetPasswordForm);
+    ctx.response.status = Status.NoContent;
 };
 
 const updateUser = async (ctx: Context) => {
@@ -94,6 +109,8 @@ const deleteUser = async (ctx: Context) => {
 userRouter.get('/', userGuard([UserRole.ADMIN]), getUsers);
 userRouter.get('/:userIdStr', userGuard([UserRole.ADMIN]), getUserById);
 userRouter.post('/', createUser);
+userRouter.post('/fogotPassword', askForgotPassword);
+userRouter.post('/resetPassword', resetPassword);
 userRouter.put('/:userIdStr', userGuard([UserRole.USER]), updateUser);
 userRouter.delete('/:userIdStr', userGuard([UserRole.USER]), deleteUser);
 

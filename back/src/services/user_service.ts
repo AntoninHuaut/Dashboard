@@ -1,16 +1,17 @@
 import { httpErrors } from 'oak';
 
 import * as userRepo from '/repositories/user_repository.ts';
-import { UserRole, IUpdateUser, ICreateUser } from '/types/user_model.ts';
+import * as tokenRepo from '/repositories/user_token_repository.ts';
+import { UserRole, IUpdateUser, ICreateUser, IResetUserPassword } from '/types/user_model.ts';
 import { hash, compare } from '/utils/hash_helper.ts';
-import { getToken } from '/utils/db_helper.ts';
-import { sendRegistrationEmail } from '/external/smtp.ts';
+import { createToken } from '/utils/db_helper.ts';
+import { sendResetPasswordEmail, sendRegistrationEmail } from '/external/smtp.ts';
 
-const getUsers = async () => {
+export const getUsers = async () => {
     return await userRepo.getUsers();
 };
 
-const getUserById = async (id: number) => {
+export const getUserById = async (id: number) => {
     const user = await userRepo.getUserById(id);
     if (!user) {
         throw new httpErrors.NotFound('User not found');
@@ -19,7 +20,7 @@ const getUserById = async (id: number) => {
     return user;
 };
 
-const getUserByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string) => {
     const user = await userRepo.getUserByEmail(email);
     if (!user) {
         throw new httpErrors.NotFound('User not found');
@@ -28,7 +29,7 @@ const getUserByEmail = async (email: string) => {
     return user;
 };
 
-const createUser = async (createUserForm: ICreateUser) => {
+export const createUser = async (createUserForm: ICreateUser) => {
     if (createUserForm.password !== createUserForm.confirmPassword) {
         throw new httpErrors.BadRequest("Passwords don't match");
     }
@@ -39,7 +40,7 @@ const createUser = async (createUserForm: ICreateUser) => {
     }
 
     const hashPassword = await hash(createUserForm.password);
-    const registrationToken = getToken();
+    const registrationToken = createToken();
 
     const createUser = await userRepo.createUser(createUserForm.email, createUserForm.username, registrationToken, hashPassword, [UserRole.USER]);
 
@@ -47,7 +48,40 @@ const createUser = async (createUserForm: ICreateUser) => {
     return createUser;
 };
 
-const updateUser = async (id: number, updateUser: IUpdateUser) => {
+export const askForgotPassword = async (email: string) => {
+    const user = await userRepo.getUserByEmail(email);
+    if (!user) {
+        throw new httpErrors.NotFound('User not found');
+    }
+
+    const forgotPasswordToken = createToken();
+    await userRepo.setForgotPasswordToken(user.id, forgotPasswordToken);
+
+    await sendResetPasswordEmail(email, forgotPasswordToken.value);
+};
+
+export const resetPassword = async (resetPasswordForm: IResetUserPassword) => {
+    if (resetPasswordForm.newPassword !== resetPasswordForm.confirmPassword) {
+        throw new httpErrors.BadRequest("Passwords don't match");
+    }
+
+    const tokenInfo = await tokenRepo.getTokenByTokenValueAndType(resetPasswordForm.token, 'forgot_password');
+    if (!tokenInfo) throw new httpErrors.Unauthorized('Invalid token');
+
+    const userId = await userRepo.getUserIdByTokenValueAndType(resetPasswordForm.token, 'forgot_password');
+    if (!userId) throw new httpErrors.NotFound('User not found');
+
+    const now = new Date();
+    if (now > tokenInfo.exp) {
+        await userRepo.removeUserTokenId(userId, resetPasswordForm.token, 'forgot_password');
+        throw new httpErrors.Unauthorized('Token expired');
+    }
+
+    const hashPassword = await hash(resetPasswordForm.newPassword);
+    return await userRepo.setResetPassword(userId, resetPasswordForm.token, hashPassword);
+};
+
+export const updateUser = async (id: number, updateUser: IUpdateUser) => {
     const hashCurrentPassword = await userRepo.getUserPassword(id);
     if (!hashCurrentPassword) {
         throw new httpErrors.NotFound('User not found');
@@ -74,7 +108,7 @@ const updateUser = async (id: number, updateUser: IUpdateUser) => {
     }
 };
 
-const deleteUser = async (id: number) => {
+export const deleteUser = async (id: number) => {
     const testUser = await userRepo.getUserById(id);
     if (!testUser) {
         throw new httpErrors.NotFound('User not found');
@@ -82,5 +116,3 @@ const deleteUser = async (id: number) => {
 
     return await userRepo.deleteUser(id);
 };
-
-export { createUser, deleteUser, getUserByEmail, getUserById, getUsers, updateUser };
