@@ -12,8 +12,8 @@ services:
     depends_on:
       - db
 
-  learning-react-build-front:
-    container_name: clearning-react-build-front
+  learning-react-front:
+    container_name: clearning-react-front
     restart: unless-stopped
     build:
       context: ./front
@@ -30,5 +30,7 @@ services:
     image: postgres:14-alpine
     volumes:
       - ./data-db:/var/lib/postgresql/data
+      - ./init/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+      - ./init/script.sql:/script.sql
     env_file:
       - db.env
