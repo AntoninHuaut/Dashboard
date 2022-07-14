@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
-import { loginRequest } from '../api/auth_request';
-import { useFetch } from '../api/request';
-import { EmailInput, isValidEmail } from '../components/form/EmailInput';
-import { useAuth } from '../hooks/useAuth';
-import { handleInputChange } from '../services/form.service';
-import { ILoginRequest } from '../types/LoginType';
+import { loginRequest } from '../../api/auth_request';
+import { useFetch } from '../../api/request';
+import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
+import { useAuth } from '../../hooks/useAuth';
+import { handleInputChange } from '../../services/form.service';
+import { ILoginRequest } from '../../types/LoginType';
 
 export function LoginPage() {
     const auth = useAuth();

@@ -4,8 +4,8 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
-import { verifyRequest } from '../api/auth_request';
-import { useFetch } from '../api/request';
+import { verifyRequest } from '../../api/auth_request';
+import { useFetch } from '../../api/request';
 
 export function VerifyPage() {
     const params = useParams();
