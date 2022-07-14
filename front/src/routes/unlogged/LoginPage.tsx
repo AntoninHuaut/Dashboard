@@ -5,12 +5,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
-import { loginRequest } from '../api/auth_request';
-import { useFetch } from '../api/request';
-import { EmailInput, isValidEmail } from '../components/form/EmailInput';
-import { useAuth } from '../hooks/useAuth';
-import { handleInputChange } from '../services/form.service';
-import { ILoginRequest } from '../types/LoginType';
+import { loginRequest } from '../../api/auth_request';
+import { useFetch } from '../../api/request';
+import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
+import { useAuth } from '../../hooks/useAuth';
+import { handleInputChange } from '../../services/form.service';
+import { ILoginRequest } from '../../types/LoginType';
 
 export function LoginPage() {
     const auth = useAuth();
@@ -103,6 +103,15 @@ export function LoginPage() {
                             setLoginRemember((v) => ({ ...v, checked: !v.checked }));
                         }}
                     />
+                    <Anchor<'a'>
+                        size="sm"
+                        href="/forgotPassword"
+                        onClick={(evt) => {
+                            evt.preventDefault();
+                            navigate('/forgotPassword');
+                        }}>
+                        Forgot password?
+                    </Anchor>
                 </Group>
                 <Button fullWidth mt="xl" onClick={onSubmit} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
                     Sign in

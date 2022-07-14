@@ -23,6 +23,7 @@ if (!SMTP_SERVER || !SMTP_FROM || isNaN(+SMTP_PORT) || !SMTP_LOGIN || !SMTP_PASS
 const TEMPLATE_FOLDER = path.dirname(path.fromFileUrl(import.meta.url)) + '/smtp_template';
 const TEMPLATES = {
     verifUser: Deno.readTextFileSync(`${TEMPLATE_FOLDER}/verifUser.html`),
+    resetPassword: Deno.readTextFileSync(`${TEMPLATE_FOLDER}/resetPassword.html`),
 };
 
 async function sendEmail(to: string, subject: string, html: string) {
@@ -51,4 +52,9 @@ async function sendEmail(to: string, subject: string, html: string) {
 export async function sendRegistrationEmail(to: string, token: string) {
     const html = `${TEMPLATES.verifUser}`.replace(/{{VERIF_URL}}/g, `${BASE_FRONT_URL}/verify/${token}`);
     await sendEmail(to, 'Verify your email', html);
+}
+
+export async function sendResetPasswordEmail(to: string, token: string) {
+    const html = `${TEMPLATES.resetPassword}`.replace(/{{VERIF_URL}}/g, `${BASE_FRONT_URL}/resetPassword/${token}`);
+    await sendEmail(to, 'Reset your password', html);
 }

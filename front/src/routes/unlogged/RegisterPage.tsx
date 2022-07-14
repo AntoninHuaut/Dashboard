@@ -4,14 +4,14 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
-import { useFetch } from '../api/request';
-import { registerRequest } from '../api/user_request';
-import { EmailInput, isValidEmail } from '../components/form/EmailInput';
-import { isValidPassword, PasswordStrength } from '../components/form/PasswordStength';
-import { handleInputChange } from '../services/form.service';
-import { IRegisterRequest } from '../types/LoginType';
-import { ConfirmPassword } from '../components/form/ConfirmPassword';
-import { UsernameInput, isValidUsername } from '../components/form/UsernameInput';
+import { useFetch } from '../../api/request';
+import { registerRequest } from '../../api/user_request';
+import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
+import { isValidPassword, PasswordStrength } from '../../components/form/PasswordStength';
+import { handleInputChange } from '../../services/form.service';
+import { IRegisterRequest } from '../../types/LoginType';
+import { ConfirmPassword } from '../../components/form/ConfirmPassword';
+import { UsernameInput, isValidUsername } from '../../components/form/UsernameInput';
 
 export function RegisterPage() {
     const navigate = useNavigate();

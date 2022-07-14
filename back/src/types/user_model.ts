@@ -35,6 +35,16 @@ export interface ICreateUser {
     confirmPassword: password;
 }
 
+export interface IForgotUserPassword {
+    email: email;
+}
+
+export interface IResetUserPassword {
+    token: string;
+    newPassword: password;
+    confirmPassword: password;
+}
+
 interface IUpdateUserPassword {
     currentPassword: password;
     newPassword: password;

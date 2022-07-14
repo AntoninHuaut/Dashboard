@@ -1,18 +1,18 @@
 import { get } from '/config.ts';
 
-const REGISTRATION_TOKEN_EXP = get('REGISTRATION_TOKEN_EXP') ?? '';
+const TOKEN_EXP = get('TOKEN_EXP') ?? '';
 
-if (isNaN(+REGISTRATION_TOKEN_EXP)) {
-    console.error('Invalid REGISTRATION_TOKEN_EXP');
+if (isNaN(+TOKEN_EXP)) {
+    console.error('Invalid TOKEN_EXP');
     Deno.exit(5);
 }
 
-export interface IRegistrationToken {
+export interface IToken {
     value: string;
     exp: Date;
 }
 
-export const getRegistrationToken = (): IRegistrationToken => ({
+export const createToken = (): IToken => ({
     value: `${crypto.randomUUID()}-${crypto.randomUUID()}`,
-    exp: new Date(new Date().getTime() + +REGISTRATION_TOKEN_EXP * 1000),
+    exp: new Date(new Date().getTime() + +TOKEN_EXP * 1000),
 });

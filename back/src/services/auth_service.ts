@@ -1,6 +1,7 @@
 import { httpErrors } from 'oak';
 
 import * as userRepo from '/repositories/user_repository.ts';
+import * as tokenRepo from '/repositories/user_token_repository.ts';
 import { User } from '/types/user_model.ts';
 import { GeneratedToken, JWTUser } from '/types/auth_model.ts';
 import { compare } from '/utils/hash_helper.ts';
@@ -57,14 +58,17 @@ export const refreshToken = async (token: string) => {
 };
 
 export const verifyUser = async (token: string) => {
-    const tokenExpDate = await userRepo.getRegistrationTokenExpDate(token);
-    if (!tokenExpDate) throw new httpErrors.Unauthorized('Invalid token');
+    const tokenInfo = await tokenRepo.getTokenByTokenValueAndType(token, 'registration');
+    if (!tokenInfo) throw new httpErrors.Unauthorized('Invalid token');
+
+    const userId = await userRepo.getUserIdByTokenValueAndType(token, 'registration');
+    if (!userId) throw new httpErrors.NotFound('User not found');
 
     const now = new Date();
-    if (now > tokenExpDate) {
-        await userRepo.deleteUserByRegistrationToken(token);
+    if (now > tokenInfo.exp) {
+        await userRepo.removeUserTokenId(userId, token, 'registration');
         throw new httpErrors.Unauthorized('Token expired');
     }
 
-    return await userRepo.setVerifiedUser(token);
+    return await userRepo.setVerifiedUser(userId, token);
 };
