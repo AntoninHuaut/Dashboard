@@ -11,6 +11,8 @@ import { LoginPage } from '../../routes/unlogged/LoginPage';
 import { PageNotFound } from '../../routes/PageNotFound';
 import { RegisterPage } from '../../routes/unlogged/RegisterPage';
 import { VerifyPage } from '../../routes/unlogged/VerifyPage';
+import { ForgotPasswordPage } from '../../routes/unlogged/ForgotPasswordPage';
+import { ResetPasswordPage } from '../../routes/unlogged/ResetPasswordPage';
 
 export function AppRouter() {
     const { isLoadingUser, loadingElement } = useAuth();
@@ -22,6 +24,8 @@ export function AppRouter() {
                 { path: '/', element: <IndexPage /> },
                 { path: '/login', element: <LoginPage /> },
                 { path: '/register', element: <RegisterPage /> },
+                { path: '/forgotPassword', element: <ForgotPasswordPage /> },
+                { path: '/resetPassword/:token', element: <ResetPasswordPage /> },
                 { path: '/verify/:token', element: <VerifyPage /> },
             ],
         },

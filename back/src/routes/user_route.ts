@@ -109,7 +109,7 @@ const deleteUser = async (ctx: Context) => {
 userRouter.get('/', userGuard([UserRole.ADMIN]), getUsers);
 userRouter.get('/:userIdStr', userGuard([UserRole.ADMIN]), getUserById);
 userRouter.post('/', createUser);
-userRouter.post('/fogotPassword', askForgotPassword);
+userRouter.post('/forgotPassword', askForgotPassword);
 userRouter.post('/resetPassword', resetPassword);
 userRouter.put('/:userIdStr', userGuard([UserRole.USER]), updateUser);
 userRouter.delete('/:userIdStr', userGuard([UserRole.USER]), deleteUser);

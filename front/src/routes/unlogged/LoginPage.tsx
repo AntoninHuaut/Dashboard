@@ -103,6 +103,15 @@ export function LoginPage() {
                             setLoginRemember((v) => ({ ...v, checked: !v.checked }));
                         }}
                     />
+                    <Anchor<'a'>
+                        size="sm"
+                        href="/forgotPassword"
+                        onClick={(evt) => {
+                            evt.preventDefault();
+                            navigate('/forgotPassword');
+                        }}>
+                        Forgot password?
+                    </Anchor>
                 </Group>
                 <Button fullWidth mt="xl" onClick={onSubmit} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
                     Sign in

@@ -1,4 +1,4 @@
-import { Button, Container, Paper, TextInput, Title } from '@mantine/core';
+import { Anchor, Button, Container, Paper, Text, TextInput, Title } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -49,6 +49,18 @@ export function VerifyPage() {
             <Title align="center" sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}>
                 Email verification
             </Title>
+            <Text color="dimmed" size="sm" align="center" mt={5}>
+                Your account is already activated?{' '}
+                <Anchor<'a'>
+                    href="/login"
+                    size="sm"
+                    onClick={(evt) => {
+                        evt.preventDefault();
+                        navigate('/login');
+                    }}>
+                    Sign in
+                </Anchor>
+            </Text>
 
             <Paper mt={30} radius="xl" p="lg" shadow="xl">
                 <TextInput
@@ -58,7 +70,7 @@ export function VerifyPage() {
                     icon={<Key />}
                     placeholder="Verification token sent by email"
                     value={token}
-                    disabled={verifyFetch.isLoading || isAccountVerified}
+                    disabled
                     onChange={(evt) => setToken(evt.target.value)}
                     required
                 />
