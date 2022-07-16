@@ -6,12 +6,14 @@ import { Key } from 'tabler-icons-react';
 
 import { useFetch } from '../../api/request';
 import { registerRequest } from '../../api/user_request';
+import { ConfirmPassword } from '../../components/form/ConfirmPassword';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { isValidPassword, PasswordStrength } from '../../components/form/PasswordStength';
+import { isValidUsername, UsernameInput } from '../../components/form/UsernameInput';
+import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { CaptchaAction } from '../../types/CaptchaType';
 import { IRegisterRequest } from '../../types/LoginType';
-import { ConfirmPassword } from '../../components/form/ConfirmPassword';
-import { UsernameInput, isValidUsername } from '../../components/form/UsernameInput';
 
 export function RegisterPage() {
     const navigate = useNavigate();
@@ -21,7 +23,10 @@ export function RegisterPage() {
     const [isRegisterEnable, setRegisterEnable] = useState(false);
     const [isAccountCreated, setAccountCreated] = useState(false);
 
-    const onSubmit = () => registerFetch.makeRequest(registerRequest(register));
+    const onSubmit = useCaptcha(CaptchaAction.Register, async (captcha: string) => {
+        await registerFetch.makeRequest(registerRequest(register, captcha));
+        onSubmit(false);
+    });
 
     useEffect(
         () =>
@@ -109,7 +114,7 @@ export function RegisterPage() {
                     disabled={registerFetch.isLoading || isAccountCreated}
                 />
 
-                <Button fullWidth mt="xl" onClick={onSubmit} loading={registerFetch.isLoading} disabled={!isRegisterEnable || isAccountCreated}>
+                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={registerFetch.isLoading} disabled={!isRegisterEnable || isAccountCreated}>
                     Register
                 </Button>
             </Paper>

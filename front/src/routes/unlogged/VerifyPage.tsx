@@ -6,6 +6,10 @@ import { Key } from 'tabler-icons-react';
 
 import { verifyRequest } from '../../api/auth_request';
 import { useFetch } from '../../api/request';
+import { useCaptcha } from '../../hooks/useCaptcha';
+import { handleInputChange } from '../../services/form.service';
+import { CaptchaAction } from '../../types/CaptchaType';
+import { IVerifyRequest } from '../../types/LoginType';
 
 export function VerifyPage() {
     const params = useParams();
@@ -13,14 +17,18 @@ export function VerifyPage() {
     const verifyFetch = useFetch();
 
     const [isAccountVerified, setAccountVerified] = useState(false);
-    const [token, setToken] = useState('');
     const [isVerifyEnable, setVerifyEnable] = useState(false);
 
-    useEffect(() => setToken(params.token ?? ''), []);
+    const [verify, setVerify] = useState<IVerifyRequest>({ token: '' });
 
-    useEffect(() => setVerifyEnable(token.length > 0), [token]);
+    const onSubmit = useCaptcha(CaptchaAction.Verify, async (captcha: string) => {
+        await verifyFetch.makeRequest(verifyRequest(verify, captcha));
+        onSubmit(false);
+    });
 
-    const onSubmit = () => verifyFetch.makeRequest(verifyRequest(token));
+    useEffect(() => setVerify((prev) => ({ ...prev, token: params.token ?? '' })), []);
+
+    useEffect(() => setVerifyEnable(verify.token.length > 0), [verify.token]);
 
     useLayoutEffect(() => {
         if (verifyFetch.cannotHandleResult()) return;
@@ -69,13 +77,13 @@ export function VerifyPage() {
                     name="token"
                     icon={<Key />}
                     placeholder="Verification token sent by email"
-                    value={token}
+                    value={verify.token}
                     disabled
-                    onChange={(evt) => setToken(evt.target.value)}
+                    onChange={(evt) => handleInputChange(evt, setVerify)}
                     required
                 />
 
-                <Button fullWidth mt="xl" onClick={onSubmit} loading={verifyFetch.isLoading} disabled={!isVerifyEnable || isAccountVerified}>
+                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={verifyFetch.isLoading} disabled={!isVerifyEnable || isAccountVerified}>
                     Verify
                 </Button>
             </Paper>

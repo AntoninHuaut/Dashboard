@@ -1,4 +1,4 @@
-import { IRegisterRequest, IResetPasswordRequest } from '../types/LoginType';
+import { IFogotPasswordRequest, IRegisterRequest, IResetPasswordRequest } from '../types/LoginType';
 import { BASE_API_URL, HttpMethod, mergeFetchOptions } from './request';
 
 const URL_API_URL = `${BASE_API_URL}/user`;
@@ -13,34 +13,32 @@ export const updateRequest = (userId: number, fieldUpdate: { [key: string]: stri
     };
 };
 
-export const registerRequest = (body: IRegisterRequest) => {
+export const registerRequest = (registerForm: IRegisterRequest, captcha: string) => {
     return {
         url: `${URL_API_URL}`,
         options: mergeFetchOptions({
             method: HttpMethod.POST,
-            body: JSON.stringify(body),
+            body: JSON.stringify({ ...registerForm, captcha }),
         }),
     };
 };
 
-export const forgotPasswordRequest = (email: string) => {
+export const forgotPasswordRequest = (forgotPasswordForm: IFogotPasswordRequest, captcha: string) => {
     return {
         url: `${URL_API_URL}/forgotPassword`,
         options: mergeFetchOptions({
             method: HttpMethod.POST,
-            body: JSON.stringify({
-                email,
-            }),
+            body: JSON.stringify({ ...forgotPasswordForm, captcha }),
         }),
     };
 };
 
-export const resetPasswordRequest = (resetPwd: IResetPasswordRequest) => {
+export const resetPasswordRequest = (resetPasswordForm: IResetPasswordRequest, captcha: string) => {
     return {
         url: `${URL_API_URL}/resetPassword`,
         options: mergeFetchOptions({
             method: HttpMethod.POST,
-            body: JSON.stringify(resetPwd),
+            body: JSON.stringify({ ...resetPasswordForm, captcha }),
         }),
     };
 };

@@ -8,7 +8,9 @@ import { useFetch } from '../../api/request';
 import { resetPasswordRequest } from '../../api/user_request';
 import { ConfirmPassword } from '../../components/form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../../components/form/PasswordStength';
+import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { CaptchaAction } from '../../types/CaptchaType';
 import { IResetPasswordRequest } from '../../types/LoginType';
 
 export function ResetPasswordPage() {
@@ -16,20 +18,24 @@ export function ResetPasswordPage() {
     const navigate = useNavigate();
     const resetPasswordFetch = useFetch();
 
-    const [isPasswordReset, setPasswordReset] = useState(false);
     const [resetPwd, setResetPwd] = useState<IResetPasswordRequest>({
         token: params.token ?? '',
         newPassword: '',
         confirmPassword: '',
     });
+
+    const onSubmit = useCaptcha(CaptchaAction.ResetPassword, async (captcha: string) => {
+        resetPasswordFetch.makeRequest(resetPasswordRequest(resetPwd, captcha));
+        onSubmit(false);
+    });
+
+    const [isPasswordReset, setPasswordReset] = useState(false);
     const [isButtonEnable, setButtonEnable] = useState(false);
 
     useEffect(
         () => setButtonEnable(resetPwd.token.length > 1 && isValidPassword(resetPwd.newPassword) && resetPwd.newPassword === resetPwd.confirmPassword),
         [resetPwd]
     );
-
-    const onSubmit = () => resetPasswordFetch.makeRequest(resetPasswordRequest(resetPwd));
 
     useLayoutEffect(() => {
         if (resetPasswordFetch.cannotHandleResult()) return;
@@ -103,7 +109,7 @@ export function ResetPasswordPage() {
                     disabled={resetPasswordFetch.isLoading || isPasswordReset}
                 />
 
-                <Button fullWidth mt="xl" onClick={onSubmit} loading={resetPasswordFetch.isLoading} disabled={!isButtonEnable || isPasswordReset}>
+                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={resetPasswordFetch.isLoading} disabled={!isButtonEnable || isPasswordReset}>
                     Reset password
                 </Button>
             </Paper>

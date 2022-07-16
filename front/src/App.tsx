@@ -2,6 +2,7 @@ import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core
 import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { ModalsProvider } from '@mantine/modals';
 import { NotificationsProvider } from '@mantine/notifications';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import { BrowserRouter } from 'react-router-dom';
 
 import { AppRouter } from './components/layout/AppRouter';
@@ -31,7 +32,9 @@ function App() {
                     <NotificationsProvider position="top-center" transitionDuration={500} autoClose={7500}>
                         <BrowserRouter>
                             <AuthProvider>
-                                <AppRouter />
+                                <GoogleReCaptchaProvider reCaptchaKey={import.meta.env.VITE_RECAPTCHA_CLIENT_SECRET}>
+                                    <AppRouter />
+                                </GoogleReCaptchaProvider>
                             </AuthProvider>
                         </BrowserRouter>
                     </NotificationsProvider>

@@ -1,4 +1,4 @@
-import { ILoginRequest } from '../types/LoginType';
+import { ILoginRequest, IVerifyRequest } from '../types/LoginType';
 import { BASE_API_URL, HttpMethod, mergeFetchOptions } from './request';
 
 const AUTH_API_URL = `${BASE_API_URL}/auth`;
@@ -17,24 +17,22 @@ export const refreshRequest = () => {
     };
 };
 
-export const loginRequest = (loginRequest: ILoginRequest) => {
+export const loginRequest = (loginForm: ILoginRequest, captcha: string) => {
     return {
         url: `${AUTH_API_URL}/login`,
         options: mergeFetchOptions({
             method: HttpMethod.POST,
-            body: JSON.stringify(loginRequest),
+            body: JSON.stringify({ ...loginForm, captcha }),
         }),
     };
 };
 
-export const verifyRequest = (token: string) => {
+export const verifyRequest = (verifyForm: IVerifyRequest, captcha: string) => {
     return {
         url: `${AUTH_API_URL}/verify`,
         options: mergeFetchOptions({
             method: HttpMethod.POST,
-            body: JSON.stringify({
-                token: token,
-            }),
+            body: JSON.stringify({ ...verifyForm, captcha }),
         }),
     };
 };

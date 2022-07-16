@@ -5,7 +5,7 @@ import * as userService from '/services/user_service.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
 import { ICreateUser, IResetUserPassword, IForgotUserPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
 import { hasUserRole } from '/utils/role_helper.ts';
-import { safeParseBody } from '/utils/route_helper.ts';
+import { safeParseBody, validCaptchaToken } from '/utils/route_helper.ts';
 
 const validUserId = z.number().min(1);
 const validEmail = z.string().trim().email();
@@ -50,6 +50,7 @@ const getUserById = async (ctx: Context) => {
 
 const createUser = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
+    await validCaptchaToken(body.captcha, ctx.request.ip);
     const userToCreate = validCreateUser.parse(body);
 
     const createdUser = await userService.createUser(userToCreate);
@@ -63,6 +64,7 @@ const createUser = async (ctx: Context) => {
 
 const askForgotPassword = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
+    await validCaptchaToken(body.captcha, ctx.request.ip);
     const { email } = validForgotPassword.parse(body);
 
     await userService.askForgotPassword(email);
@@ -71,6 +73,7 @@ const askForgotPassword = async (ctx: Context) => {
 
 const resetPassword = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
+    await validCaptchaToken(body.captcha, ctx.request.ip);
     const resetPasswordForm = validResetPassword.parse(body);
 
     await userService.resetPassword(resetPasswordForm);
