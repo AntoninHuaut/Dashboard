@@ -19,8 +19,7 @@ services:
       context: ./front
       args:
         VITE_BASE_API_URL: http://localhost:4009/api/v1
-    env_file:
-      - front.env
+        VITE_RECAPTCHA_CLIENT_SECRET:
     ports:
       - "4010:8080"
     depends_on:
