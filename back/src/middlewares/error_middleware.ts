@@ -1,8 +1,7 @@
-import { ZodError } from 'zod';
 import { Context, isHttpError, Middleware, Status } from 'oak';
-import { get } from '/config.ts';
+import { ZodError } from 'zod';
 
-const ENV = get('ENV');
+import { config } from '/config.ts';
 
 const error: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     try {
@@ -15,10 +14,10 @@ const error: Middleware = async (ctx: Context, next: () => Promise<unknown>) => 
             message = JSON.parse(err.message);
             status = 400;
         } else if (!isHttpError(err) || !err.expose) {
-            message = ENV === 'dev' ? message : 'Internal Server Error';
+            message = config.ENV === 'dev' ? message : 'Internal Server Error';
         }
 
-        if (ENV === 'dev') {
+        if (config.ENV === 'dev') {
             console.error(status, ctx.request.url.href, err);
         } else if (status > 499) {
             await Deno.writeTextFile('./data/error.log', `${status} ${ctx.request.url.href}\n${err}\n`);

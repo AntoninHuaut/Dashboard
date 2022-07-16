@@ -1,7 +1,8 @@
-import { getJWTUser } from '/utils/jwt_helper.ts';
 import { Context, Middleware } from 'oak';
+
 import { JWTUser } from '/types/auth_model.ts';
 import { ContextUser, UserRole } from '/types/user_model.ts';
+import { getJWTUser } from '/utils/jwt_helper.ts';
 
 const jwt: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     try {

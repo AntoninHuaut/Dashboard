@@ -1,13 +1,6 @@
 import { Context, httpErrors, isHttpError } from 'oak';
-import { get } from '/config.ts';
 
-const RECAPTCHA_SERVER_SECRET = get('RECAPTCHA_SERVER_SECRET');
-const MIN_RECAPTCHA_STORE = get('MIN_RECAPTCHA_STORE') ?? '';
-
-if (!RECAPTCHA_SERVER_SECRET || isNaN(+MIN_RECAPTCHA_STORE)) {
-    console.error('Invalid captcha configuration');
-    Deno.exit(8);
-}
+import { config } from '/config.ts';
 
 // deno-lint-ignore no-explicit-any
 export const safeParseBody = async (ctx: Context): Promise<Record<string, any>> => {
@@ -27,7 +20,7 @@ export const validCaptchaToken = async (token: string, userIpAdress: string) => 
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-                secret: RECAPTCHA_SERVER_SECRET,
+                secret: config.RECAPTCHA_SERVER_SECRET,
                 response: token,
                 remoteip: userIpAdress,
             }),
@@ -40,7 +33,7 @@ export const validCaptchaToken = async (token: string, userIpAdress: string) => 
             throw new httpErrors.BadRequest('Invalid captcha token: ' + errorMsg);
         }
 
-        if (json.number < +MIN_RECAPTCHA_STORE) {
+        if (json.number < config.MIN_RECAPTCHA_STORE) {
             throw new httpErrors.BadRequest('Captcha score is too low');
         }
     } catch (err) {

@@ -1,6 +1,7 @@
 import { Router } from 'oak';
-import userRouter from './user_route.ts';
+
 import authRouter from './auth_route.ts';
+import userRouter from './user_route.ts';
 
 const router = new Router();
 const api = new Router();

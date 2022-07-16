@@ -1,16 +1,8 @@
 import { create, getNumericDate, Header, Payload, verify } from 'djwt';
-import { get } from '/config.ts';
-import { JWTUser } from '/types/auth_model.ts';
+
+import { config } from '/config.ts';
+import { JWTUser, TokenProperty } from '/types/auth_model.ts';
 import { User } from '/types/user_model.ts';
-import { TokenProperty } from '/types/auth_model.ts';
-
-const JWT_ACCESS_TOKEN_EXP = get('JWT_ACCESS_TOKEN_EXP') ?? '';
-const JWT_REFRESH_TOKEN_EXP = get('JWT_REFRESH_TOKEN_EXP') ?? '';
-
-if (isNaN(+JWT_ACCESS_TOKEN_EXP) || isNaN(+JWT_REFRESH_TOKEN_EXP)) {
-    console.error('Invalid JWT configuration');
-    Deno.exit(2);
-}
 
 const header: Header = {
     alg: 'HS512',
@@ -53,12 +45,12 @@ const getAuthToken = async (user: User): Promise<TokenProperty> => {
         email: user.email,
         username: user.username,
         rolesStr: user.roles.join(','),
-        exp: getNumericDate(new Date().getTime() + +JWT_ACCESS_TOKEN_EXP),
+        exp: getNumericDate(new Date().getTime() + config.JWT_ACCESS_TOKEN_EXP),
     };
 
     return {
         value: await create(header, payload, key),
-        maxAge: +JWT_ACCESS_TOKEN_EXP,
+        maxAge: config.JWT_ACCESS_TOKEN_EXP,
     };
 };
 
@@ -66,12 +58,12 @@ const getRefreshToken = async (user: User): Promise<TokenProperty> => {
     const payload: Payload = {
         iss: 'deno-api',
         id: user.id,
-        exp: getNumericDate(new Date().getTime() + +JWT_REFRESH_TOKEN_EXP),
+        exp: getNumericDate(new Date().getTime() + config.JWT_REFRESH_TOKEN_EXP),
     };
 
     return {
         value: await create(header, payload, key),
-        maxAge: +JWT_REFRESH_TOKEN_EXP,
+        maxAge: config.JWT_REFRESH_TOKEN_EXP,
     };
 };
 

@@ -1,11 +1,11 @@
 import { httpErrors } from 'oak';
 
+import { sendRegistrationEmail, sendResetPasswordEmail } from '/external/smtp.ts';
 import * as userRepo from '/repositories/user_repository.ts';
 import * as tokenRepo from '/repositories/user_token_repository.ts';
-import { UserRole, IUpdateUser, ICreateUser, IResetUserPassword } from '/types/user_model.ts';
-import { hash, compare } from '/utils/hash_helper.ts';
+import { ICreateUser, IResetUserPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
 import { createToken } from '/utils/db_helper.ts';
-import { sendResetPasswordEmail, sendRegistrationEmail } from '/external/smtp.ts';
+import { compare, hash } from '/utils/hash_helper.ts';
 
 export const getUsers = async () => {
     return await userRepo.getUsers();
