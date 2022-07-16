@@ -9,7 +9,9 @@ import { deleteRequest } from '../../api/user_request';
 import { UpdateFieldProfile } from '../../components/user/UpdateFieldsProfile';
 import { UpdatePasswordProfile } from '../../components/user/UpdatePasswordProfile';
 import { useAuth } from '../../hooks/useAuth';
+import { useCaptcha } from '../../hooks/useCaptcha';
 import { getGravatarUrl } from '../../services/form.service';
+import { CaptchaAction } from '../../types/CaptchaType';
 
 const ROLES_COLOR: { [key: string]: MantineColor } = {
     USER: 'blue',
@@ -29,7 +31,10 @@ export function ProfilePage() {
     const avatar = useMemo(() => getGravatarUrl(user.email), [user.email]);
     const [displayPasswordUpdate, setDisplayPasswordUpdate] = useState(false);
 
-    const deleteAccount = () => deleteFetch.makeRequest(deleteRequest(user.id));
+    const deleteAccount = useCaptcha(CaptchaAction.DeleteAccount, async (captcha: string) => {
+        await deleteFetch.makeRequest(deleteRequest(user.id, captcha));
+        deleteAccount(false);
+    });
 
     const [isDeleted, setIsDeleted] = useState(false);
 
@@ -40,7 +45,7 @@ export function ProfilePage() {
             children: <Text size="sm">Are you sure you want to delete your profile? This action is irreversible.</Text>,
             labels: { confirm: 'Delete account', cancel: "No don't delete it" },
             confirmProps: { color: 'red' },
-            onConfirm: deleteAccount,
+            onConfirm: () => deleteAccount(true),
         });
 
     useEffect(() => {

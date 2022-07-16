@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { Context, helpers, httpErrors, Router, Status } from 'oak';
+import { Context, httpErrors, Router, Status } from 'oak';
 
 import * as authService from '/services/auth_service.ts';
 import { TokenProperty } from '/types/auth_model.ts';
-import { safeParseBody } from '/utils/route_helper.ts';
+import { safeParseBody, validCaptchaToken } from '/utils/route_helper.ts';
 import * as userService from '/services/user_service.ts';
 import { getAuthRoute } from './routes.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
@@ -38,6 +38,7 @@ function setCookie(ctx: Context, key: string, tokenProp: TokenProperty) {
 
 const login = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
+    await validCaptchaToken(body.captcha, ctx.request.ip);
     const loginUser = validAuthFormUser.parse(body);
 
     const token = await authService.loginUser(loginUser.email, loginUser.password);
@@ -82,6 +83,7 @@ const refreshToken = async (ctx: Context) => {
 
 const verifyUser = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
+    await validCaptchaToken(body.captcha, ctx.request.ip);
     const verifyToken = validVerifyToken.parse(body);
 
     await authService.verifyUser(verifyToken.token);

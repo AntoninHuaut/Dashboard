@@ -16,8 +16,6 @@ export interface MemoType {
     loadingElement: () => JSX.Element;
 }
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const AuthProvider = ({ children }: { children: React.ReactNode | React.ReactNode[] }) => {
     const [user, setUser] = useState<IUser>();
     const [isLoadingUser, setLoadingUser] = useState<boolean>(true);

@@ -6,6 +6,8 @@ import { Check, Edit, X } from 'tabler-icons-react';
 import { useFetch } from '../../api/request';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
+import { useCaptcha } from '../../hooks/useCaptcha';
+import { CaptchaAction } from '../../types/CaptchaType';
 import { EmailInput, isValidEmail } from '../form/EmailInput';
 import { UsernameInput, isValidUsername } from '../form/UsernameInput';
 
@@ -25,12 +27,17 @@ export function UpdateFieldProfile() {
 
     const editButton = useCallback(
         (fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => void) => {
-            const validateChange = async () => {
+            const validateChange = async (captcha: string) => {
                 setLoading(true);
-                await updateFetch.makeRequest(updateRequest(auth.user.id, { [fieldName]: fieldValue }));
+                await updateFetch.makeRequest(updateRequest(auth.user.id, { [fieldName]: fieldValue }, captcha));
                 await auth.refreshUser();
                 setLoading(false);
             };
+
+            const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
+                await validateChange(captcha);
+                onSubmit(false);
+            });
 
             const cancelChange = () => {
                 setFieldValue(auth.user[fieldName]);
@@ -52,7 +59,7 @@ export function UpdateFieldProfile() {
 
                     {editFieldName === fieldName && !isLoading && (
                         <>
-                            <ActionIcon color={'lime'} variant="filled" size="md" mr="2px" onClick={validateChange} disabled={isLoading || !isValidInput}>
+                            <ActionIcon color={'lime'} variant="filled" size="md" mr="2px" onClick={() => onSubmit(true)} disabled={isLoading || !isValidInput}>
                                 <Check />
                             </ActionIcon>
                             <ActionIcon color={'red'} variant="filled" size="md" onClick={cancelChange} disabled={isLoading || !isValidInput}>

@@ -30,6 +30,14 @@ export interface IRegisterRequest {
     confirmPassword: string;
 }
 
+export interface IFogotPasswordRequest {
+    email: string;
+}
+
+export interface IVerifyRequest {
+    token: string;
+}
+
 export interface IResetPasswordRequest {
     token: string;
     newPassword: string;

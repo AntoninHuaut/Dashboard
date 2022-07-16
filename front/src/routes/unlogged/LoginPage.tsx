@@ -9,7 +9,9 @@ import { loginRequest } from '../../api/auth_request';
 import { useFetch } from '../../api/request';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { useAuth } from '../../hooks/useAuth';
+import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { CaptchaAction } from '../../types/CaptchaType';
 import { ILoginRequest } from '../../types/LoginType';
 
 export function LoginPage() {
@@ -20,6 +22,18 @@ export function LoginPage() {
     const [loginRemember, setLoginRemember] = useLocalStorage({ key: 'loginRemember', defaultValue: { checked: false, email: '' } });
     const [login, setLogin] = useState<ILoginRequest>({ email: '', password: '' });
     const [isSignInEnable, setSignInEnable] = useState(false);
+
+    const onSubmit = useCaptcha(CaptchaAction.Login, async (captcha: string) => {
+        if (loginRemember.checked) {
+            setLoginRemember((v) => ({
+                ...v,
+                email: login.email,
+            }));
+        }
+
+        await loginFetch.makeRequest(loginRequest(login, captcha));
+        onSubmit(false);
+    });
 
     useEffect(() => setLogin((v) => ({ ...v, email: loginRemember.email })), []);
 
@@ -33,17 +47,6 @@ export function LoginPage() {
             }));
         }
     }, [loginRemember.checked]);
-
-    const onSubmit = () => {
-        if (loginRemember.checked) {
-            setLoginRemember((v) => ({
-                ...v,
-                email: login.email,
-            }));
-        }
-
-        loginFetch.makeRequest(loginRequest(login));
-    };
 
     useEffect(() => {
         if (loginFetch.cannotHandleResult()) return;
@@ -113,7 +116,7 @@ export function LoginPage() {
                         Forgot password?
                     </Anchor>
                 </Group>
-                <Button fullWidth mt="xl" onClick={onSubmit} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
+                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
                     Sign in
                 </Button>
             </Paper>

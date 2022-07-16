@@ -6,18 +6,26 @@ import { useNavigate } from 'react-router-dom';
 import { useFetch } from '../../api/request';
 import { forgotPasswordRequest } from '../../api/user_request';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
+import { useCaptcha } from '../../hooks/useCaptcha';
+import { CaptchaAction } from '../../types/CaptchaType';
+import { IFogotPasswordRequest } from '../../types/LoginType';
+import { handleInputChange } from '../../services/form.service';
 
 export function ForgotPasswordPage() {
     const navigate = useNavigate();
     const forgotPasswordFetch = useFetch();
 
     const [isRequestSent, setRequestSent] = useState(false);
-    const [email, setEmail] = useState('');
     const [isButtonEnable, setButtonEnable] = useState(false);
 
-    useEffect(() => setButtonEnable(isValidEmail(email)), [email]);
+    const [forgotPassword, setForgotPassword] = useState<IFogotPasswordRequest>({ email: '' });
 
-    const onSubmit = () => forgotPasswordFetch.makeRequest(forgotPasswordRequest(email));
+    const onSubmit = useCaptcha(CaptchaAction.ForgotPassword, async (captcha: string) => {
+        await forgotPasswordFetch.makeRequest(forgotPasswordRequest(forgotPassword, captcha));
+        onSubmit(false);
+    });
+
+    useEffect(() => setButtonEnable(isValidEmail(forgotPassword.email)), [forgotPassword.email]);
 
     useLayoutEffect(() => {
         if (forgotPasswordFetch.cannotHandleResult()) return;
@@ -60,9 +68,13 @@ export function ForgotPasswordPage() {
             </Text>
 
             <Paper mt={30} radius="xl" p="lg" shadow="xl">
-                <EmailInput value={email} disabled={forgotPasswordFetch.isLoading} onChange={(evt) => setEmail(evt.target.value)} />
+                <EmailInput
+                    value={forgotPassword.email}
+                    disabled={forgotPasswordFetch.isLoading}
+                    onChange={(evt) => handleInputChange(evt, setForgotPassword)}
+                />
 
-                <Button fullWidth mt="xl" onClick={onSubmit} loading={forgotPasswordFetch.isLoading} disabled={!isButtonEnable || isRequestSent}>
+                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={forgotPasswordFetch.isLoading} disabled={!isButtonEnable || isRequestSent}>
                     Send reset link
                 </Button>
             </Paper>
