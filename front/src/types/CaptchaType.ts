@@ -1,7 +1,7 @@
 export enum CaptchaAction {
     Login = 'login',
     Register = 'register',
-    ForgotPassword = 'forgot-password',
-    ResetPassword = 'reset-password',
+    ForgotPassword = 'forgot_password',
+    ResetPassword = 'reset_password',
     Verify = 'verify',
 }
