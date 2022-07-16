@@ -85,6 +85,7 @@ const updateUser = async (ctx: Context) => {
     const userId: number = validUserId.parse(+userIdStr);
 
     const body = await safeParseBody(ctx);
+    await validCaptchaToken(body.captcha, ctx.request.ip);
     const updatedUser = validUpdateUser.parse(body);
 
     const user = ctx.state.me;

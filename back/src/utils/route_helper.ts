@@ -9,6 +9,7 @@ if (!RECAPTCHA_SERVER_SECRET || isNaN(+MIN_RECAPTCHA_STORE)) {
     Deno.exit(8);
 }
 
+// deno-lint-ignore no-explicit-any
 export const safeParseBody = async (ctx: Context): Promise<Record<string, any>> => {
     try {
         const { value } = ctx.request.body({ type: 'json' });

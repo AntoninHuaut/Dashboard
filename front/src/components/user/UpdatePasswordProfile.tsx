@@ -6,7 +6,9 @@ import { Check, CircleCheck, Key, Lock, X } from 'tabler-icons-react';
 import { useFetch } from '../../api/request';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
+import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { CaptchaAction } from '../../types/CaptchaType';
 import { IUpdatePasswordRequest } from '../../types/LoginType';
 import { ConfirmPassword } from '../form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../form/PasswordStength';
@@ -24,7 +26,10 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
     });
 
     const updatePasswordFetch = useFetch();
-    const onSubmit = () => updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass));
+    const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
+        updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass, captcha));
+        onSubmit(false);
+    });
 
     const [isValidForm, setIsValidForm] = useState(false);
     useEffect(
@@ -93,7 +98,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
                     leftIcon={<Check />}
                     disabled={!isValidForm || updatePasswordFetch.isLoading}
                     loading={updatePasswordFetch.isLoading}
-                    onClick={onSubmit}>
+                    onClick={() => onSubmit(true)}>
                     Save
                 </Button>
                 <Button size="md" color="red" leftIcon={<X />} onClick={props.closePasswordForm} disabled={updatePasswordFetch.isLoading}>

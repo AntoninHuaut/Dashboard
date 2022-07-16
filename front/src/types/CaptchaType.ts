@@ -4,4 +4,5 @@ export enum CaptchaAction {
     ForgotPassword = 'forgot_password',
     ResetPassword = 'reset_password',
     Verify = 'verify',
+    UpdateProfile = 'update_profile',
 }
