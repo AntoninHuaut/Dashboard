@@ -4,11 +4,11 @@ import { get } from '/config.ts';
 import { createUser } from '/repositories/user_repository.ts';
 import { UserRole } from '/types/user_model.ts';
 
-const DB_HOST = get('DB_HOST');
-const DB_PORT = get('DB_PORT') ?? '';
-const DB_DATABASE = get('DB_DATABASE');
-const DB_USER = get('DB_USER');
-const DB_PASSWORD = get('DB_PASSWORD');
+const DB_HOST = get('POSTGRES_HOST');
+const DB_PORT = get('POSTGRES_PORT') ?? '';
+const DB_DATABASE = get('POSTGRES_DB');
+const DB_USER = get('POSTGRES_USER');
+const DB_PASSWORD = get('POSTGRES_PASSWORD');
 const DEFAULT_ADMIN_EMAIL = get('DEFAULT_ADMIN_EMAIL');
 const DEFAULT_ADMIN_PASSWORD = get('DEFAULT_ADMIN_PASSWORD');
 
