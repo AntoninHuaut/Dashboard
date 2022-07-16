@@ -1,13 +1,13 @@
-import { z } from 'zod';
 import { Context, httpErrors, Router, Status } from 'oak';
+import { z } from 'zod';
 
-import * as authService from '/services/auth_service.ts';
-import { TokenProperty } from '/types/auth_model.ts';
-import { safeParseBody, validCaptchaToken } from '/utils/route_helper.ts';
-import * as userService from '/services/user_service.ts';
 import { getAuthRoute } from './routes.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
+import * as authService from '/services/auth_service.ts';
+import * as userService from '/services/user_service.ts';
+import { TokenProperty } from '/types/auth_model.ts';
 import { UserRole } from '/types/user_model.ts';
+import { safeParseBody, validCaptchaToken } from '/utils/route_helper.ts';
 
 const validAuthFormUser = z.object({
     email: z.string(),

@@ -1,8 +1,10 @@
 import { Application } from 'oak';
-import { router } from '/routes/routes.ts';
-import setupMiddlewares from '/middlewares/middlewares.ts';
 
-const PORT = +(Deno.env.get('PORT') ?? 8000);
+import { config } from '/config.ts';
+import setupMiddlewares from '/middlewares/middlewares.ts';
+import { router } from '/routes/routes.ts';
+
+const PORT = config.PORT ?? 8000;
 const app = new Application();
 
 setupMiddlewares(app);

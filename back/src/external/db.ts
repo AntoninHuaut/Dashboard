@@ -1,33 +1,16 @@
 import postgres from 'postgres';
-import { hash } from '/utils/hash_helper.ts';
-import { get } from '/config.ts';
+
+import { config } from '/config.ts';
 import { createUser } from '/repositories/user_repository.ts';
 import { UserRole } from '/types/user_model.ts';
-
-const DB_HOST = get('POSTGRES_HOST');
-const DB_PORT = get('POSTGRES_PORT') ?? '';
-const DB_DATABASE = get('POSTGRES_DB');
-const DB_USER = get('POSTGRES_USER');
-const DB_PASSWORD = get('POSTGRES_PASSWORD');
-const DEFAULT_ADMIN_EMAIL = get('DEFAULT_ADMIN_EMAIL');
-const DEFAULT_ADMIN_PASSWORD = get('DEFAULT_ADMIN_PASSWORD');
-
-if (!DB_HOST || isNaN(+DB_PORT) || !DB_DATABASE || !DB_USER || !DB_PASSWORD) {
-    console.error('Invalid DB configuration');
-    Deno.exit(3);
-}
-
-if (!DEFAULT_ADMIN_EMAIL || !DEFAULT_ADMIN_PASSWORD) {
-    console.error('Invalid default admin credentials');
-    Deno.exit(4);
-}
+import { hash } from '/utils/hash_helper.ts';
 
 const sql = postgres({
-    host: DB_HOST,
-    port: +DB_PORT,
-    database: DB_DATABASE,
-    user: DB_USER,
-    password: DB_PASSWORD,
+    host: config.POSTGRES_HOST,
+    port: config.POSTGRES_PORT,
+    database: config.POSTGRES_DB,
+    user: config.POSTGRES_USER,
+    password: config.POSTGRES_PASSWORD,
     connection: {
         timezone: 'UTC',
     },
@@ -37,7 +20,7 @@ let currentTry = 0;
 export async function connect() {
     if (currentTry > 5) {
         console.error('Failed to connect to DB');
-        Deno.exit(7);
+        Deno.exit(1);
     }
 
     try {
@@ -58,8 +41,8 @@ export async function connect() {
 
 const createDefaultAdmin = async () => {
     try {
-        const hashPassword = await hash(DEFAULT_ADMIN_PASSWORD);
-        await createUser(DEFAULT_ADMIN_EMAIL, 'DefaultAdmin', null, hashPassword, [UserRole.USER, UserRole.ADMIN]);
+        const hashPassword = await hash(config.DEFAULT_ADMIN_PASSWORD);
+        await createUser(config.DEFAULT_ADMIN_EMAIL, 'DefaultAdmin', null, hashPassword, [UserRole.USER, UserRole.ADMIN]);
     } catch (err) {
         if (err instanceof postgres.PostgresError && err.message.startsWith('duplicate key')) {
             // Ignore

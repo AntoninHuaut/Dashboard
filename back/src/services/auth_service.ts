@@ -2,8 +2,8 @@ import { httpErrors } from 'oak';
 
 import * as userRepo from '/repositories/user_repository.ts';
 import * as tokenRepo from '/repositories/user_token_repository.ts';
-import { User } from '/types/user_model.ts';
 import { GeneratedToken, JWTUser } from '/types/auth_model.ts';
+import { User } from '/types/user_model.ts';
 import { compare } from '/utils/hash_helper.ts';
 import { getAuthToken, getJWTUser, getRefreshToken } from '/utils/jwt_helper.ts';
 

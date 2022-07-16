@@ -1,11 +1,4 @@
-import { get } from '/config.ts';
-
-const TOKEN_EXP = get('TOKEN_EXP') ?? '';
-
-if (isNaN(+TOKEN_EXP)) {
-    console.error('Invalid TOKEN_EXP');
-    Deno.exit(5);
-}
+import { config } from '/config.ts';
 
 export interface IToken {
     value: string;
@@ -14,5 +7,5 @@ export interface IToken {
 
 export const createToken = (): IToken => ({
     value: `${crypto.randomUUID()}-${crypto.randomUUID()}`,
-    exp: new Date(new Date().getTime() + +TOKEN_EXP * 1000),
+    exp: new Date(new Date().getTime() + config.TOKEN_EXP * 1000),
 });
