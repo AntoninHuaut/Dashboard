@@ -98,7 +98,9 @@ const updateUser = async (ctx: Context) => {
 };
 
 const deleteUser = async (ctx: Context) => {
-    const { userIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const { userIdStr, captcha } = helpers.getQuery(ctx, { mergeParams: true });
+    await validCaptchaToken(captcha, ctx.request.ip);
+
     const userId: number = validUserId.parse(+userIdStr);
 
     const user = ctx.state.me;

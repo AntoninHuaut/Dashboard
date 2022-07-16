@@ -43,9 +43,9 @@ export const resetPasswordRequest = (resetPasswordForm: IResetPasswordRequest, c
     };
 };
 
-export const deleteRequest = (userId: number) => {
+export const deleteRequest = (userId: number, captcha: string) => {
     return {
-        url: `${URL_API_URL}/${userId}`,
+        url: `${URL_API_URL}/${userId}?captcha=${captcha}`,
         options: mergeFetchOptions({
             method: HttpMethod.DELETE,
         }),
