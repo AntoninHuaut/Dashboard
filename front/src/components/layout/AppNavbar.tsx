@@ -93,6 +93,7 @@ export function AppNavbar(props: AppNavbarProps) {
             key={item.label}
             onClick={(evt) => {
                 evt.preventDefault();
+                umami.trackEvent(`navbar-${item.label.toLowerCase()}`, 'click');
                 setOpened(false);
                 navigate(item.link);
             }}>
@@ -117,6 +118,7 @@ export function AppNavbar(props: AppNavbarProps) {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
+                        umami.trackEvent('navbar-logout', 'click');
                         setOpened(false);
                         navigate('/app/logout');
                     }}>

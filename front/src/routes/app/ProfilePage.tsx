@@ -32,6 +32,7 @@ export function ProfilePage() {
     const [displayPasswordUpdate, setDisplayPasswordUpdate] = useState(false);
 
     const deleteAccount = useCaptcha(CaptchaAction.DeleteAccount, async (captcha: string) => {
+        umami.trackEvent('delete', 'account');
         await deleteFetch.makeRequest(deleteRequest(user.id, captcha));
         deleteAccount(false);
     });

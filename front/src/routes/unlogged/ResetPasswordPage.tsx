@@ -47,6 +47,7 @@ export function ResetPasswordPage() {
                 color: 'red',
             });
         } else {
+            umami.trackEvent('password-reset', 'account');
             setPasswordReset(true);
             showNotification({
                 title: 'Your password has been reset!',

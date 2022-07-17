@@ -33,10 +33,15 @@ export function ThemeSwitcher() {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const Icon = colorScheme === 'dark' ? Sun : Moon;
 
+    const toggleThemeTrack = () => {
+        umami.trackEvent('toggle-theme', 'click');
+        toggleColorScheme();
+    };
+
     return (
         <Group position="center" my="xl">
             <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
-                <UnstyledButton aria-label="Toggle theme" className={classes.control} onClick={() => toggleColorScheme()} title="Ctrl + J">
+                <UnstyledButton aria-label="Toggle theme" className={classes.control} onClick={toggleThemeTrack} title="Ctrl + J">
                     <Text size="sm" className={classes.value}>
                         {upperFirst(colorScheme === 'light' ? 'dark' : 'light')} theme
                     </Text>
@@ -50,7 +55,7 @@ export function ThemeSwitcher() {
             <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
                 <Group position="center" my="xl">
                     <ActionIcon
-                        onClick={() => toggleColorScheme()}
+                        onClick={toggleThemeTrack}
                         size="lg"
                         sx={(theme) => ({
                             backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
