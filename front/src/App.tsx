@@ -8,6 +8,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppRouter } from './components/layout/AppRouter';
 import { AuthProvider } from './hooks/useAuth';
 
+import './App.css';
+
 function App() {
     const preferredColorScheme = useColorScheme();
     const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
