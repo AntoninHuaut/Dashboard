@@ -27,6 +27,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
 
     const updatePasswordFetch = useFetch();
     const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
+        umami.trackEvent(`update-password`, 'account');
         updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass, captcha));
         onSubmit(false);
     });

@@ -28,6 +28,7 @@ export function UpdateFieldProfile() {
     const editButton = useCallback(
         (fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => void) => {
             const validateChange = async (captcha: string) => {
+                umami.trackEvent(`update-${fieldName.toLowerCase()}`, 'account');
                 setLoading(true);
                 await updateFetch.makeRequest(updateRequest(auth.user.id, { [fieldName]: fieldValue }, captcha));
                 await auth.refreshUser();

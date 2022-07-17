@@ -37,6 +37,7 @@ export function ForgotPasswordPage() {
                 color: 'red',
             });
         } else {
+            umami.trackEvent('forgot-password', 'account');
             setRequestSent(true);
             showNotification({
                 title: 'Your password reset link has been sent',
@@ -61,6 +62,7 @@ export function ForgotPasswordPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
+                        umami.trackEvent('sign-in', 'link');
                         navigate('/login');
                     }}>
                     Sign in
@@ -74,7 +76,13 @@ export function ForgotPasswordPage() {
                     onChange={(evt) => handleInputChange(evt, setForgotPassword)}
                 />
 
-                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={forgotPasswordFetch.isLoading} disabled={!isButtonEnable || isRequestSent}>
+                <Button
+                    className="umami--click--forgot-password"
+                    fullWidth
+                    mt="xl"
+                    onClick={() => onSubmit(true)}
+                    loading={forgotPasswordFetch.isLoading}
+                    disabled={!isButtonEnable || isRequestSent}>
                     Send reset link
                 </Button>
             </Paper>

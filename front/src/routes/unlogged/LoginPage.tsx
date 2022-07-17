@@ -52,6 +52,7 @@ export function LoginPage() {
         if (loginFetch.cannotHandleResult()) return;
 
         if (loginFetch.data) {
+            umami.trackEvent('login', 'account');
             auth.login(loginFetch.data);
         }
 
@@ -76,6 +77,7 @@ export function LoginPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
+                        umami.trackEvent('create-account', 'link');
                         navigate('/register');
                     }}>
                     Create account
@@ -99,6 +101,7 @@ export function LoginPage() {
 
                 <Group position="apart" mt="md">
                     <Checkbox
+                        className="umami--click--remember-me"
                         label="Remember me"
                         checked={loginRemember.checked}
                         disabled={loginFetch.isLoading}
@@ -111,12 +114,19 @@ export function LoginPage() {
                         href="/forgotPassword"
                         onClick={(evt) => {
                             evt.preventDefault();
+                            umami.trackEvent('forgot-password', 'link');
                             navigate('/forgotPassword');
                         }}>
                         Forgot password?
                     </Anchor>
                 </Group>
-                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
+                <Button
+                    className="umami--click--sign-in"
+                    fullWidth
+                    mt="xl"
+                    onClick={() => onSubmit(true)}
+                    loading={loginFetch.isLoading}
+                    disabled={!isSignInEnable}>
                     Sign in
                 </Button>
 

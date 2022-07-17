@@ -44,6 +44,7 @@ export function RegisterPage() {
 
         if (registerFetch.data) {
             setAccountCreated(true);
+            umami.trackEvent('created', 'account');
             showNotification({
                 title: 'Your account has been created!',
                 message: "You will be redirected to the login page. Don't forget to check your email to activate your account.",
@@ -75,6 +76,7 @@ export function RegisterPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
+                        umami.trackEvent('sign-in', 'link');
                         navigate('/login');
                     }}>
                     Sign in
@@ -114,7 +116,13 @@ export function RegisterPage() {
                     disabled={registerFetch.isLoading || isAccountCreated}
                 />
 
-                <Button fullWidth mt="xl" onClick={() => onSubmit(true)} loading={registerFetch.isLoading} disabled={!isRegisterEnable || isAccountCreated}>
+                <Button
+                    className="umami--click--register"
+                    fullWidth
+                    mt="xl"
+                    onClick={() => onSubmit(true)}
+                    loading={registerFetch.isLoading}
+                    disabled={!isRegisterEnable || isAccountCreated}>
                     Register
                 </Button>
             </Paper>

@@ -40,6 +40,7 @@ export function VerifyPage() {
                 color: 'red',
             });
         } else {
+            umami.trackEvent('verify', 'account');
             setAccountVerified(true);
             showNotification({
                 title: 'Your account has been verified!',
