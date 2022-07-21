@@ -1,2 +1,2 @@
-# LearningReact-ront
+# LearningReact-Front
 with React, Vite, Mantine
