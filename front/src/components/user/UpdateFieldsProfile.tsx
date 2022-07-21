@@ -7,6 +7,7 @@ import { useFetch } from '../../api/request';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { EmailInput, isValidEmail } from '../form/EmailInput';
 import { UsernameInput, isValidUsername } from '../form/UsernameInput';
@@ -28,7 +29,7 @@ export function UpdateFieldProfile() {
     const editButton = useCallback(
         (fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => void) => {
             const validateChange = async (captcha: string) => {
-                umami.trackEvent(`update-${fieldName.toLowerCase()}`, 'account');
+                safeTrack(`update-${fieldName.toLowerCase()}`, 'account');
                 setLoading(true);
                 await updateFetch.makeRequest(updateRequest(auth.user.id, { [fieldName]: fieldValue }, captcha));
                 await auth.refreshUser();

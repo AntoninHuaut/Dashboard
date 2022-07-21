@@ -10,6 +10,7 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IFogotPasswordRequest } from '../../types/LoginType';
 import { handleInputChange } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 
 export function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ export function ForgotPasswordPage() {
                 color: 'red',
             });
         } else {
-            umami.trackEvent('forgot-password', 'account');
+            safeTrack('forgot-password', 'account');
             setRequestSent(true);
             showNotification({
                 title: 'Your password reset link has been sent',
@@ -62,7 +63,7 @@ export function ForgotPasswordPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
-                        umami.trackEvent('sign-in', 'link');
+                        safeTrack('sign-in', 'link');
                         navigate('/login');
                     }}>
                     Sign in

@@ -1,6 +1,7 @@
 import { createStyles, UnstyledButton, Text, Center, useMantineColorScheme, Group, MediaQuery, ActionIcon } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { Moon, Sun } from 'tabler-icons-react';
+import { safeTrack } from '../../services/umami.service';
 
 const useStyles = createStyles((theme) => ({
     control: {
@@ -34,7 +35,7 @@ export function ThemeSwitcher() {
     const Icon = colorScheme === 'dark' ? Sun : Moon;
 
     const toggleThemeTrack = () => {
-        umami.trackEvent('toggle-theme', 'click');
+        safeTrack('toggle-theme', 'click');
         toggleColorScheme();
     };
 

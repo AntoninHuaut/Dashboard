@@ -10,6 +10,7 @@ import { ConfirmPassword } from '../../components/form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../../components/form/PasswordStength';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IResetPasswordRequest } from '../../types/LoginType';
 
@@ -47,7 +48,7 @@ export function ResetPasswordPage() {
                 color: 'red',
             });
         } else {
-            umami.trackEvent('password-reset', 'account');
+            safeTrack('password-reset', 'account');
             setPasswordReset(true);
             showNotification({
                 title: 'Your password has been reset!',

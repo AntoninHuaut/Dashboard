@@ -8,6 +8,7 @@ import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IUpdatePasswordRequest } from '../../types/LoginType';
 import { ConfirmPassword } from '../form/ConfirmPassword';
@@ -27,7 +28,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
 
     const updatePasswordFetch = useFetch();
     const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
-        umami.trackEvent(`update-password`, 'account');
+        safeTrack(`update-password`, 'account');
         updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass, captcha));
         onSubmit(false);
     });

@@ -11,6 +11,7 @@ import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { ILoginRequest } from '../../types/LoginType';
 
@@ -52,7 +53,7 @@ export function LoginPage() {
         if (loginFetch.cannotHandleResult()) return;
 
         if (loginFetch.data) {
-            umami.trackEvent('login', 'account');
+            safeTrack('login', 'account');
             auth.login(loginFetch.data);
         }
 
@@ -77,7 +78,7 @@ export function LoginPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
-                        umami.trackEvent('create-account', 'link');
+                        safeTrack('create-account', 'link');
                         navigate('/register');
                     }}>
                     Create account
@@ -114,7 +115,7 @@ export function LoginPage() {
                         href="/forgotPassword"
                         onClick={(evt) => {
                             evt.preventDefault();
-                            umami.trackEvent('forgot-password', 'link');
+                            safeTrack('forgot-password', 'link');
                             navigate('/forgotPassword');
                         }}>
                         Forgot password?

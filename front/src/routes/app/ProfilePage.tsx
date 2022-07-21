@@ -11,6 +11,7 @@ import { UpdatePasswordProfile } from '../../components/user/UpdatePasswordProfi
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { getGravatarUrl } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 
 const ROLES_COLOR: { [key: string]: MantineColor } = {
@@ -32,7 +33,7 @@ export function ProfilePage() {
     const [displayPasswordUpdate, setDisplayPasswordUpdate] = useState(false);
 
     const deleteAccount = useCaptcha(CaptchaAction.DeleteAccount, async (captcha: string) => {
-        umami.trackEvent('delete', 'account');
+        safeTrack('delete', 'account');
         await deleteFetch.makeRequest(deleteRequest(user.id, captcha));
         deleteAccount(false);
     });

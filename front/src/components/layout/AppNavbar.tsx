@@ -5,6 +5,7 @@ import { Home, Logout, UserCircle } from 'tabler-icons-react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon = getRef('icon');
@@ -93,7 +94,7 @@ export function AppNavbar(props: AppNavbarProps) {
             key={item.label}
             onClick={(evt) => {
                 evt.preventDefault();
-                umami.trackEvent(`navbar-${item.label.toLowerCase()}`, 'click');
+                safeTrack(`navbar-${item.label.toLowerCase()}`, 'click');
                 setOpened(false);
                 navigate(item.link);
             }}>
@@ -118,7 +119,7 @@ export function AppNavbar(props: AppNavbarProps) {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
-                        umami.trackEvent('navbar-logout', 'click');
+                        safeTrack('navbar-logout', 'click');
                         setOpened(false);
                         navigate('/app/logout');
                     }}>

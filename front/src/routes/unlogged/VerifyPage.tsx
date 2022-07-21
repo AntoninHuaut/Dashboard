@@ -8,6 +8,7 @@ import { verifyRequest } from '../../api/auth_request';
 import { useFetch } from '../../api/request';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
+import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IVerifyRequest } from '../../types/LoginType';
 
@@ -40,7 +41,7 @@ export function VerifyPage() {
                 color: 'red',
             });
         } else {
-            umami.trackEvent('verify', 'account');
+            safeTrack('verify', 'account');
             setAccountVerified(true);
             showNotification({
                 title: 'Your account has been verified!',
