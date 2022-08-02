@@ -49,26 +49,21 @@ export function PasswordStrength(passwordInputProps: PasswordStrengthProps) {
     const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
     return (
-        <Popover
-            opened={popoverOpened}
-            position="bottom"
-            placement="start"
-            withArrow
-            styles={{ popover: { width: '100%' } }}
-            trapFocus={false}
-            transition="pop-top-left"
-            onFocusCapture={() => setPopoverOpened(true)}
-            onBlurCapture={() => setPopoverOpened(false)}
-            target={
-                <PasswordInput
-                    required
-                    description="Strong password should include letters in lower and uppercase, at least 1 number, at least 1 special symbol"
-                    {...passwordInputProps}
-                />
-            }>
-            <Progress color={color} value={strength} size={5} style={{ marginBottom: 10 }} />
-            <PasswordRequirement label={`Includes at least ${MIN_PASSWORD_LENGTH} characters`} meets={value.length >= MIN_PASSWORD_LENGTH} />
-            {checks}
+        <Popover opened={popoverOpened} position="bottom" withArrow trapFocus={false} transition="pop-top-left">
+            <Popover.Target>
+                <div onFocusCapture={() => setPopoverOpened(true)} onBlurCapture={() => setPopoverOpened(false)}>
+                    <PasswordInput
+                        required
+                        description="Strong password should include letters in lower and uppercase, at least 1 number, at least 1 special symbol"
+                        {...passwordInputProps}
+                    />
+                </div>
+            </Popover.Target>
+            <Popover.Dropdown>
+                <Progress color={color} value={strength} size={5} style={{ marginBottom: 10 }} />
+                <PasswordRequirement label={`Includes at least ${MIN_PASSWORD_LENGTH} characters`} meets={value.length >= MIN_PASSWORD_LENGTH} />
+                {checks}
+            </Popover.Dropdown>
         </Popover>
     );
 }
