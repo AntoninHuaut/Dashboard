@@ -1,12 +1,11 @@
 import { Anchor, Button, Checkbox, Container, Group, Paper, PasswordInput, Text, Title } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { showNotification } from '@mantine/notifications';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
 import { loginRequest } from '../../api/auth_request';
-import { useFetch } from '../../api/request';
+import { useFetch } from '../../hooks/useFetch';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
@@ -14,11 +13,23 @@ import { handleInputChange } from '../../services/form.service';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { ILoginRequest } from '../../types/LoginType';
+import { errorNotif } from '../../services/notification.services';
 
 export function LoginPage() {
     const auth = useAuth();
     const navigate = useNavigate();
-    const loginFetch = useFetch();
+    const loginFetch = useFetch({
+        onError(error) {
+            errorNotif({
+                title: 'An error occurred during login',
+                message: error.message,
+            });
+        },
+        onData(data) {
+            safeTrack('login', 'account');
+            auth.login(data);
+        },
+    });
 
     const [loginRemember, setLoginRemember] = useLocalStorage({ key: 'loginRemember', defaultValue: { checked: false, email: '' } });
     const [login, setLogin] = useState<ILoginRequest>({ email: '', password: '' });
@@ -48,23 +59,6 @@ export function LoginPage() {
             }));
         }
     }, [loginRemember.checked]);
-
-    useEffect(() => {
-        if (loginFetch.cannotHandleResult()) return;
-
-        if (loginFetch.data) {
-            safeTrack('login', 'account');
-            auth.login(loginFetch.data);
-        }
-
-        if (loginFetch.error) {
-            showNotification({
-                title: 'An error occurred during login',
-                message: loginFetch.error.message,
-                color: 'red',
-            });
-        }
-    }, [loginFetch.isLoading]);
 
     return (
         <Container size={420} my={40}>

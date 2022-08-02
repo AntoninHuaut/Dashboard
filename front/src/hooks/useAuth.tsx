@@ -1,7 +1,7 @@
 import { Center, Loader, Stack } from '@mantine/core';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-import { useFetch } from '../api/request';
+import { useFetch } from '../hooks/useFetch';
 import { logoutRequest, refreshRequest, sessionRequest } from '../api/auth_request';
 import { IUser } from '../types/LoginType';
 
@@ -19,7 +19,14 @@ export interface MemoType {
 export const AuthProvider = ({ children }: { children: React.ReactNode | React.ReactNode[] }) => {
     const [user, setUser] = useState<IUser>();
     const [isLoadingUser, setLoadingUser] = useState<boolean>(true);
-    const userFetch = useFetch();
+    const userFetch = useFetch({
+        onAfterRequest() {
+            setLoadingUser(false);
+        },
+        onData(data) {
+            setUser(data);
+        },
+    });
 
     const login = async (user: IUser) => setUser(user);
 
@@ -59,16 +66,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode | React.R
 
         fetchUser();
     }, []);
-
-    useEffect(() => {
-        if (userFetch.cannotHandleResult()) return;
-
-        setLoadingUser(false);
-
-        if (userFetch.data) {
-            setUser(userFetch.data);
-        }
-    }, [userFetch.isLoading]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

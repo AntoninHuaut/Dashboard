@@ -1,13 +1,13 @@
 import { Anchor, Button, Container, Paper, Text, TextInput, Title } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
 import { verifyRequest } from '../../api/auth_request';
-import { useFetch } from '../../api/request';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
+import { errorNotif, successNotif } from '../../services/notification.services';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IVerifyRequest } from '../../types/LoginType';
@@ -15,7 +15,21 @@ import { IVerifyRequest } from '../../types/LoginType';
 export function VerifyPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const verifyFetch = useFetch();
+    const verifyFetch = useFetch({
+        onError(error) {
+            errorNotif({ title: 'An error occurred during verification', message: error.message });
+        },
+        onNoData() {
+            safeTrack('verify', 'account');
+            setAccountVerified(true);
+            const autoCloseDelay = successNotif({
+                title: 'Your account has been verified!',
+                message: 'You will be redirected to the login page',
+            });
+
+            setTimeout(() => navigate('/login'), autoCloseDelay);
+        },
+    });
 
     const [isAccountVerified, setAccountVerified] = useState(false);
     const [isVerifyEnable, setVerifyEnable] = useState(false);
@@ -30,29 +44,6 @@ export function VerifyPage() {
     useEffect(() => setVerify((prev) => ({ ...prev, token: params.token ?? '' })), []);
 
     useEffect(() => setVerifyEnable(verify.token.length > 0), [verify.token]);
-
-    useLayoutEffect(() => {
-        if (verifyFetch.cannotHandleResult()) return;
-
-        if (verifyFetch.error) {
-            showNotification({
-                title: 'An error occurred during verification',
-                message: verifyFetch.error.message,
-                color: 'red',
-            });
-        } else {
-            safeTrack('verify', 'account');
-            setAccountVerified(true);
-            showNotification({
-                title: 'Your account has been verified!',
-                message: 'You will be redirected to the login page',
-                color: 'green',
-                autoClose: 3000,
-            });
-
-            setTimeout(() => navigate('/login'), 3000);
-        }
-    }, [verifyFetch.isLoading]);
 
     return (
         <Container size={420} my={40}>

@@ -1,9 +1,9 @@
 import { Button, Group, PasswordInput } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Check, CircleCheck, Key, Lock, X } from 'tabler-icons-react';
+import { Check, Key, Lock, X } from 'tabler-icons-react';
 
-import { useFetch } from '../../api/request';
+import { useFetch } from '../../hooks/useFetch';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
@@ -13,6 +13,7 @@ import { CaptchaAction } from '../../types/CaptchaType';
 import { IUpdatePasswordRequest } from '../../types/LoginType';
 import { ConfirmPassword } from '../form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../form/PasswordStength';
+import { errorNotif, successNotif } from '../../services/notification.services';
 
 interface UpdatePasswordProfileProps {
     closePasswordForm: () => any;
@@ -26,7 +27,21 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
         confirmPassword: '',
     });
 
-    const updatePasswordFetch = useFetch();
+    const updatePasswordFetch = useFetch({
+        onError(error) {
+            errorNotif({
+                title: "Couldn't update password",
+                message: error.message,
+            });
+        },
+        onNoData() {
+            successNotif({
+                message: 'Your password has been updated',
+            });
+            props.closePasswordForm();
+        },
+    });
+
     const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
         safeTrack(`update-password`, 'account');
         updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass, captcha));
@@ -41,25 +56,6 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
             ),
         [updatePass]
     );
-
-    useLayoutEffect(() => {
-        if (updatePasswordFetch.cannotHandleResult()) return;
-
-        if (updatePasswordFetch.error) {
-            showNotification({
-                title: "Couldn't update password",
-                message: updatePasswordFetch.error.message,
-                color: 'red',
-            });
-        } else {
-            showNotification({
-                message: 'Your password has been updated',
-                color: 'green',
-                autoClose: 3000,
-            });
-            props.closePasswordForm();
-        }
-    }, [updatePasswordFetch.isLoading]);
 
     return (
         <>

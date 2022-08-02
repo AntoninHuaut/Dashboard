@@ -1,10 +1,9 @@
 import { Anchor, Button, Container, Paper, Text, Title } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
-import { useFetch } from '../../api/request';
+import { useFetch } from '../../hooks/useFetch';
 import { registerRequest } from '../../api/user_request';
 import { ConfirmPassword } from '../../components/form/ConfirmPassword';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
@@ -15,10 +14,28 @@ import { handleInputChange } from '../../services/form.service';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IRegisterRequest } from '../../types/LoginType';
+import { errorNotif, successNotif } from '../../services/notification.services';
 
 export function RegisterPage() {
     const navigate = useNavigate();
-    const registerFetch = useFetch();
+    const registerFetch = useFetch({
+        onError(error) {
+            errorNotif({
+                title: 'An error occurred during register',
+                message: error.message,
+            });
+        },
+        onData(_data) {
+            setAccountCreated(true);
+            safeTrack('created', 'account');
+            const autoCloseDelay = successNotif({
+                title: 'Your account has been created!',
+                message: "You will be redirected to the login page. Don't forget to check your email to activate your account.",
+            });
+
+            setTimeout(() => navigate('/login'), autoCloseDelay);
+        },
+    });
 
     const [register, setRegister] = useState<IRegisterRequest>({ email: '', username: '', password: '', confirmPassword: '' });
     const [isRegisterEnable, setRegisterEnable] = useState(false);
@@ -39,31 +56,6 @@ export function RegisterPage() {
             ),
         [register]
     );
-
-    useLayoutEffect(() => {
-        if (registerFetch.cannotHandleResult()) return;
-
-        if (registerFetch.data) {
-            setAccountCreated(true);
-            safeTrack('created', 'account');
-            showNotification({
-                title: 'Your account has been created!',
-                message: "You will be redirected to the login page. Don't forget to check your email to activate your account.",
-                color: 'green',
-                autoClose: 3000,
-            });
-
-            setTimeout(() => navigate('/login'), 3000);
-        }
-
-        if (registerFetch.error) {
-            showNotification({
-                title: 'An error occurred during register',
-                message: registerFetch.error.message,
-                color: 'red',
-            });
-        }
-    }, [registerFetch.isLoading]);
 
     return (
         <Container size={420} my={40}>

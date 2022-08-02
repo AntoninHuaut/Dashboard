@@ -1,10 +1,9 @@
-import { Avatar, Badge, Button, Group, LoadingOverlay, MantineColor, Paper, Stack, Text, Title, useMantineTheme } from '@mantine/core';
+import { Avatar, Badge, Button, Group, LoadingOverlay, MantineColor, Paper, Stack, Text, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { showNotification } from '@mantine/notifications';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useFetch } from '../../api/request';
+import { useFetch } from '../../hooks/useFetch';
 import { deleteRequest } from '../../api/user_request';
 import { UpdateFieldProfile } from '../../components/user/UpdateFieldsProfile';
 import { UpdatePasswordProfile } from '../../components/user/UpdatePasswordProfile';
@@ -13,6 +12,7 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { getGravatarUrl } from '../../services/form.service';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
+import { errorNotif, successNotif } from '../../services/notification.services';
 
 const ROLES_COLOR: { [key: string]: MantineColor } = {
     USER: 'blue',
@@ -25,12 +25,28 @@ function getRoleColor(role: string): MantineColor {
 
 export function ProfilePage() {
     const { user } = useAuth();
-    const theme = useMantineTheme();
     const navigate = useNavigate();
-    const deleteFetch = useFetch();
     const modals = useModals();
     const avatar = useMemo(() => getGravatarUrl(user.email), [user.email]);
     const [displayPasswordUpdate, setDisplayPasswordUpdate] = useState(false);
+
+    const deleteFetch = useFetch({
+        onError(error) {
+            errorNotif({
+                title: "Couldn't delete account",
+                message: error.message,
+            });
+        },
+        onNoData() {
+            setIsDeleted(true);
+            const autoCloseDelay = successNotif({
+                title: 'Your account has been deleted',
+                message: 'You will be redirected to the login page',
+            });
+
+            setTimeout(() => navigate('/app/logout'), autoCloseDelay);
+        },
+    });
 
     const deleteAccount = useCaptcha(CaptchaAction.DeleteAccount, async (captcha: string) => {
         safeTrack('delete', 'account');
@@ -49,28 +65,6 @@ export function ProfilePage() {
             confirmProps: { color: 'red' },
             onConfirm: () => deleteAccount(true),
         });
-
-    useEffect(() => {
-        if (deleteFetch.cannotHandleResult()) return;
-
-        if (deleteFetch.error) {
-            showNotification({
-                title: "Couldn't delete account",
-                message: deleteFetch.error.message,
-                color: 'red',
-            });
-        } else {
-            setIsDeleted(true);
-            showNotification({
-                title: 'Your account has been deleted',
-                message: 'You will be redirected to the login page',
-                color: 'green',
-                autoClose: 3000,
-            });
-
-            setTimeout(() => navigate('/app/logout'), 3000);
-        }
-    }, [deleteFetch.isLoading]);
 
     return (
         <Stack>

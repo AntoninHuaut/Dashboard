@@ -1,9 +1,8 @@
 import { ActionIcon, useMantineTheme } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
 import { ChangeEvent, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Check, Edit, X } from 'tabler-icons-react';
 
-import { useFetch } from '../../api/request';
+import { useFetch } from '../../hooks/useFetch';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
@@ -11,13 +10,27 @@ import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { EmailInput, isValidEmail } from '../form/EmailInput';
 import { UsernameInput, isValidUsername } from '../form/UsernameInput';
+import { errorNotif, successNotif } from '../../services/notification.services';
 
 type FieldNameType = 'email' | 'username';
 
 export function UpdateFieldProfile() {
     const auth = useAuth();
     const theme = useMantineTheme();
-    const updateFetch = useFetch();
+    const updateFetch = useFetch({
+        onError(error) {
+            errorNotif({
+                title: 'An error occurred while updating your data',
+                message: error.message,
+            });
+        },
+        onNoData() {
+            setEditFieldName('');
+            successNotif({
+                message: 'Your data has been updated',
+            });
+        },
+    });
 
     const [email, setEmail] = useState(auth.user.email);
     const [username, setUsername] = useState(auth.user.username);
@@ -113,25 +126,6 @@ export function UpdateFieldProfile() {
                 return setValidInput(isValidUsername(username));
         }
     }, [email, username]);
-
-    useLayoutEffect(() => {
-        if (updateFetch.cannotHandleResult()) return;
-
-        if (updateFetch.error) {
-            showNotification({
-                title: 'An error occurred while updating your data',
-                message: updateFetch.error.message,
-                color: 'red',
-            });
-        } else {
-            setEditFieldName('');
-            showNotification({
-                message: 'Your data has been updated',
-                color: 'green',
-                autoClose: 3000,
-            });
-        }
-    }, [isLoading]);
 
     return (
         <>

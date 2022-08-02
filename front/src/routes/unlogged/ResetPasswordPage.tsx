@@ -1,15 +1,15 @@
 import { Anchor, Button, Container, Paper, Text, TextInput, Title } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Key } from 'tabler-icons-react';
 
-import { useFetch } from '../../api/request';
 import { resetPasswordRequest } from '../../api/user_request';
 import { ConfirmPassword } from '../../components/form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../../components/form/PasswordStength';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
+import { errorNotif, successNotif } from '../../services/notification.services';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IResetPasswordRequest } from '../../types/LoginType';
@@ -17,7 +17,21 @@ import { IResetPasswordRequest } from '../../types/LoginType';
 export function ResetPasswordPage() {
     const params = useParams();
     const navigate = useNavigate();
-    const resetPasswordFetch = useFetch();
+    const resetPasswordFetch = useFetch({
+        onError(error) {
+            errorNotif({ title: 'An error occurred during password reset', message: error.message });
+        },
+        onNoData() {
+            safeTrack('password-reset', 'account');
+            setPasswordReset(true);
+            const autoCloseDelay = successNotif({
+                title: 'Your password has been reset!',
+                message: 'You will be redirected to the login page',
+            });
+
+            setTimeout(() => navigate('/login'), autoCloseDelay);
+        },
+    });
 
     const [resetPwd, setResetPwd] = useState<IResetPasswordRequest>({
         token: params.token ?? '',
@@ -37,29 +51,6 @@ export function ResetPasswordPage() {
         () => setButtonEnable(resetPwd.token.length > 1 && isValidPassword(resetPwd.newPassword) && resetPwd.newPassword === resetPwd.confirmPassword),
         [resetPwd]
     );
-
-    useLayoutEffect(() => {
-        if (resetPasswordFetch.cannotHandleResult()) return;
-
-        if (resetPasswordFetch.error) {
-            showNotification({
-                title: 'An error occurred during password reset',
-                message: resetPasswordFetch.error.message,
-                color: 'red',
-            });
-        } else {
-            safeTrack('password-reset', 'account');
-            setPasswordReset(true);
-            showNotification({
-                title: 'Your password has been reset!',
-                message: 'You will be redirected to the login page',
-                color: 'green',
-                autoClose: 3000,
-            });
-
-            setTimeout(() => navigate('/login'), 3000);
-        }
-    }, [resetPasswordFetch.isLoading]);
 
     return (
         <Container size={420} my={40}>
