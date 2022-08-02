@@ -1,2 +1,2 @@
-# LearningReact-Back
+# LearningReact-Front
 with React, Vite, Mantine
