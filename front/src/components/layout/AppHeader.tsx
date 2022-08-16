@@ -24,7 +24,7 @@ export function AppHeader(props: AppHeaderProps) {
                         <Link to={'/'}>
                             <Avatar size={32} radius={32} src={'/logo.svg'} />
                         </Link>
-                        <Title order={4}>LearningReact</Title>
+                        <Title order={4}>Dashboard</Title>
                     </Group>
                 </MediaQuery>
 
@@ -33,7 +33,7 @@ export function AppHeader(props: AppHeaderProps) {
                         <Link to={'/'}>
                             <Avatar size={42} radius={42} src={'/logo.svg'} />
                         </Link>
-                        <Title order={2}>LearningReact</Title>
+                        <Title order={2}>Dashboard</Title>
                     </Group>
                 </MediaQuery>
 

@@ -1,6 +1,6 @@
 services:
-  learning-react-back:
-    container_name: clearning-react-back
+  dashboard-react-back:
+    container_name: cdashboard-react-back
     restart: unless-stopped
     build: ./back
     volumes:
@@ -13,8 +13,8 @@ services:
     depends_on:
       - db
 
-  learning-react-front:
-    container_name: clearning-react-front
+  dashboard-react-front:
+    container_name: cdashboard-react-front
     restart: unless-stopped
     build:
       context: ./front
@@ -24,10 +24,10 @@ services:
     ports:
       - "4010:8080"
     depends_on:
-      - learning-react-back
+      - dashboard-react-back
 
   db:
-    container_name: clearning-react-db
+    container_name: cdashboard-react-db
     restart: unless-stopped
     image: postgres:14-alpine
     volumes:

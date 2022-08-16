@@ -40,7 +40,7 @@ await loadKey();
 
 const getAuthToken = async (user: User): Promise<TokenProperty> => {
     const payload: Payload = {
-        iss: 'learningreact-api',
+        iss: 'dashboard-api',
         id: user.id,
         email: user.email,
         username: user.username,
