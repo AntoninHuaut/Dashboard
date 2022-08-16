@@ -1,2 +1,2 @@
-# LearningReact-Front
+# Dashboard-Front
 with React, Vite, Mantine
