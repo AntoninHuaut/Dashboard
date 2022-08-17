@@ -2,20 +2,22 @@ import { ActionIcon, useMantineTheme } from '@mantine/core';
 import { ChangeEvent, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Check, Edit, X } from 'tabler-icons-react';
 
-import { useFetch } from '../../hooks/useFetch';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
+import { errorNotif, successNotif } from '../../services/notification.services';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
+import { IUser } from '../../types/LoginType';
 import { EmailInput, isValidEmail } from '../form/EmailInput';
-import { UsernameInput, isValidUsername } from '../form/UsernameInput';
-import { errorNotif, successNotif } from '../../services/notification.services';
+import { isValidUsername, UsernameInput } from '../form/UsernameInput';
 
 type FieldNameType = 'email' | 'username';
 
 export function UpdateFieldProfile() {
     const auth = useAuth();
+    const user = auth.user as IUser; // Protected route
     const theme = useMantineTheme();
     const updateFetch = useFetch({
         onError(error) {
@@ -24,7 +26,7 @@ export function UpdateFieldProfile() {
                 message: error.message,
             });
         },
-        onNoData() {
+        onSuccess(_data) {
             setEditFieldName('');
             successNotif({
                 message: 'Your data has been updated',
@@ -32,8 +34,8 @@ export function UpdateFieldProfile() {
         },
     });
 
-    const [email, setEmail] = useState(auth.user.email);
-    const [username, setUsername] = useState(auth.user.username);
+    const [email, setEmail] = useState(user.email);
+    const [username, setUsername] = useState(user.username);
 
     const [isLoading, setLoading] = useState(false);
     const [isValidInput, setValidInput] = useState(true);
@@ -44,7 +46,7 @@ export function UpdateFieldProfile() {
             const validateChange = async (captcha: string) => {
                 safeTrack(`update-${fieldName.toLowerCase()}`, 'account');
                 setLoading(true);
-                await updateFetch.makeRequest(updateRequest(auth.user.id, { [fieldName]: fieldValue }, captcha));
+                await updateFetch.makeRequest(updateRequest(user.id, { [fieldName]: fieldValue }, captcha));
                 await auth.refreshUser();
                 setLoading(false);
             };
@@ -55,7 +57,7 @@ export function UpdateFieldProfile() {
             });
 
             const cancelChange = () => {
-                setFieldValue(auth.user[fieldName]);
+                setFieldValue(user[fieldName]);
                 setEditFieldName('');
             };
 

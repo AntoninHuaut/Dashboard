@@ -21,7 +21,7 @@ export function ForgotPasswordPage() {
                 message: error.message,
             });
         },
-        onNoData() {
+        onSuccess(_data) {
             safeTrack('forgot-password', 'account');
             setRequestSent(true);
             const autoCloseDelay = successNotif({

@@ -25,7 +25,7 @@ export function RegisterPage() {
                 message: error.message,
             });
         },
-        onData(_data) {
+        onSuccess(_data) {
             setAccountCreated(true);
             safeTrack('created', 'account');
             const autoCloseDelay = successNotif({

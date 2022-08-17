@@ -3,16 +3,17 @@ import { useModals } from '@mantine/modals';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useFetch } from '../../hooks/useFetch';
 import { deleteRequest } from '../../api/user_request';
 import { UpdateFieldProfile } from '../../components/user/UpdateFieldsProfile';
 import { UpdatePasswordProfile } from '../../components/user/UpdatePasswordProfile';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
 import { getGravatarUrl } from '../../services/form.service';
+import { errorNotif, successNotif } from '../../services/notification.services';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
-import { errorNotif, successNotif } from '../../services/notification.services';
+import { IUser } from '../../types/LoginType';
 
 const ROLES_COLOR: { [key: string]: MantineColor } = {
     USER: 'blue',
@@ -24,7 +25,8 @@ function getRoleColor(role: string): MantineColor {
 }
 
 export function ProfilePage() {
-    const { user } = useAuth();
+    const auth = useAuth();
+    const user = auth.user as IUser; // Protected route
     const navigate = useNavigate();
     const modals = useModals();
     const avatar = useMemo(() => getGravatarUrl(user.email), [user.email]);
@@ -37,7 +39,7 @@ export function ProfilePage() {
                 message: error.message,
             });
         },
-        onNoData() {
+        onSuccess(_data) {
             setIsDeleted(true);
             const autoCloseDelay = successNotif({
                 title: 'Your account has been deleted',

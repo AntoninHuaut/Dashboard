@@ -19,7 +19,7 @@ export function VerifyPage() {
         onError(error) {
             errorNotif({ title: 'An error occurred during verification', message: error.message });
         },
-        onNoData() {
+        onSuccess(_data) {
             safeTrack('verify', 'account');
             setAccountVerified(true);
             const autoCloseDelay = successNotif({

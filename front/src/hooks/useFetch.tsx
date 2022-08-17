@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
 
-interface UseFetchParameter {
-    onError?: (servError: any) => any; // Error
-
-    onData?: (servData: any) => any; // No error with data
-    onNoData?: () => any; // No error with no data
-
+interface UseFetchParameter<T> {
+    onError?: (servError: Error) => any; // Error
+    onSuccess?: (servData: T | null) => any; // No error with optional data
     onAfterRequest?: () => any; // Always called after request
 }
 
-export const useFetch = (params: UseFetchParameter) => {
+export const useFetch = <T,>(params: UseFetchParameter<T>) => {
     const [data, setData] = useState<any>();
     const [error, setError] = useState<Error | null>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -66,18 +63,12 @@ export const useFetch = (params: UseFetchParameter) => {
     useEffect(() => {
         if (cannotHandleResult()) return;
 
-        if (data && params.onData) {
-            params.onData(data);
+        if (error && params.onError) {
+            params.onError(error);
         }
 
-        if (error) {
-            if (params.onError) {
-                params.onError(error);
-            }
-        } else {
-            if (params.onNoData) {
-                params.onNoData();
-            }
+        if (params.onSuccess) {
+            params.onSuccess(data);
         }
 
         if (params.onAfterRequest) {

@@ -6,6 +6,7 @@ import { Home, Logout, UserCircle } from 'tabler-icons-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
 import { safeTrack } from '../../services/umami.service';
+import { IUser } from '../../types/LoginType';
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon = getRef('icon');
@@ -75,7 +76,8 @@ interface AppNavbarProps {
 export function AppNavbar(props: AppNavbarProps) {
     const { setOpened, opened, hiddenBreakpoint } = props;
 
-    const { user } = useAuth();
+    const auth = useAuth();
+    const user = auth.user as IUser; // Protected route
     const navigate = useNavigate();
     const location = useLocation();
     const { classes, cx } = useStyles();

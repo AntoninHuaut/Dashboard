@@ -8,7 +8,7 @@ import { IUser } from '../types/LoginType';
 const AuthContext = createContext<any>(null);
 
 export interface MemoType {
-    user: IUser;
+    user: IUser | null;
     login: (user: IUser) => Promise<void>;
     logout: () => any;
     isLoadingUser: boolean;
@@ -17,13 +17,13 @@ export interface MemoType {
 }
 
 export const AuthProvider = ({ children }: { children: React.ReactNode | React.ReactNode[] }) => {
-    const [user, setUser] = useState<IUser>();
+    const [user, setUser] = useState<IUser | null>(null);
     const [isLoadingUser, setLoadingUser] = useState<boolean>(true);
-    const userFetch = useFetch({
+    const userFetch = useFetch<IUser>({
         onAfterRequest() {
             setLoadingUser(false);
         },
-        onData(data) {
+        onSuccess(data) {
             setUser(data);
         },
     });
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode | React.R
     const login = async (user: IUser) => setUser(user);
 
     const logout = () => {
-        userFetch.makeRequest(logoutRequest()).finally(() => setUser(null as unknown as IUser));
+        userFetch.makeRequest(logoutRequest()).finally(() => setUser(null));
     };
 
     const loadingElement = () => (
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode | React.R
 
     const value = useMemo(
         (): MemoType => ({
-            user: user as IUser,
+            user: user,
             login,
             logout,
             isLoadingUser,
