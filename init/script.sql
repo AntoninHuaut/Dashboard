@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "users_token" (
 
 CREATE TABLE IF NOT EXISTS "users" (
     "id"                       serial,
-    "email"                    varchar(255) not null  UNIQUE,
+    "email"                    varchar(255) not null UNIQUE,
     "username"                 varchar(64)  not null,
     "password"                 varchar(255) not null,
     "roles"                    varchar(128) not null,
@@ -18,4 +18,11 @@ CREATE TABLE IF NOT EXISTS "users" (
     "forgot_password_token_id" int          null,
     PRIMARY KEY ("id"),
     CONSTRAINT users_rti_fk FOREIGN KEY("registration_token_id") REFERENCES users_token("token_id")
+);
+
+CREATE TABLE IF NOT EXISTS "app_trackmail" (
+    "user_id"                int  not null UNIQUE,
+    "trackmail_token"        text not null UNIQUE,
+    PRIMARY KEY ("user_id"),
+    CONSTRAINT app_trackmail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id")
 );
