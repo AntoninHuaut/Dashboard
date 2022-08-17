@@ -12,20 +12,22 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
-import { ILoginRequest } from '../../types/LoginType';
-import { errorNotif } from '../../services/notification.services';
+import { ILoginRequest, IUser } from '../../types/LoginType';
+import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
 
 export function LoginPage() {
     const auth = useAuth();
     const navigate = useNavigate();
-    const loginFetch = useFetch({
+    const loginFetch = useFetch<IUser>({
         onError(error) {
             errorNotif({
                 title: 'An error occurred during login',
                 message: error.message,
             });
         },
-        onData(data) {
+        onSuccess(data) {
+            if (!data) return errorNoDataFetchNotif();
+
             safeTrack('login', 'account');
             auth.login(data);
         },

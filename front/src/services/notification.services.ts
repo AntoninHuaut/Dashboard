@@ -5,6 +5,10 @@ interface NotifParams {
     message: string;
 }
 
+export function errorNoDataFetchNotif() {
+    errorNotif({ message: 'Unable to retrieve server response' });
+}
+
 export function errorNotif({ title = 'An error occurred', message }: NotifParams) {
     genericNotif({
         title: title,

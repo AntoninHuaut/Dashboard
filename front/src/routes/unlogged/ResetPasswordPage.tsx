@@ -21,7 +21,7 @@ export function ResetPasswordPage() {
         onError(error) {
             errorNotif({ title: 'An error occurred during password reset', message: error.message });
         },
-        onNoData() {
+        onSuccess(_data) {
             safeTrack('password-reset', 'account');
             setPasswordReset(true);
             const autoCloseDelay = successNotif({

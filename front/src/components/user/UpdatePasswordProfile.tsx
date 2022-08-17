@@ -10,7 +10,7 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
 import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
-import { IUpdatePasswordRequest } from '../../types/LoginType';
+import { IUpdatePasswordRequest, IUser } from '../../types/LoginType';
 import { ConfirmPassword } from '../form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../form/PasswordStength';
 import { errorNotif, successNotif } from '../../services/notification.services';
@@ -21,6 +21,7 @@ interface UpdatePasswordProfileProps {
 
 export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
     const auth = useAuth();
+    const user = auth.user as IUser; // Protected route
     const [updatePass, setUpdatePass] = useState({
         currentPassword: '',
         newPassword: '',
@@ -34,7 +35,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
                 message: error.message,
             });
         },
-        onNoData() {
+        onSuccess(_data) {
             successNotif({
                 message: 'Your password has been updated',
             });
@@ -44,7 +45,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
 
     const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
         safeTrack(`update-password`, 'account');
-        updatePasswordFetch.makeRequest(updateRequest(auth.user.id, updatePass, captcha));
+        updatePasswordFetch.makeRequest(updateRequest(user.id, updatePass, captcha));
         onSubmit(false);
     });
 
