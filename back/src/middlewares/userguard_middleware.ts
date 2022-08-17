@@ -1,7 +1,7 @@
 import { Context, httpErrors, Middleware } from 'oak';
 
 import { User, UserRole } from '/types/user_model.ts';
-import { hasUserRole } from '/utils/role_helper.ts';
+import { hasSomeUserRole } from '/utils/role_helper.ts';
 
 const userGuard = (roles?: UserRole[]) => {
     const middleware: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
@@ -10,7 +10,7 @@ const userGuard = (roles?: UserRole[]) => {
             throw new httpErrors.Unauthorized('Unauthorized guest user');
         }
 
-        if (roles && !hasUserRole(user, roles)) {
+        if (roles && !hasSomeUserRole(user, roles)) {
             throw new httpErrors.Forbidden('Forbidden user role');
         }
 

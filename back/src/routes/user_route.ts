@@ -89,7 +89,7 @@ const updateUser = async (ctx: Context) => {
     const updatedUser = validUpdateUser.parse(body);
 
     const user = ctx.state.me;
-    if (user.id == userId || hasUserRole(user, [UserRole.ADMIN])) {
+    if (user.id == userId || hasUserRole(user, UserRole.ADMIN)) {
         await userService.updateUser(userId, updatedUser);
         ctx.response.status = Status.NoContent;
     } else {
@@ -104,7 +104,7 @@ const deleteUser = async (ctx: Context) => {
     const userId: number = validUserId.parse(+userIdStr);
 
     const user = ctx.state.me;
-    if (user.id == userId || hasUserRole(user, [UserRole.ADMIN])) {
+    if (user.id == userId || hasUserRole(user, UserRole.ADMIN)) {
         await userService.deleteUser(userId);
         ctx.response.status = Status.NoContent;
     } else {
