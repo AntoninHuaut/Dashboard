@@ -6,13 +6,14 @@ import { UnProtectedLayout } from '../../layouts/UnProtectedLayout';
 import { HomePage } from '../../routes/app/HomePage';
 import { LogoutPage } from '../../routes/app/LogoutPage';
 import { ProfilePage } from '../../routes/app/ProfilePage';
+import { TrackMailPage } from '../../routes/app/TrackMailPage';
 import { IndexPage } from '../../routes/IndexPage';
-import { LoginPage } from '../../routes/unlogged/LoginPage';
 import { PageNotFound } from '../../routes/PageNotFound';
-import { RegisterPage } from '../../routes/unlogged/RegisterPage';
-import { VerifyPage } from '../../routes/unlogged/VerifyPage';
 import { ForgotPasswordPage } from '../../routes/unlogged/ForgotPasswordPage';
+import { LoginPage } from '../../routes/unlogged/LoginPage';
+import { RegisterPage } from '../../routes/unlogged/RegisterPage';
 import { ResetPasswordPage } from '../../routes/unlogged/ResetPasswordPage';
+import { VerifyPage } from '../../routes/unlogged/VerifyPage';
 
 export function AppRouter() {
     const { isLoadingUser, loadingElement } = useAuth();
@@ -35,6 +36,7 @@ export function AppRouter() {
             children: [
                 { path: '/app/home', element: <HomePage /> },
                 { path: '/app/profile', element: <ProfilePage /> },
+                { path: '/app/track-mail', element: <TrackMailPage /> },
                 { path: '/app/logout', element: <LogoutPage /> },
             ],
         },

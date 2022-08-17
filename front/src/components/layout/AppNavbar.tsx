@@ -1,7 +1,7 @@
 import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Logout, UserCircle } from 'tabler-icons-react';
+import { Home, Logout, Mail, UserCircle } from 'tabler-icons-react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
@@ -65,6 +65,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const data = [
     { link: '/app/home', label: 'Home', icon: Home },
     { link: '/app/profile', label: 'Profile', icon: UserCircle },
+    { link: '/app/track-mail', label: 'TrackMail', icon: Mail },
 ];
 
 interface AppNavbarProps {
