@@ -7,7 +7,7 @@ const router = new Router();
 const api = new Router();
 
 api.get('/', (ctx) => {
-    ctx.response.body = 'UP';
+    ctx.response.body = { status: 'UP' };
 });
 
 export const API_ROUTE = '/api';
