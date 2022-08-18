@@ -44,7 +44,7 @@ export function UpdateFieldProfile() {
     const editButton = useCallback(
         (fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => void) => {
             const validateChange = async (captcha: string) => {
-                safeTrack(`update-${fieldName.toLowerCase()}`, 'account');
+                safeTrack(`update-account`, { userId: user.id, label: fieldName.toLowerCase() });
                 setLoading(true);
                 await updateFetch.makeRequest(updateRequest(user.id, { [fieldName]: fieldValue }, captcha));
                 await auth.refreshUser();

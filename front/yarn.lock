@@ -639,11 +639,6 @@
   resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.2.tgz"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
-"@types/umami@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/@types/umami/-/umami-0.1.0.tgz"
-  integrity sha512-nsrcnBdKXTP/koCwL3c+ywQG0lk+uqNo74oIe0FHC109aO4vZoXL0eSQqkUdWa9Hwc3ssFgJINBBCe0MZVYUwg==
-
 "@vitejs/plugin-react@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react/-/plugin-react-2.0.1.tgz#3197c01d8e4a4eb9fed829c7888c467a43aadd4e"

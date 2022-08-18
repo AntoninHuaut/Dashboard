@@ -44,7 +44,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
     });
 
     const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
-        safeTrack(`update-password`, 'account');
+        safeTrack(`update-account`, { userId: user.id, label: 'password' });
         updatePasswordFetch.makeRequest(updateRequest(user.id, updatePass, captcha));
         onSubmit(false);
     });

@@ -10,7 +10,6 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IResetPasswordRequest } from '../../types/LoginType';
 
@@ -22,7 +21,6 @@ export function ResetPasswordPage() {
             errorNotif({ title: 'An error occurred during password reset', message: error.message });
         },
         onSuccess(_data) {
-            safeTrack('password-reset', 'account');
             setPasswordReset(true);
             const autoCloseDelay = successNotif({
                 title: 'Your password has been reset!',

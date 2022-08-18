@@ -28,7 +28,7 @@ export function LoginPage() {
         onSuccess(data) {
             if (!data) return errorNoDataFetchNotif();
 
-            safeTrack('login', 'account');
+            safeTrack('account', { userId: data.id, label: 'login' });
             auth.login(data);
         },
     });
@@ -74,7 +74,6 @@ export function LoginPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
-                        safeTrack('create-account', 'link');
                         navigate('/register');
                     }}>
                     Create account
@@ -111,7 +110,6 @@ export function LoginPage() {
                         href="/forgotPassword"
                         onClick={(evt) => {
                             evt.preventDefault();
-                            safeTrack('forgot-password', 'link');
                             navigate('/forgotPassword');
                         }}>
                         Forgot password?

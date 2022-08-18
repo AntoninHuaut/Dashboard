@@ -8,7 +8,6 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IVerifyRequest } from '../../types/LoginType';
 
@@ -20,7 +19,6 @@ export function VerifyPage() {
             errorNotif({ title: 'An error occurred during verification', message: error.message });
         },
         onSuccess(_data) {
-            safeTrack('verify', 'account');
             setAccountVerified(true);
             const autoCloseDelay = successNotif({
                 title: 'Your account has been verified!',

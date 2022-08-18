@@ -97,7 +97,7 @@ export function AppNavbar(props: AppNavbarProps) {
             key={item.label}
             onClick={(evt) => {
                 evt.preventDefault();
-                safeTrack(`navbar-${item.label.toLowerCase()}`, 'click');
+                safeTrack(`navbar-click`, { userId: user.id, label: item.label.toLowerCase() });
                 setOpened(false);
                 navigate(item.link);
             }}>
@@ -122,7 +122,7 @@ export function AppNavbar(props: AppNavbarProps) {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
-                        safeTrack('navbar-logout', 'click');
+                        safeTrack(`navbar-click`, { userId: user.id, label: 'logout' });
                         setOpened(false);
                         navigate('/app/logout');
                     }}>

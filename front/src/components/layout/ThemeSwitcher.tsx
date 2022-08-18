@@ -1,6 +1,7 @@
 import { createStyles, UnstyledButton, Text, Center, useMantineColorScheme, Group, MediaQuery, ActionIcon } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { Moon, Sun } from 'tabler-icons-react';
+import { useAuth } from '../../hooks/useAuth';
 import { safeTrack } from '../../services/umami.service';
 
 const useStyles = createStyles((theme) => ({
@@ -30,12 +31,13 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export function ThemeSwitcher() {
+    const { user } = useAuth();
     const { classes } = useStyles();
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const Icon = colorScheme === 'dark' ? Sun : Moon;
 
     const toggleThemeTrack = () => {
-        safeTrack('toggle-theme', 'click');
+        safeTrack(`navbar-click`, { userId: user?.id, label: 'toggle-theme' });
         toggleColorScheme();
     };
 

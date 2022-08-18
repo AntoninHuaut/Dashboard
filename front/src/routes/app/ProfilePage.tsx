@@ -51,7 +51,7 @@ export function ProfilePage() {
     });
 
     const deleteAccount = useCaptcha(CaptchaAction.DeleteAccount, async (captcha: string) => {
-        safeTrack('delete', 'account');
+        safeTrack(`update-account`, { userId: user.id, label: 'delete' });
         await deleteFetch.makeRequest(deleteRequest(user.id, captcha));
         deleteAccount(false);
     });
