@@ -46,7 +46,7 @@ export const updateSettings = async (userId: number, logEmailFrom: boolean, logE
 
 export const insertMail = async (userId: number, body: ICreateMail): Promise<IMail | null> => {
     const result = await sql` INSERT INTO "app_trackmail_mail" ( "user_id", "email_id", "email_from", "email_to", "subject", "created" ) 
-        VALUES ( ${userId}, ${crypto.randomUUID()}, ${body.emailFrom}, ${body.emailTo}, ${body.subject}, ${new Date()} ) 
+        VALUES ( ${userId}, ${crypto.randomUUID()}, ${body.email_from}, ${body.email_to}, ${body.subject}, ${new Date()} ) 
         RETURNING *; `;
 
     return result.length > 0 && result[0].email_id ? (result[0] as IMail) : null;

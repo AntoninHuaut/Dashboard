@@ -12,15 +12,15 @@ const trackMailRouter = new Router();
 const validPage = z.number().min(0).default(0);
 
 const validCreateMail: z.ZodType<ICreateMail> = z.object({
-    emailFrom: z.string().min(1),
-    emailTo: z.string().array().min(1),
+    email_from: z.string().min(1),
+    email_to: z.string().array().min(1),
     subject: z.string(),
 });
 
 const validUpdateSettings: z.ZodType<ITrackMailSettings> = z.object({
-    logEmailFrom: z.boolean(),
-    logEmailTo: z.boolean(),
-    logSubject: z.boolean(),
+    log_email_from: z.boolean(),
+    log_email_to: z.boolean(),
+    log_subject: z.boolean(),
 });
 
 const getToken = async (ctx: Context) => {

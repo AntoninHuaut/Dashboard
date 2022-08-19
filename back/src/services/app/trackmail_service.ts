@@ -37,7 +37,7 @@ export const getSettings = async (userId: number): Promise<ITrackMailSettings> =
 };
 
 export const updateSettings = async (userId: number, newSettings: ITrackMailSettings): Promise<boolean> => {
-    return await trackMailRepo.updateSettings(userId, newSettings.logEmailFrom, newSettings.logEmailTo, newSettings.logSubject);
+    return await trackMailRepo.updateSettings(userId, newSettings.log_email_from, newSettings.log_email_to, newSettings.log_subject);
 };
 
 export const createMail = async (userId: number, body: ICreateMail): Promise<IMail> => {
