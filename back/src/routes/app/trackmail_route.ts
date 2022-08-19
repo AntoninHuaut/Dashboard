@@ -1,11 +1,12 @@
+import { Context, helpers, Router, Status } from 'oak';
 import { z } from 'zod';
-import { Context, Router, helpers, Status, httpErrors } from 'oak';
 
-import userGuard from '../../middlewares/userguard_middleware.ts';
-import { ICreateMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
-import { UserRole } from '../../types/user_model.ts';
-import { safeParseBody } from '../../utils/route_helper.ts';
+import trackMailTokenGuard from '/middlewares/app/trackmailtokenguard_middleware.ts';
+import userGuard from '/middlewares/userguard_middleware.ts';
 import * as trackMailService from '/services/app/trackmail_service.ts';
+import { ICreateMail, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { UserRole } from '/types/user_model.ts';
+import { safeParseBody } from '/utils/route_helper.ts';
 
 const trackMailRouter = new Router();
 
@@ -38,28 +39,28 @@ const resetToken = async (ctx: Context) => {
 };
 
 const getSettings = async (ctx: Context) => {
-    const userId = await safeGetUserIdByToken(ctx);
-    const settings = await trackMailService.getSettings(userId);
+    const user = ctx.state.me;
+    const settings = await trackMailService.getSettings(user.id);
 
     ctx.response.body = settings;
 };
 
 const updateSettings = async (ctx: Context) => {
-    const userId = await safeGetUserIdByToken(ctx);
     const body = await safeParseBody(ctx);
     const newSettings = validUpdateSettings.parse(body);
 
-    await trackMailService.updateSettings(userId, newSettings);
+    const user = ctx.state.me;
+    await trackMailService.updateSettings(user.id, newSettings);
     ctx.response.status = Status.NoContent;
 };
 
 const getMails = async (ctx: Context) => {
-    const userId = await safeGetUserIdByToken(ctx);
     const { pageStr } = helpers.getQuery(ctx, { mergeParams: true });
     const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
 
-    const mailCount = await trackMailService.getMailsCount(userId);
-    const mails = await trackMailService.getMails(userId, page);
+    const user = ctx.state.me;
+    const mailCount = await trackMailService.getMailsCount(user.id);
+    const mails = await trackMailService.getMails(user.id, page);
 
     ctx.response.body = {
         data: mails,
@@ -73,11 +74,11 @@ const getMails = async (ctx: Context) => {
 };
 
 const createMail = async (ctx: Context) => {
-    const userId = await safeGetUserIdByToken(ctx);
     const body = await safeParseBody(ctx);
     const createMailBody = validCreateMail.parse(body);
 
-    const createdMail = await trackMailService.createMail(userId, createMailBody);
+    const user = ctx.state.me;
+    const createdMail = await trackMailService.createMail(user.id, createMailBody);
 
     ctx.response.body = createdMail; // TODO: add path to track pixel & track link
 };
@@ -85,26 +86,10 @@ const createMail = async (ctx: Context) => {
 trackMailRouter.get('/token', userGuard([UserRole.USER]), getToken);
 trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
 
-trackMailRouter.get('/settings', getSettings);
-trackMailRouter.post('/settings', updateSettings);
+trackMailRouter.get('/settings', trackMailTokenGuard(), getSettings);
+trackMailRouter.post('/settings', trackMailTokenGuard(), updateSettings);
 
-trackMailRouter.get('/mail/:pageStr?', getMails);
-trackMailRouter.post('/mail', createMail);
+trackMailRouter.get('/mail/:pageStr?', trackMailTokenGuard(), getMails);
+trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
 
 export default trackMailRouter;
-
-function safeGetUserIdByToken(ctx: Context): Promise<number> {
-    return trackMailService.getUserIdByToken(extractTrackMailToken(ctx));
-}
-
-function extractTrackMailToken(ctx: Context): string {
-    const authorization = ctx.request.headers.get('authorization');
-    if (!authorization) {
-        throw new httpErrors.BadRequest('Missing Authorization header');
-    }
-
-    const [type, token] = authorization.split(' ');
-    if (type !== 'Bearer' || !token?.trim()) throw new httpErrors.BadRequest('Missing Authorization header');
-
-    return token;
-}

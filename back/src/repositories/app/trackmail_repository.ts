@@ -1,4 +1,4 @@
-import { ICreateMail, IMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
+import { ICreateMail, IMail, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { sql } from '/external/db.ts';
 
 function generateToken() {

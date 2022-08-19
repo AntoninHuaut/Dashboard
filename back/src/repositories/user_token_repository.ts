@@ -1,4 +1,4 @@
-import { IToken } from '../utils/db_helper.ts';
+import { IToken } from '/utils/db_helper.ts';
 import { sql } from '/external/db.ts';
 
 export type TOKEN_TYPE = 'registration' | 'forgot_password';

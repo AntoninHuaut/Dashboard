@@ -1,6 +1,6 @@
 import { httpErrors } from 'oak';
 
-import { ICreateMail, IMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
+import { ICreateMail, IMail, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_MAILS_PER_PAGE = 15;
