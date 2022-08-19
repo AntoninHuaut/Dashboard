@@ -1,35 +1,25 @@
-import { ActionIcon, Group, Input, LoadingOverlay, Menu, Text, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Group, Input, LoadingOverlay, Menu, Text, Tooltip, useMantineTheme } from '@mantine/core';
 import { useClipboard, useHover } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { Copy, Eye, EyeOff, Refresh, Settings } from 'tabler-icons-react';
+import { Copy, Eye, EyeOff, TrashX } from 'tabler-icons-react';
 
-import { resetTrackMailToken, trackMailToken } from '../../api/trackmail_request';
+import { resetTrackMailTokenRequest } from '../../api/trackmail_request';
 import { useFetch } from '../../hooks/useFetch';
 import { errorNoDataFetchNotif, errorNotif, successNotif } from '../../services/notification.services';
 import { ITrackMailTokenResponse } from '../../types/TrackMailType';
 
 interface TrackMailTokenProps {
+    token: string;
+    setToken: (token: string) => void;
     rightElement: React.ReactNode;
 }
 
-export function TrackMailToken({ rightElement }: TrackMailTokenProps) {
+export function TrackMailToken({ token, setToken, rightElement }: TrackMailTokenProps) {
     const theme = useMantineTheme();
     const clipboard = useClipboard();
 
-    const [token, setToken] = useState('');
     const [showToken, setShowToken] = useState(false);
     const { hovered, ref } = useHover();
-
-    const tokenFetch = useFetch<ITrackMailTokenResponse>({
-        onError(err) {
-            errorNotif({ title: 'Failed to get TrackMail token', message: err.message });
-        },
-        onSuccess(servData) {
-            if (!servData) return errorNoDataFetchNotif();
-
-            setToken(servData.token);
-        },
-    });
 
     const resetTokenFetch = useFetch<ITrackMailTokenResponse>({
         onError(err) {
@@ -44,8 +34,7 @@ export function TrackMailToken({ rightElement }: TrackMailTokenProps) {
     });
 
     const resetToken = () => {
-        resetTokenFetch.makeRequest(resetTrackMailToken());
-        close();
+        resetTokenFetch.makeRequest(resetTrackMailTokenRequest());
     };
 
     const copyToken = () => {
@@ -55,10 +44,6 @@ export function TrackMailToken({ rightElement }: TrackMailTokenProps) {
 
     useEffect(() => setShowToken(hovered && !resetTokenFetch.isLoading), [hovered, resetTokenFetch.isLoading]);
 
-    useEffect(() => {
-        tokenFetch.makeRequest(trackMailToken());
-    }, []);
-
     return (
         <>
             <Text color={theme.primaryColor} weight={600} size="lg">
@@ -67,13 +52,15 @@ export function TrackMailToken({ rightElement }: TrackMailTokenProps) {
             <Group position="center">
                 <Menu shadow="md">
                     <Menu.Target>
-                        <ActionIcon color="red" variant="light" loading={resetTokenFetch.isLoading}>
-                            <Refresh />
-                        </ActionIcon>
+                        <Tooltip label="Reset token">
+                            <ActionIcon color="red" variant="light" loading={resetTokenFetch.isLoading}>
+                                <TrashX />
+                            </ActionIcon>
+                        </Tooltip>
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                        <Menu.Item color="red" onClick={resetToken} icon={<Refresh size={14} />}>
+                        <Menu.Item color="red" onClick={resetToken} icon={<TrashX size={20} />}>
                             Reset token (can't be revert)
                         </Menu.Item>
                     </Menu.Dropdown>
@@ -88,9 +75,11 @@ export function TrackMailToken({ rightElement }: TrackMailTokenProps) {
                         variant="filled"
                         icon={showToken ? <Eye /> : <EyeOff />}
                         rightSection={
-                            <ActionIcon color="blue" onClick={copyToken}>
-                                <Copy />
-                            </ActionIcon>
+                            <Tooltip label="Copy token to your clipboard">
+                                <ActionIcon color="blue" onClick={copyToken}>
+                                    <Copy />
+                                </ActionIcon>
+                            </Tooltip>
                         }
                     />
                 </div>

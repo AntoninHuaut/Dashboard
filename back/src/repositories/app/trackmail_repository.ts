@@ -5,13 +5,18 @@ function generateToken() {
     return `${crypto.randomUUID()}-${crypto.randomUUID()}`;
 }
 
-export const getToken = async (userId: number): Promise<string | null> => {
+export const getTokenByUserId = async (userId: number): Promise<string | null> => {
     const result = await sql` SELECT "trackmail_token" FROM "app_trackmail" WHERE "user_id" = ${userId}; `;
 
     return result.length ? result[0].trackmail_token : null;
 };
 
-export const insertTokenForUserId = async (userId: number): Promise<string | null> => {
+export const getUserIdByToken = async (token: string): Promise<number | null> => {
+    const result = await sql` SELECT "user_id" FROM "app_trackmail" WHERE "trackmail_token" = ${token}; `;
+
+    return result.length ? result[0].user_id : null;
+};
+export const createUserTrackMail = async (userId: number): Promise<string | null> => {
     const result = await sql` INSERT INTO "app_trackmail" ( "user_id", "trackmail_token" ) 
         VALUES ( ${userId}, ${generateToken()} ) 
         RETURNING "trackmail_token"; `;

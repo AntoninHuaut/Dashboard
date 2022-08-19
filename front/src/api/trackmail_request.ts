@@ -3,7 +3,7 @@ import { BASE_API_URL, HttpMethod, mergeFetchOptions } from './request';
 
 const TRACKMAIL_API_URL = `${BASE_API_URL}/app/trackmail`;
 
-export const trackMailToken = () => {
+export const trackMailTokenRequest = () => {
     return {
         url: `${TRACKMAIL_API_URL}/token`,
         options: mergeFetchOptions({
@@ -12,7 +12,7 @@ export const trackMailToken = () => {
     };
 };
 
-export const resetTrackMailToken = () => {
+export const resetTrackMailTokenRequest = () => {
     return {
         url: `${TRACKMAIL_API_URL}/token`,
         options: mergeFetchOptions({
@@ -21,21 +21,39 @@ export const resetTrackMailToken = () => {
     };
 };
 
-export const trackMailSettings = () => {
+export const trackMailSettingsRequest = (token: string) => {
     return {
         url: `${TRACKMAIL_API_URL}/settings`,
         options: mergeFetchOptions({
             method: HttpMethod.GET,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         }),
     };
 };
 
-export const updateTrackMailSettings = (newSettings: ITrackMailSettings) => {
+export const updateTrackMailSettingsRequest = (newSettings: ITrackMailSettings, token: string) => {
     return {
         url: `${TRACKMAIL_API_URL}/settings`,
         options: mergeFetchOptions({
             method: HttpMethod.POST,
             body: JSON.stringify(newSettings),
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }),
+    };
+};
+
+export const mailsRequest = (targetPage: number, token: string) => {
+    return {
+        url: `${TRACKMAIL_API_URL}/mail/${targetPage}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.GET,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         }),
     };
 };

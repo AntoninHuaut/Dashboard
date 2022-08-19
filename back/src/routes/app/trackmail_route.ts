@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Context, Router, httpErrors, helpers, Status } from 'oak';
+import { Context, Router, helpers, Status, httpErrors } from 'oak';
 
 import userGuard from '../../middlewares/userguard_middleware.ts';
 import { ICreateMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
@@ -38,28 +38,28 @@ const resetToken = async (ctx: Context) => {
 };
 
 const getSettings = async (ctx: Context) => {
-    const user = ctx.state.me;
-    const settings = await trackMailService.getSettings(user.id);
+    const userId = await safeGetUserIdByToken(ctx);
+    const settings = await trackMailService.getSettings(userId);
 
     ctx.response.body = settings;
 };
 
 const updateSettings = async (ctx: Context) => {
-    const user = ctx.state.me;
+    const userId = await safeGetUserIdByToken(ctx);
     const body = await safeParseBody(ctx);
     const newSettings = validUpdateSettings.parse(body);
 
-    await trackMailService.updateSettings(user.id, newSettings);
+    await trackMailService.updateSettings(userId, newSettings);
     ctx.response.status = Status.NoContent;
 };
 
 const getMails = async (ctx: Context) => {
-    const user = ctx.state.me;
+    const userId = await safeGetUserIdByToken(ctx);
     const { pageStr } = helpers.getQuery(ctx, { mergeParams: true });
     const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
 
-    const mailCount = await trackMailService.getMailsCount(user.id);
-    const mails = await trackMailService.getMails(user.id, page);
+    const mailCount = await trackMailService.getMailsCount(userId);
+    const mails = await trackMailService.getMails(userId, page);
 
     ctx.response.body = {
         data: mails,
@@ -73,11 +73,11 @@ const getMails = async (ctx: Context) => {
 };
 
 const createMail = async (ctx: Context) => {
-    const user = ctx.state.me;
+    const userId = await safeGetUserIdByToken(ctx);
     const body = await safeParseBody(ctx);
     const createMailBody = validCreateMail.parse(body);
 
-    const createdMail = await trackMailService.createMail(user.id, createMailBody);
+    const createdMail = await trackMailService.createMail(userId, createMailBody);
 
     ctx.response.body = createdMail; // TODO: add path to track pixel & track link
 };
@@ -85,10 +85,26 @@ const createMail = async (ctx: Context) => {
 trackMailRouter.get('/token', userGuard([UserRole.USER]), getToken);
 trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
 
-trackMailRouter.get('/settings', userGuard([UserRole.USER]), getSettings);
-trackMailRouter.post('/settings', userGuard([UserRole.USER]), updateSettings);
+trackMailRouter.get('/settings', getSettings);
+trackMailRouter.post('/settings', updateSettings);
 
-trackMailRouter.get('/mail/:pageStr?', userGuard([UserRole.USER]), getMails);
-trackMailRouter.post('/mail', userGuard([UserRole.USER]), createMail);
+trackMailRouter.get('/mail/:pageStr?', getMails);
+trackMailRouter.post('/mail', createMail);
 
 export default trackMailRouter;
+
+function safeGetUserIdByToken(ctx: Context): Promise<number> {
+    return trackMailService.getUserIdByToken(extractTrackMailToken(ctx));
+}
+
+function extractTrackMailToken(ctx: Context): string {
+    const authorization = ctx.request.headers.get('authorization');
+    if (!authorization) {
+        throw new httpErrors.BadRequest('Missing Authorization header');
+    }
+
+    const [type, token] = authorization.split(' ');
+    if (type !== 'Bearer' || !token?.trim()) throw new httpErrors.BadRequest('Missing Authorization header');
+
+    return token;
+}

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS "app_trackmail" (
     "log_email_to"           boolean default true not null,
     "log_subject"            boolean default true not null,
     PRIMARY KEY ("user_id"),
-    CONSTRAINT app_trackmail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id")
+    CONSTRAINT app_trackmail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "app_trackmail_mail" (
@@ -38,5 +38,5 @@ CREATE TABLE IF NOT EXISTS "app_trackmail_mail" (
     "subject"                varchar(255) null,
     "created"                timestamptz  default now() not null,
     PRIMARY KEY ("email_id"),
-    CONSTRAINT app_trackmail_mail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id")
+    CONSTRAINT app_trackmail_mail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id") ON DELETE CASCADE
 );

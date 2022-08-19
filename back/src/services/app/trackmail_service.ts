@@ -5,10 +5,19 @@ import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_MAILS_PER_PAGE = 15;
 
+export const getUserIdByToken = async (token: string): Promise<number> => {
+    const userId = await trackMailRepo.getUserIdByToken(token);
+    if (!userId) {
+        throw new httpErrors.BadRequest('Invalid token');
+    }
+
+    return userId;
+};
+
 export const getOrCreateToken = async (userId: number): Promise<string> => {
-    let token = await trackMailRepo.getToken(userId);
+    let token = await trackMailRepo.getTokenByUserId(userId);
     if (!token) {
-        token = await trackMailRepo.insertTokenForUserId(userId);
+        token = await trackMailRepo.createUserTrackMail(userId);
     }
 
     if (!token) {
@@ -30,7 +39,7 @@ export const resetToken = async (userId: number): Promise<string> => {
 export const getSettings = async (userId: number): Promise<ITrackMailSettings> => {
     const settings = await trackMailRepo.getSettings(userId);
     if (!settings) {
-        throw new httpErrors.InternalServerError('Could not get token');
+        throw new httpErrors.InternalServerError('Could not get settings');
     }
 
     return settings;
@@ -51,7 +60,7 @@ export const createMail = async (userId: number, body: ICreateMail): Promise<IMa
 
 export const getMailsCount = async (userId: number): Promise<number> => {
     const result = await trackMailRepo.getMailsCount(userId);
-    if (!result) {
+    if (result == undefined) {
         throw new httpErrors.InternalServerError('Could not get mails count');
     }
 

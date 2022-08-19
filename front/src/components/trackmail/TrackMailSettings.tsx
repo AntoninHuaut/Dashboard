@@ -1,16 +1,20 @@
-import { ActionIcon, Button, Checkbox, Group, Modal, Space, Stack, Text, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Button, Checkbox, Group, Modal, Space, Stack, Text, Tooltip, useMantineTheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { Check, Settings, X } from 'tabler-icons-react';
 
 import { HttpStatusCode } from '../../api/HttpStatusCode';
-import { trackMailSettings, updateTrackMailSettings } from '../../api/trackmail_request';
+import { trackMailSettingsRequest, updateTrackMailSettingsRequest } from '../../api/trackmail_request';
 import { useFetch } from '../../hooks/useFetch';
 import { errorNoDataFetchNotif, errorNotif, successNotif } from '../../services/notification.services';
 import { ITrackMailSettings } from '../../types/TrackMailType';
 
 const defaultSettings = { log_email_from: false, log_email_to: false, log_subject: false };
 
-export function TrackMailSettings() {
+interface TrackMailSettingsProps {
+    token: string;
+}
+
+export function TrackMailSettings({ token }: TrackMailSettingsProps) {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
 
@@ -31,21 +35,21 @@ export function TrackMailSettings() {
 
     const updateSettingsFetch = useFetch<ITrackMailSettings>({
         onError(err) {
-            errorNotif({ title: 'Failed to update TrackMail settings', message: err.message });
+            errorNotif({ title: 'Failed to update settings', message: err.message });
         },
         onSuccess(_servData, statusCode) {
             if (statusCode === HttpStatusCode.NoContent) {
                 setOpened(false);
-                successNotif({ title: 'Success', message: 'TrackMail settings updated' });
-                settingsFetch.makeRequest(trackMailSettings());
+                successNotif({ title: 'Success', message: 'Settings updated' });
+                settingsFetch.makeRequest(trackMailSettingsRequest(token));
             } else {
-                errorNotif({ title: 'Failed to update TrackMail settings', message: 'Unknown error' });
+                errorNotif({ title: 'Failed to update settings', message: 'Unknown error' });
             }
         },
     });
 
     useEffect(() => {
-        settingsFetch.makeRequest(trackMailSettings());
+        settingsFetch.makeRequest(trackMailSettingsRequest(token));
     }, []);
 
     const switchSettings = (key: keyof ITrackMailSettings) => {
@@ -57,7 +61,7 @@ export function TrackMailSettings() {
         setOpened(false);
     };
 
-    const updateSettings = () => updateSettingsFetch.makeRequest(updateTrackMailSettings(editedSettings));
+    const updateSettings = () => updateSettingsFetch.makeRequest(updateTrackMailSettingsRequest(editedSettings, token));
 
     return (
         <>
@@ -66,7 +70,10 @@ export function TrackMailSettings() {
                 overlayOpacity={0.55}
                 overlayBlur={3}
                 opened={opened}
-                onClose={() => setOpened(false)}
+                onClose={() => {
+                    setOpened(false);
+                    resetEditedSettings();
+                }}
                 title="TrackMail Settings">
                 <Stack>
                     <Text size="sm">Configure what TrackMail records about tracked emails.</Text>
@@ -114,9 +121,11 @@ export function TrackMailSettings() {
                 </Stack>
             </Modal>
 
-            <ActionIcon onClick={() => setOpened(true)}>
-                <Settings />
-            </ActionIcon>
+            <Tooltip label="TrackMail Settings">
+                <ActionIcon onClick={() => setOpened(true)}>
+                    <Settings />
+                </ActionIcon>
+            </Tooltip>
         </>
     );
 }
