@@ -10,3 +10,9 @@ export interface IMail {
     subject: string;
     created: Date;
 }
+
+export interface ITrackMailSettings {
+    logEmailFrom: boolean;
+    logEmailTo: boolean;
+    logSubject: boolean;
+}

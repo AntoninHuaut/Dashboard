@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { Context, Router, httpErrors, helpers } from 'oak';
+import { Context, Router, httpErrors, helpers, Status } from 'oak';
 
 import userGuard from '../../middlewares/userguard_middleware.ts';
-import { ICreateMail } from '../../types/app/trackmail_model.ts';
+import { ICreateMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
 import { UserRole } from '../../types/user_model.ts';
 import { safeParseBody } from '../../utils/route_helper.ts';
 import * as trackMailService from '/services/app/trackmail_service.ts';
@@ -17,26 +17,40 @@ const validCreateMail: z.ZodType<ICreateMail> = z.object({
     subject: z.string(),
 });
 
-const getTokenByUserId = async (ctx: Context) => {
+const validUpdateSettings: z.ZodType<ITrackMailSettings> = z.object({
+    logEmailFrom: z.boolean(),
+    logEmailTo: z.boolean(),
+    logSubject: z.boolean(),
+});
+
+const getToken = async (ctx: Context) => {
     const user = ctx.state.me;
-    const token = await trackMailService.getOrCreateTokenByUserId(user.id);
+    const token = await trackMailService.getOrCreateToken(user.id);
 
-    if (!token) {
-        throw new httpErrors.InternalServerError('Could not get or generate token');
-    }
-
-    ctx.response.body = { token: token };
+    ctx.response.body = { token };
 };
 
-const resetTokenByUserId = async (ctx: Context) => {
+const resetToken = async (ctx: Context) => {
     const user = ctx.state.me;
-    const token = await trackMailService.resetTokenByUserId(user.id);
+    const token = await trackMailService.resetToken(user.id);
 
-    if (!token) {
-        throw new httpErrors.InternalServerError('Could not reset and get token');
-    }
+    ctx.response.body = { token };
+};
 
-    ctx.response.body = { token: token };
+const getSettings = async (ctx: Context) => {
+    const user = ctx.state.me;
+    const settings = await trackMailService.getSettings(user.id);
+
+    ctx.response.body = settings;
+};
+
+const updateSettings = async (ctx: Context) => {
+    const user = ctx.state.me;
+    const body = await safeParseBody(ctx);
+    const newSettings = validUpdateSettings.parse(body);
+
+    await trackMailService.updateSettings(user.id, newSettings);
+    ctx.response.status = Status.NoContent;
 };
 
 const getMails = async (ctx: Context) => {
@@ -68,8 +82,12 @@ const createMail = async (ctx: Context) => {
     ctx.response.body = createdMail; // TODO: add path to track pixel & track link
 };
 
-trackMailRouter.get('/token', userGuard([UserRole.USER]), getTokenByUserId);
-trackMailRouter.post('/token', userGuard([UserRole.USER]), resetTokenByUserId);
+trackMailRouter.get('/token', userGuard([UserRole.USER]), getToken);
+trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
+
+trackMailRouter.get('/settings', userGuard([UserRole.USER]), getSettings);
+trackMailRouter.post('/settings', userGuard([UserRole.USER]), updateSettings);
+
 trackMailRouter.get('/mail/:pageStr?', userGuard([UserRole.USER]), getMails);
 trackMailRouter.post('/mail', userGuard([UserRole.USER]), createMail);
 

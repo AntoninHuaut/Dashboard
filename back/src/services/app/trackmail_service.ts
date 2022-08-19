@@ -1,20 +1,43 @@
-import { ICreateMail, IMail } from '../../types/app/trackmail_model.ts';
-import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 import { httpErrors } from 'oak';
+
+import { ICreateMail, IMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
+import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_MAILS_PER_PAGE = 15;
 
-export const getOrCreateTokenByUserId = async (userId: number): Promise<string | null> => {
-    let token = await trackMailRepo.getTokenByUserId(userId);
+export const getOrCreateToken = async (userId: number): Promise<string> => {
+    let token = await trackMailRepo.getToken(userId);
     if (!token) {
         token = await trackMailRepo.insertTokenForUserId(userId);
+    }
+
+    if (!token) {
+        throw new httpErrors.InternalServerError('Could not get or generate token');
     }
 
     return token;
 };
 
-export const resetTokenByUserId = async (userId: number): Promise<string | null> => {
-    return await trackMailRepo.resetTokenByUserId(userId);
+export const resetToken = async (userId: number): Promise<string> => {
+    const token = await trackMailRepo.resetToken(userId);
+    if (!token) {
+        throw new httpErrors.InternalServerError('Could not reset and get token');
+    }
+
+    return token;
+};
+
+export const getSettings = async (userId: number): Promise<ITrackMailSettings> => {
+    const settings = await trackMailRepo.getSettings(userId);
+    if (!settings) {
+        throw new httpErrors.InternalServerError('Could not get token');
+    }
+
+    return settings;
+};
+
+export const updateSettings = async (userId: number, newSettings: ITrackMailSettings): Promise<boolean> => {
+    return await trackMailRepo.updateSettings(userId, newSettings.logEmailFrom, newSettings.logEmailTo, newSettings.logSubject);
 };
 
 export const createMail = async (userId: number, body: ICreateMail): Promise<IMail> => {

@@ -1,11 +1,11 @@
-import { ICreateMail, IMail } from '../../types/app/trackmail_model.ts';
+import { ICreateMail, IMail, ITrackMailSettings } from '../../types/app/trackmail_model.ts';
 import { sql } from '/external/db.ts';
 
 function generateToken() {
     return `${crypto.randomUUID()}-${crypto.randomUUID()}`;
 }
 
-export const getTokenByUserId = async (userId: number): Promise<string | null> => {
+export const getToken = async (userId: number): Promise<string | null> => {
     const result = await sql` SELECT "trackmail_token" FROM "app_trackmail" WHERE "user_id" = ${userId}; `;
 
     return result.length ? result[0].trackmail_token : null;
@@ -19,13 +19,29 @@ export const insertTokenForUserId = async (userId: number): Promise<string | nul
     return result.length && result[0].trackmail_token ? result[0].trackmail_token : null;
 };
 
-export const resetTokenByUserId = async (userId: number): Promise<string | null> => {
+export const resetToken = async (userId: number): Promise<string | null> => {
     const result = await sql` UPDATE "app_trackmail" 
         SET "trackmail_token" = ${generateToken()} 
         WHERE "user_id" = ${userId} 
         RETURNING "trackmail_token"; `;
 
     return result.length && result[0].trackmail_token ? result[0].trackmail_token : null;
+};
+
+export const getSettings = async (userId: number): Promise<ITrackMailSettings | null> => {
+    const result = await sql` SELECT "log_email_from", "log_email_to", "log_subject" 
+        FROM "app_trackmail"
+        WHERE "user_id" = ${userId}; `;
+
+    return result.length ? (result[0] as unknown as ITrackMailSettings) : null;
+};
+
+export const updateSettings = async (userId: number, logEmailFrom: boolean, logEmailTo: boolean, logSubject: boolean): Promise<boolean> => {
+    const result = await sql` UPDATE "app_trackmail"
+        SET "log_email_from" = ${logEmailFrom}, "log_email_to" = ${logEmailTo}, "log_subject" = ${logSubject}
+        WHERE "user_id" = ${userId}; `;
+
+    return result.count > 0;
 };
 
 export const insertMail = async (userId: number, body: ICreateMail): Promise<IMail | null> => {
