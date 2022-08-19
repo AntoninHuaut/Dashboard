@@ -37,7 +37,7 @@ export const updateTrackMailSettingsRequest = (newSettings: ITrackMailSettings, 
     return {
         url: `${TRACKMAIL_API_URL}/settings`,
         options: mergeFetchOptions({
-            method: HttpMethod.POST,
+            method: HttpMethod.PUT,
             body: JSON.stringify(newSettings),
             headers: {
                 Authorization: `Bearer ${token}`,

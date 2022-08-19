@@ -80,6 +80,7 @@ const createMail = async (ctx: Context) => {
     const user = ctx.state.me;
     const createdMail = await trackMailService.createMail(user.id, createMailBody);
 
+    ctx.response.status = Status.Created;
     ctx.response.body = createdMail; // TODO: add path to track pixel & track link
 };
 
@@ -87,7 +88,7 @@ trackMailRouter.get('/token', userGuard([UserRole.USER]), getToken);
 trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
 
 trackMailRouter.get('/settings', trackMailTokenGuard(), getSettings);
-trackMailRouter.post('/settings', trackMailTokenGuard(), updateSettings);
+trackMailRouter.put('/settings', trackMailTokenGuard(), updateSettings);
 
 trackMailRouter.get('/mail/:pageStr?', trackMailTokenGuard(), getMails);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
