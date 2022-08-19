@@ -100,7 +100,14 @@ export function TrackMailSettings() {
                         <Button leftIcon={<X />} color="red" onClick={resetEditedSettings} loading={settingsFetch.isLoading || updateSettingsFetch.isLoading}>
                             Cancel
                         </Button>
-                        <Button leftIcon={<Check />} color="green" onClick={updateSettings} loading={settingsFetch.isLoading || updateSettingsFetch.isLoading}>
+                        <Button
+                            leftIcon={<Check />}
+                            color="green"
+                            onClick={updateSettings}
+                            loading={settingsFetch.isLoading || updateSettingsFetch.isLoading}
+                            disabled={Object.keys(originalSettings).every(
+                                (key) => originalSettings[key as keyof ITrackMailSettings] == editedSettings[key as keyof ITrackMailSettings]
+                            )}>
                             Update
                         </Button>
                     </Group>
