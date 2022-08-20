@@ -11,7 +11,6 @@ import { isValidPassword, PasswordStrength } from '../../components/form/Passwor
 import { isValidUsername, UsernameInput } from '../../components/form/UsernameInput';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IRegisterRequest, IUser } from '../../types/LoginType';
 import { errorNoDataFetchNotif, errorNotif, successNotif } from '../../services/notification.services';
@@ -29,7 +28,6 @@ export function RegisterPage() {
             if (!data) return errorNoDataFetchNotif();
 
             setAccountCreated(true);
-            safeTrack('account', { userId: data.id, label: 'register' });
             const autoCloseDelay = successNotif({
                 title: 'Your account has been created!',
                 message: "You will be redirected to the login page. Don't forget to check your email to activate your account.",

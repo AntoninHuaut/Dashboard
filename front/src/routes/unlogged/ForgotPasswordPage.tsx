@@ -9,7 +9,6 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IFogotPasswordRequest } from '../../types/LoginType';
 import { handleInputChange } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
 
 export function ForgotPasswordPage() {
@@ -22,7 +21,6 @@ export function ForgotPasswordPage() {
             });
         },
         onSuccess(_data) {
-            safeTrack('account', { label: 'forgot-password' });
             setRequestSent(true);
             const autoCloseDelay = successNotif({
                 title: 'Your password reset link has been sent',

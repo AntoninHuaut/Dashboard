@@ -11,7 +11,6 @@ import { useCaptcha } from '../../hooks/useCaptcha';
 import { useFetch } from '../../hooks/useFetch';
 import { getGravatarUrl } from '../../services/form.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IUser } from '../../types/LoginType';
 
@@ -51,7 +50,6 @@ export function ProfilePage() {
     });
 
     const deleteAccount = useCaptcha(CaptchaAction.DeleteAccount, async (captcha: string) => {
-        safeTrack(`update-account`, { userId: user.id, label: 'delete' });
         await deleteFetch.makeRequest(deleteRequest(user.id, captcha));
         deleteAccount(false);
     });

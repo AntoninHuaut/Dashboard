@@ -10,7 +10,6 @@ import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { handleInputChange } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { ILoginRequest, IUser } from '../../types/LoginType';
 import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
@@ -28,7 +27,6 @@ export function LoginPage() {
         onSuccess(data) {
             if (!data) return errorNoDataFetchNotif();
 
-            safeTrack('account', { userId: data.id, label: 'login' });
             auth.login(data);
         },
     });

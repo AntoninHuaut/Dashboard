@@ -5,7 +5,6 @@ import { Home, Logout, Mail, UserCircle } from 'tabler-icons-react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
 import { IUser } from '../../types/LoginType';
 
 const useStyles = createStyles((theme, _params, getRef) => {
@@ -97,7 +96,6 @@ export function AppNavbar(props: AppNavbarProps) {
             key={item.label}
             onClick={(evt) => {
                 evt.preventDefault();
-                safeTrack(`navbar-click`, { userId: user.id, label: item.label.toLowerCase() });
                 setOpened(false);
                 navigate(item.link);
             }}>
@@ -122,7 +120,6 @@ export function AppNavbar(props: AppNavbarProps) {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
-                        safeTrack(`navbar-click`, { userId: user.id, label: 'logout' });
                         setOpened(false);
                         navigate('/app/logout');
                     }}>
