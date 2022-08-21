@@ -1,9 +1,6 @@
 import { ICreateMail, IMail, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { sql } from '/external/db.ts';
-
-function generateToken() {
-    return `${crypto.randomUUID()}-${crypto.randomUUID()}`;
-}
+import { createToken } from '/utils/db_helper.ts';
 
 export const getTokenByUserId = async (userId: number): Promise<string | null> => {
     const result = await sql` SELECT "trackmail_token" FROM "app_trackmail" WHERE "user_id" = ${userId}; `;
@@ -18,7 +15,7 @@ export const getUserIdByToken = async (token: string): Promise<number | null> =>
 };
 export const createUserTrackMail = async (userId: number): Promise<string | null> => {
     const result = await sql` INSERT INTO "app_trackmail" ( "user_id", "trackmail_token" ) 
-        VALUES ( ${userId}, ${generateToken()} ) 
+        VALUES ( ${userId}, ${createToken().value} ) 
         RETURNING "trackmail_token"; `;
 
     return result.length && result[0].trackmail_token ? result[0].trackmail_token : null;
@@ -26,7 +23,7 @@ export const createUserTrackMail = async (userId: number): Promise<string | null
 
 export const resetToken = async (userId: number): Promise<string | null> => {
     const result = await sql` UPDATE "app_trackmail" 
-        SET "trackmail_token" = ${generateToken()} 
+        SET "trackmail_token" = ${createToken().value} 
         WHERE "user_id" = ${userId} 
         RETURNING "trackmail_token"; `;
 
@@ -55,7 +52,7 @@ export const updateSettings = async (userId: number, logEmailFrom: boolean, logE
 
 export const insertMail = async (userId: number, body: ICreateMail): Promise<IMail | null> => {
     const result = await sql` INSERT INTO "app_trackmail_mail" ( "user_id", "email_id", "email_from", "email_to", "subject", "created" ) 
-        VALUES ( ${userId}, ${crypto.randomUUID()}, ${body.email_from}, ${body.email_to}, ${body.subject}, ${new Date()} ) 
+        VALUES ( ${userId}, ${createToken().value}, ${body.email_from}, ${body.email_to}, ${body.subject}, ${new Date()} ) 
         RETURNING *; `;
 
     return result.length > 0 && result[0].email_id ? (result[0] as IMail) : null;

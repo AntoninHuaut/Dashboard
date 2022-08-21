@@ -1,5 +1,6 @@
 import { Context, helpers, Router, send, Status } from 'oak';
 import { z } from 'zod';
+import { TOKEN_STRING_LENGTH } from '/utils/db_helper.ts';
 
 import trackMailTokenGuard from '/middlewares/app/trackmailtokenguard_middleware.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
@@ -11,7 +12,7 @@ import { safeParseBody } from '/utils/route_helper.ts';
 const trackMailRouter = new Router();
 
 const validPage = z.number().min(0).default(0);
-const validMailId = z.string().uuid();
+const validMailId = z.string().min(TOKEN_STRING_LENGTH).max(TOKEN_STRING_LENGTH);
 
 const validCreateMail: z.ZodType<ICreateMail> = z.object({
     email_from: z.string().min(1),
