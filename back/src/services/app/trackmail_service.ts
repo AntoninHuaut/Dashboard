@@ -75,3 +75,12 @@ export const getMails = async (userId: number, page: number): Promise<IMail[]> =
 
     return result;
 };
+
+export const pixelTrack = async (emailId: string, userIp: string): Promise<boolean> => {
+    const mail = await trackMailRepo.getMailById(emailId);
+    if (!mail) {
+        throw new httpErrors.BadRequest('Invalid email id');
+    }
+
+    return await trackMailRepo.pixelTrack(emailId, userIp);
+};

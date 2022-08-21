@@ -1,4 +1,4 @@
-import { Context, helpers, Router, Status } from 'oak';
+import { Context, helpers, Router, send, Status } from 'oak';
 import { z } from 'zod';
 
 import trackMailTokenGuard from '/middlewares/app/trackmailtokenguard_middleware.ts';
@@ -11,6 +11,7 @@ import { safeParseBody } from '/utils/route_helper.ts';
 const trackMailRouter = new Router();
 
 const validPage = z.number().min(0).default(0);
+const validMailId = z.string().uuid();
 
 const validCreateMail: z.ZodType<ICreateMail> = z.object({
     email_from: z.string().min(1),
@@ -84,6 +85,21 @@ const createMail = async (ctx: Context) => {
     ctx.response.body = createdMail; // TODO: add path to track pixel & track link
 };
 
+const pixelTrack = async (ctx: Context) => {
+    const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+
+    if (emailIdStr) {
+        const emailId = validMailId.parse(emailIdStr);
+        const userIp = ctx.request.ips[0];
+
+        await trackMailService.pixelTrack(emailId, userIp);
+    }
+
+    await send(ctx, 'trackmail_pixel.png', {
+        root: `${Deno.cwd()}/data`,
+    });
+};
+
 trackMailRouter.get('/token', userGuard([UserRole.USER]), getToken);
 trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
 
@@ -92,5 +108,7 @@ trackMailRouter.put('/settings', trackMailTokenGuard(), updateSettings);
 
 trackMailRouter.get('/mail/:pageStr?', trackMailTokenGuard(), getMails);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
+
+trackMailRouter.get('/pixelTrack/:emailIdStr?', pixelTrack);
 
 export default trackMailRouter;

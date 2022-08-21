@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS "users" (
     CONSTRAINT users_rti_fk FOREIGN KEY("registration_token_id") REFERENCES users_token("token_id")
 );
 
+/* */
+
 CREATE TABLE IF NOT EXISTS "app_trackmail" (
     "user_id"                int  not null UNIQUE,
     "trackmail_token"        text not null UNIQUE,
@@ -39,4 +41,13 @@ CREATE TABLE IF NOT EXISTS "app_trackmail_mail" (
     "created"                timestamptz  default now() not null,
     PRIMARY KEY ("email_id"),
     CONSTRAINT app_trackmail_mail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id") ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "app_trackmail_log" (
+    "log_id"                 serial,
+    "email_id"               varchar(36)  not null,
+    "user_ip"                varchar(48)  not null,
+    "log_date"               timestamptz  default now() not null,
+    PRIMARY KEY ("log_id"),
+    CONSTRAINT app_trackmail_log_email_id_fk FOREIGN KEY("email_id") REFERENCES app_trackmail_mail("email_id") ON DELETE CASCADE
 );

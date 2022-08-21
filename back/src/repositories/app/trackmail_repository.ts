@@ -33,6 +33,8 @@ export const resetToken = async (userId: number): Promise<string | null> => {
     return result.length && result[0].trackmail_token ? result[0].trackmail_token : null;
 };
 
+/* */
+
 export const getSettings = async (userId: number): Promise<ITrackMailSettings | null> => {
     const result = await sql` SELECT "log_email_from", "log_email_to", "log_subject" 
         FROM "app_trackmail"
@@ -49,12 +51,20 @@ export const updateSettings = async (userId: number, logEmailFrom: boolean, logE
     return result.count > 0;
 };
 
+/* */
+
 export const insertMail = async (userId: number, body: ICreateMail): Promise<IMail | null> => {
     const result = await sql` INSERT INTO "app_trackmail_mail" ( "user_id", "email_id", "email_from", "email_to", "subject", "created" ) 
         VALUES ( ${userId}, ${crypto.randomUUID()}, ${body.email_from}, ${body.email_to}, ${body.subject}, ${new Date()} ) 
         RETURNING *; `;
 
     return result.length > 0 && result[0].email_id ? (result[0] as IMail) : null;
+};
+
+export const getMailById = async (emailId: string): Promise<IMail | null> => {
+    const result = await sql` SELECT * FROM "app_trackmail_mail" WHERE "email_id" = ${emailId}; `;
+
+    return result.length > 0 ? (result[0] as IMail) : null;
 };
 
 export const getMailsCount = async (userId: number): Promise<number> => {
@@ -71,5 +81,14 @@ export const getMails = async (userId: number, page: number, NUMBER_OF_MAILS_PER
         ORDER BY "created" DESC
         LIMIT ${NUMBER_OF_MAILS_PER_PAGE} OFFSET ${page * NUMBER_OF_MAILS_PER_PAGE}; `;
 
-    return result.length ? (result as unknown as IMail[]) : [];
+    return result.length > 0 && result[0].email_id ? (result as unknown as IMail[]) : [];
+};
+
+/* */
+
+export const pixelTrack = async (emailId: string, userIp: string): Promise<boolean> => {
+    const result = await sql` INSERT INTO "app_trackmail_log" ( "email_id", "user_ip", "log_date" ) 
+        VALUES ( ${emailId}, ${userIp}, ${new Date()} ); `;
+
+    return result.count > 0;
 };
