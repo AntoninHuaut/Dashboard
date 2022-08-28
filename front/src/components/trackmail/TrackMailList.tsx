@@ -1,12 +1,12 @@
-import { ActionIcon, Center, LoadingOverlay, Pagination, Stack, Table } from '@mantine/core';
+import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table } from '@mantine/core';
 import dayjs from 'dayjs';
 import { forwardRef, Ref, useEffect, useImperativeHandle, useState } from 'react';
-import { InfoCircle, X } from 'tabler-icons-react';
+import { Check, InfoCircle, X } from 'tabler-icons-react';
 
 import { mailsRequest } from '../../api/trackmail_request';
 import { useFetch } from '../../hooks/useFetch';
 import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
-import { IMail, IMailResponse, IPagination } from '../../types/TrackMailType';
+import { IMailExtended, IMailResponse, IPagination } from '../../types/TrackMailType';
 
 interface TrackMailListProps {
     token: string;
@@ -24,7 +24,7 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
         page: 0,
         total: 0,
     });
-    const [mails, setMails] = useState<IMail[]>([]);
+    const [mails, setMails] = useState<IMailExtended[]>([]);
     const mailFetch = useFetch<IMailResponse>({
         onError(err) {
             errorNotif({ title: 'Failed to get mails', message: err.message });
@@ -45,21 +45,23 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
 
     useImperativeHandle(ref, () => ({ refreshTable }));
 
-    const rows = mails.map((row: IMail) => (
+    const rows = mails.map((row: IMailExtended) => (
         <tr key={row.email_id}>
             <td>{dayjs(row.created).format('DD/MM/YYYY [at] HH[h]mm')}</td>
             <td>{row.subject}</td>
             <td>{row.email_from}</td>
             <td>{row.email_to}</td>
             <td>
-                {/* TODO */}
-                <X color="red" />
-            </td>
-            <td>
-                {/* TODO */}
-                <ActionIcon color="blue">
-                    <InfoCircle />
-                </ActionIcon>
+                {row.pixelTrackCount > 0 ? (
+                    <Group>
+                        <Check color="green" />
+                        <ActionIcon color="blue">
+                            <InfoCircle />
+                        </ActionIcon>
+                    </Group>
+                ) : (
+                    <X color="red" />
+                )}
             </td>
         </tr>
     ));
@@ -71,7 +73,7 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
             <Stack>
                 {mails.length > 0 ? (
                     <>
-                        <Table striped highlightOnHover sx={{ backgroundColor: 'white' }}>
+                        <Table highlightOnHover sx={{ backgroundColor: 'white' }}>
                             <thead>
                                 <tr>
                                     <th>Creation date</th>
@@ -79,7 +81,6 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
                                     <th>Sender email</th>
                                     <th>Recipients email</th>
                                     <th>Opened</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>{rows}</tbody>

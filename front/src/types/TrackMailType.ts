@@ -16,11 +16,11 @@ export interface IPagination {
 }
 
 export interface IMailResponse {
-    data: IMail[];
+    data: IMailExtended[];
     pagination: IPagination;
 }
 
-export interface IMail {
+export interface IMailExtended {
     user_id: number;
     email_id: string;
 
@@ -28,4 +28,6 @@ export interface IMail {
     email_to: string[];
     subject: string;
     created: Date;
+
+    pixelTrackCount: number;
 }
