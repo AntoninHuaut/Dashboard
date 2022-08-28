@@ -1,7 +1,7 @@
 import { Anchor, Button, Container, Paper, Text, TextInput, Title } from '@mantine/core';
+import { IconKey } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Key } from 'tabler-icons-react';
 
 import { verifyRequest } from '../../api/auth_request';
 import { useCaptcha } from '../../hooks/useCaptcha';
@@ -66,7 +66,7 @@ export function VerifyPage() {
                     mt="md"
                     label="Verification token"
                     name="token"
-                    icon={<Key />}
+                    icon={<IconKey />}
                     placeholder="Verification token sent by email"
                     value={verify.token}
                     disabled

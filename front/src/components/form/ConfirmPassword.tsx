@@ -1,6 +1,6 @@
 import { PasswordInput, PasswordInputProps } from '@mantine/core';
-import { useState, useEffect, ChangeEvent } from 'react';
-import { CircleCheck } from 'tabler-icons-react';
+import { IconCircleCheck } from '@tabler/icons';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 interface ConfirmPasswordHTMLProps extends PasswordInputProps {
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -36,7 +36,7 @@ export function ConfirmPassword(props: ConfirmPasswordProps) {
         <PasswordInput
             label="Confirm password"
             name="confirmPassword"
-            icon={<CircleCheck />}
+            icon={<IconCircleCheck />}
             placeholder="Confirm your password"
             error={error}
             value={props.confirmPassword}

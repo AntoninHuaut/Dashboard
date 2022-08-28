@@ -1,18 +1,18 @@
 import { Anchor, Button, Checkbox, Container, Group, Paper, PasswordInput, Text, Title } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
+import { IconKey } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Key } from 'tabler-icons-react';
 
 import { loginRequest } from '../../api/auth_request';
-import { useFetch } from '../../hooks/useFetch';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
+import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { ILoginRequest, IUser } from '../../types/LoginType';
-import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
 
 export function LoginPage() {
     const auth = useAuth();
@@ -85,7 +85,7 @@ export function LoginPage() {
                     mt="md"
                     label="Password"
                     name="password"
-                    icon={<Key />}
+                    icon={<IconKey />}
                     placeholder="Your password"
                     value={login.password}
                     disabled={loginFetch.isLoading}

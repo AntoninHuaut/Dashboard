@@ -1,7 +1,7 @@
 import { ActionIcon, Group, Input, LoadingOverlay, Menu, Text, Tooltip, useMantineTheme } from '@mantine/core';
 import { useClipboard, useHover } from '@mantine/hooks';
+import { IconCopy, IconEye, IconEyeOff, IconTrashX } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import { Copy, Eye, EyeOff, TrashX } from 'tabler-icons-react';
 
 import { resetTrackMailTokenRequest } from '../../api/trackmail_request';
 import { useFetch } from '../../hooks/useFetch';
@@ -54,13 +54,13 @@ export function TrackMailToken({ token, setToken, rightElement }: TrackMailToken
                     <Menu.Target>
                         <Tooltip label="Reset token">
                             <ActionIcon color="red" variant="light" loading={resetTokenFetch.isLoading}>
-                                <TrashX />
+                                <IconTrashX />
                             </ActionIcon>
                         </Tooltip>
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                        <Menu.Item color="red" onClick={resetToken} icon={<TrashX size={20} />}>
+                        <Menu.Item color="red" onClick={resetToken} icon={<IconTrashX size={20} />}>
                             Reset token (can't be revert)
                         </Menu.Item>
                     </Menu.Dropdown>
@@ -73,11 +73,11 @@ export function TrackMailToken({ token, setToken, rightElement }: TrackMailToken
                         value={showToken ? token : token.replace(/./g, '*')}
                         readOnly
                         variant="filled"
-                        icon={showToken ? <Eye /> : <EyeOff />}
+                        icon={showToken ? <IconEye /> : <IconEyeOff />}
                         rightSection={
                             <Tooltip label="Copy token to your clipboard">
                                 <ActionIcon color="blue" onClick={copyToken}>
-                                    <Copy />
+                                    <IconCopy />
                                 </ActionIcon>
                             </Tooltip>
                         }

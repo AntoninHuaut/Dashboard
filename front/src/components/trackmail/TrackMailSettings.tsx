@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Checkbox, Group, Modal, Space, Stack, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { IconCheck, IconSettings, IconX } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import { Check, Settings, X } from 'tabler-icons-react';
 
 import { HttpStatusCode } from '../../api/HttpStatusCode';
 import { trackMailSettingsRequest, updateTrackMailSettingsRequest } from '../../api/trackmail_request';
@@ -104,11 +104,15 @@ export function TrackMailSettings({ token }: TrackMailSettingsProps) {
 
                 <Stack mt="xl" align="center">
                     <Group>
-                        <Button leftIcon={<X />} color="red" onClick={resetEditedSettings} loading={settingsFetch.isLoading || updateSettingsFetch.isLoading}>
+                        <Button
+                            leftIcon={<IconX />}
+                            color="red"
+                            onClick={resetEditedSettings}
+                            loading={settingsFetch.isLoading || updateSettingsFetch.isLoading}>
                             Cancel
                         </Button>
                         <Button
-                            leftIcon={<Check />}
+                            leftIcon={<IconCheck />}
                             color="green"
                             onClick={updateSettings}
                             loading={settingsFetch.isLoading || updateSettingsFetch.isLoading}
@@ -123,7 +127,7 @@ export function TrackMailSettings({ token }: TrackMailSettingsProps) {
 
             <Tooltip label="TrackMail Settings">
                 <ActionIcon onClick={() => setOpened(true)}>
-                    <Settings />
+                    <IconSettings />
                 </ActionIcon>
             </Tooltip>
         </>

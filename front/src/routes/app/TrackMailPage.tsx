@@ -1,18 +1,18 @@
 import { ActionIcon, Center, Container, Group, Loader, Space, Stack, Tooltip } from '@mantine/core';
+import { IconRefresh } from '@tabler/icons';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { Refresh } from 'tabler-icons-react';
 
 import { trackMailTokenRequest } from '../../api/trackmail_request';
+import { TrackMailEntryDetail } from '../../components/trackmail/TrackMailEntryDetail';
 import { TrackMailEntryList } from '../../components/trackmail/TrackMailEntryList';
+import { TrackMailPixelTrackList } from '../../components/trackmail/TrackMailPixelTrackList';
 import { TrackMailSettings } from '../../components/trackmail/TrackMailSettings';
 import { TrackMailToken } from '../../components/trackmail/TrackMailToken';
 import { useFetch } from '../../hooks/useFetch';
 import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
 import { IPaginationDataRef } from '../../types/PaginationData';
 import { ITrackMailTokenResponse } from '../../types/TrackMailType';
-import { TrackMailPixelTrackList } from '../../components/trackmail/TrackMailPixelTrackList';
-import { TrackMailEntryDetail } from '../../components/trackmail/TrackMailEntryDetail';
 
 export function TrackMailPage() {
     const { emailIdParam } = useParams();
@@ -58,7 +58,7 @@ export function TrackMailPage() {
 
             <Tooltip label="Refresh email list">
                 <ActionIcon color="blue" onClick={() => paginationChildRef.current?.refreshData()}>
-                    <Refresh />
+                    <IconRefresh />
                 </ActionIcon>
             </Tooltip>
         </Group>

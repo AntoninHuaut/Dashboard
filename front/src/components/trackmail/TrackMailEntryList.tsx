@@ -1,8 +1,8 @@
 import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table } from '@mantine/core';
+import { IconCheck, IconInfoCircle, IconX } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, InfoCircle, X } from 'tabler-icons-react';
 
 import { mailsRequest } from '../../api/trackmail_request';
 import { usePaginationFetch } from '../../hooks/usePaginationFetch';
@@ -30,13 +30,13 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
             <td>
                 {row.pixelTrackCount > 0 ? (
                     <Group>
-                        <Check color="green" />
+                        <IconCheck color="green" />
                         <ActionIcon color="blue" onClick={() => navigate(`/app/track-mail/${row.email_id}/pixelTrack`)}>
-                            <InfoCircle />
+                            <IconInfoCircle />
                         </ActionIcon>
                     </Group>
                 ) : (
-                    <X color="red" />
+                    <IconX color="red" />
                 )}
             </td>
         </tr>

@@ -1,7 +1,7 @@
 import { Anchor, Button, Container, Paper, Text, TextInput, Title } from '@mantine/core';
+import { IconKey } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Key } from 'tabler-icons-react';
 
 import { resetPasswordRequest } from '../../api/user_request';
 import { ConfirmPassword } from '../../components/form/ConfirmPassword';
@@ -73,7 +73,7 @@ export function ResetPasswordPage() {
                     mt="md"
                     label="Verification token"
                     name="token"
-                    icon={<Key />}
+                    icon={<IconKey />}
                     placeholder="Verification token sent by email"
                     value={resetPwd.token}
                     disabled
@@ -85,7 +85,7 @@ export function ResetPasswordPage() {
                     mt="md"
                     label="Password"
                     name="newPassword"
-                    icon={<Key />}
+                    icon={<IconKey />}
                     placeholder="Your password"
                     value={resetPwd.newPassword}
                     disabled={resetPasswordFetch.isLoading || isPasswordReset}

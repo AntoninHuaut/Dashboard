@@ -1,7 +1,7 @@
 import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar } from '@mantine/core';
+import { IconHome, IconLogout, IconMail, IconUserCircle } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Logout, Mail, UserCircle } from 'tabler-icons-react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
@@ -62,9 +62,9 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 const data = [
-    { link: '/app/home', label: 'Home', icon: Home },
-    { link: '/app/profile', label: 'Profile', icon: UserCircle },
-    { link: '/app/track-mail', label: 'TrackMail', icon: Mail },
+    { link: '/app/home', label: 'Home', icon: IconHome },
+    { link: '/app/profile', label: 'Profile', icon: IconUserCircle },
+    { link: '/app/track-mail', label: 'TrackMail', icon: IconMail },
 ];
 
 interface AppNavbarProps {
@@ -123,7 +123,7 @@ export function AppNavbar(props: AppNavbarProps) {
                         setOpened(false);
                         navigate('/app/logout');
                     }}>
-                    <Logout className={classes.linkIcon} />
+                    <IconLogout className={classes.linkIcon} />
                     <span>Logout</span>
                 </a>
             </Navbar.Section>
