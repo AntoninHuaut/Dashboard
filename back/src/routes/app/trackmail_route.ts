@@ -56,6 +56,12 @@ const updateSettings = async (ctx: Context) => {
     ctx.response.status = Status.NoContent;
 };
 
+const getMailsCount = async (ctx: Context) => {
+    const user = ctx.state.me;
+    const mailCount = await trackMailService.getMailsCount(user.id);
+    ctx.response.body = { total: mailCount };
+};
+
 const getMails = async (ctx: Context) => {
     const { pageStr } = helpers.getQuery(ctx, { mergeParams: true });
     const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
@@ -103,6 +109,13 @@ const imagePixelTrack = async (ctx: Context) => {
     });
 };
 
+const getPixelTracksCount = async (ctx: Context) => {
+    const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const emailId = validMailId.parse(emailIdStr);
+    const pixelTrackCount = await trackMailService.getPixelTracksCount(emailId);
+    ctx.response.body = { total: pixelTrackCount };
+};
+
 const getPixelTracks = async (ctx: Context) => {
     const { emailIdStr, pageStr } = helpers.getQuery(ctx, { mergeParams: true });
     const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
@@ -130,10 +143,12 @@ trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
 trackMailRouter.get('/settings', trackMailTokenGuard(), getSettings);
 trackMailRouter.put('/settings', trackMailTokenGuard(), updateSettings);
 
+trackMailRouter.get('/mail/count', trackMailTokenGuard(), getMailsCount);
 trackMailRouter.get('/mail/:pageStr?', trackMailTokenGuard(), getMails);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
 
 trackMailRouter.get('/pixelTrack/image/:emailIdStr?', imagePixelTrack);
+trackMailRouter.get('/pixelTrack/:emailIdStr/count', trackMailTokenGuard(), getPixelTracksCount);
 trackMailRouter.get('/pixelTrack/:emailIdStr/:pageStr?', trackMailTokenGuard(), getPixelTracks);
 
 export default trackMailRouter;
