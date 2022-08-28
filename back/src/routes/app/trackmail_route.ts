@@ -87,7 +87,8 @@ const getMailById = async (ctx: Context) => {
     const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const emailId = validMailId.parse(emailIdStr);
 
-    const mail = await trackMailService.getMailById(emailId);
+    const user = ctx.state.me;
+    const mail = await trackMailService.getMailById(user.id, emailId);
 
     ctx.response.body = mail;
 };
@@ -122,7 +123,10 @@ const imagePixelTrack = async (ctx: Context) => {
 const getPixelTracksCount = async (ctx: Context) => {
     const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const emailId = validMailId.parse(emailIdStr);
-    const pixelTrackCount = await trackMailService.getPixelTracksCount(emailId);
+
+    const user = ctx.state.me;
+    const pixelTrackCount = await trackMailService.getPixelTracksCount(user.id, emailId);
+
     ctx.response.body = { total: pixelTrackCount };
 };
 
@@ -131,8 +135,9 @@ const getPixelTracks = async (ctx: Context) => {
     const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
     const emailId = validMailId.parse(emailIdStr);
 
-    const pixelTrackCount = await trackMailService.getPixelTracksCount(emailId);
-    const pixelTracks = await trackMailService.getPixelTracks(emailId, page);
+    const user = ctx.state.me;
+    const pixelTrackCount = await trackMailService.getPixelTracksCount(user.id, emailId);
+    const pixelTracks = await trackMailService.getPixelTracks(user.id, emailId, page);
 
     const bodyResponse: { data: IPixelTrack[]; pagination: IPagination } = {
         data: pixelTracks,

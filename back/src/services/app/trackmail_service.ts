@@ -76,8 +76,8 @@ export const getMails = async (userId: number, page: number): Promise<IMail[]> =
     return result;
 };
 
-export const getMailById = async (emailId: string): Promise<IMail> => {
-    const result = await trackMailRepo.getMailById(emailId);
+export const getMailById = async (userId: number, emailId: string): Promise<IMail> => {
+    const result = await trackMailRepo.getMailById(userId, emailId);
     if (!result) {
         throw new httpErrors.InternalServerError('Could not get mail');
     }
@@ -86,16 +86,16 @@ export const getMailById = async (emailId: string): Promise<IMail> => {
 };
 
 export const pixelTrack = async (emailId: string, userIp: string): Promise<boolean> => {
-    const mail = await trackMailRepo.getMailById(emailId);
-    if (!mail) {
+    const isMailExist = await trackMailRepo.existMailById(emailId);
+    if (!isMailExist) {
         throw new httpErrors.BadRequest('Invalid email id');
     }
 
     return await trackMailRepo.pixelTrack(emailId, userIp);
 };
 
-export const getPixelTracksCount = async (emailId: string): Promise<number> => {
-    const result = await trackMailRepo.getPixelTracksCount(emailId);
+export const getPixelTracksCount = async (userId: number, emailId: string): Promise<number> => {
+    const result = await trackMailRepo.getPixelTracksCount(userId, emailId);
     if (result == undefined) {
         throw new httpErrors.InternalServerError('Could not get pixel tracks count');
     }
@@ -103,8 +103,8 @@ export const getPixelTracksCount = async (emailId: string): Promise<number> => {
     return result;
 };
 
-export const getPixelTracks = async (emailId: string, page: number): Promise<IPixelTrack[]> => {
-    const result = await trackMailRepo.getPixelTracks(emailId, page, NUMBER_OF_MAILS_PER_PAGE);
+export const getPixelTracks = async (userId: number, emailId: string, page: number): Promise<IPixelTrack[]> => {
+    const result = await trackMailRepo.getPixelTracks(userId, emailId, page, NUMBER_OF_MAILS_PER_PAGE);
     if (!result) {
         throw new httpErrors.InternalServerError('Could not get pixel tracks');
     }
