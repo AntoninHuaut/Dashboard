@@ -1,6 +1,6 @@
 import { httpErrors } from 'oak';
 
-import { ICreateMail, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, IMail, IMailExtended, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_MAILS_PER_PAGE = 15;
@@ -67,7 +67,7 @@ export const getMailsCount = async (userId: number): Promise<number> => {
     return result;
 };
 
-export const getMails = async (userId: number, page: number): Promise<IMail[]> => {
+export const getMails = async (userId: number, page: number): Promise<IMailExtended[]> => {
     const result = await trackMailRepo.getMails(userId, page, NUMBER_OF_MAILS_PER_PAGE);
     if (!result) {
         throw new httpErrors.InternalServerError('Could not get mails');

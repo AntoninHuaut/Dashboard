@@ -5,7 +5,7 @@ import { TOKEN_STRING_LENGTH } from '/utils/db_helper.ts';
 import trackMailTokenGuard from '/middlewares/app/trackmailtokenguard_middleware.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
 import * as trackMailService from '/services/app/trackmail_service.ts';
-import { ICreateMail, IMail, IPagination, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, IMailExtended, IPagination, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { UserRole } from '/types/user_model.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 
@@ -70,7 +70,7 @@ const getMails = async (ctx: Context) => {
     const mailCount = await trackMailService.getMailsCount(user.id);
     const mails = await trackMailService.getMails(user.id, page);
 
-    const bodyResponse: { data: IMail[]; pagination: IPagination } = {
+    const bodyResponse: { data: IMailExtended[]; pagination: IPagination } = {
         data: mails,
         pagination: {
             numberPerPage: trackMailService.NUMBER_OF_MAILS_PER_PAGE,

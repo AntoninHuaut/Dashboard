@@ -1,4 +1,4 @@
-import { ICreateMail, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, IMail, IMailExtended, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { sql } from '/external/db.ts';
 import { createToken } from '/utils/db_helper.ts';
 
@@ -65,20 +65,22 @@ export const getMailById = async (emailId: string): Promise<IMail | null> => {
 };
 
 export const getMailsCount = async (userId: number): Promise<number> => {
-    const result = await sql` SELECT COUNT(*) 
+    const result = await sql` SELECT COUNT(*)::int 
         FROM "app_trackmail_mail" 
         WHERE "user_id" = ${userId}; `;
 
-    return result.length ? +result[0].count : 0;
+    return result.length ? result[0].count : 0;
 };
 
-export const getMails = async (userId: number, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IMail[]> => {
-    const result = await sql` SELECT * FROM "app_trackmail_mail" 
+export const getMails = async (userId: number, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IMailExtended[]> => {
+    const result = await sql` SELECT mail.*, COUNT(log.*)::int as "pixelTrackCount" FROM "app_trackmail_mail" mail 
+        JOIN app_trackmail_log log USING("email_id")
         WHERE "user_id" = ${userId}
+        GROUP BY "email_id"
         ORDER BY "created" DESC
         LIMIT ${NUMBER_OF_MAILS_PER_PAGE} OFFSET ${page * NUMBER_OF_MAILS_PER_PAGE}; `;
 
-    return result.length > 0 && result[0].email_id ? (result as unknown as IMail[]) : [];
+    return result.length > 0 && result[0].email_id ? (result as unknown as IMailExtended[]) : [];
 };
 
 /* */
@@ -91,11 +93,11 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
 };
 
 export const getPixelTracksCount = async (email_id: string): Promise<number> => {
-    const result = await sql` SELECT COUNT(*) 
+    const result = await sql` SELECT COUNT(*)::int 
         FROM "app_trackmail_log" 
         WHERE "email_id" = ${email_id}; `;
 
-    return result.length ? +result[0].count : 0;
+    return result.length ? result[0].count : 0;
 };
 
 export const getPixelTracks = async (emailId: string, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IPixelTrack[]> => {

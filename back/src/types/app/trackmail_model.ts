@@ -14,6 +14,10 @@ export interface IMail {
     created: Date;
 }
 
+export interface IMailExtended extends IMail {
+    pixelTrackCount: number;
+}
+
 export interface ITrackMailSettings {
     log_email_from: boolean;
     log_email_to: boolean;
