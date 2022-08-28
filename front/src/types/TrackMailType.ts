@@ -1,3 +1,5 @@
+import { IPaginationDataResponse } from './PaginationData';
+
 export interface ITrackMailTokenResponse {
     token: string;
 }
@@ -8,19 +10,9 @@ export interface ITrackMailSettings {
     log_subject: boolean;
 }
 
-export interface IPagination {
-    numberPerPage: number;
-    offset: number;
-    page: number;
-    total: number;
-}
+export interface IMailsResponse extends IPaginationDataResponse<IMail> {}
 
-export interface IMailResponse {
-    data: IMailExtended[];
-    pagination: IPagination;
-}
-
-export interface IMailExtended {
+export interface IMail {
     user_id: number;
     email_id: string;
 
@@ -30,4 +22,13 @@ export interface IMailExtended {
     created: Date;
 
     pixelTrackCount: number;
+}
+
+export interface IPixelTrackResponse extends IPaginationDataResponse<IPixelTrack> {}
+
+export interface IPixelTrack {
+    log_id: number;
+    email_id: string;
+    user_ip: string;
+    log_date: Date;
 }

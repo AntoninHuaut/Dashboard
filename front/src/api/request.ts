@@ -12,6 +12,11 @@ export const enum HttpMethod {
     TRACE = 'TRACE',
 }
 
+export interface IRequestParams {
+    url: string;
+    options: RequestInit;
+}
+
 const getContentTypeHeader = (options: RequestInit): RequestInit => {
     if (options.body) return { headers: { ...options.headers, 'Content-Type': 'application/json' } };
     return {};

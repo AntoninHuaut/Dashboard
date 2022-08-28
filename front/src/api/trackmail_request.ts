@@ -48,7 +48,31 @@ export const updateTrackMailSettingsRequest = (newSettings: ITrackMailSettings, 
 
 export const mailsRequest = (targetPage: number, token: string) => {
     return {
-        url: `${TRACKMAIL_API_URL}/mail/${targetPage}`,
+        url: `${TRACKMAIL_API_URL}/mail/all/${targetPage}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.GET,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }),
+    };
+};
+
+export const mailRequest = (emailId: string, token: string) => {
+    return {
+        url: `${TRACKMAIL_API_URL}/mail/${emailId}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.GET,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }),
+    };
+};
+
+export const pixelTracksRequest = (targetPage: number, emailId: string, token: string) => {
+    return {
+        url: `${TRACKMAIL_API_URL}/pixelTrack/${emailId}/${targetPage}`,
         options: mergeFetchOptions({
             method: HttpMethod.GET,
             headers: {

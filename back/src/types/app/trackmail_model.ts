@@ -12,9 +12,7 @@ export interface IMail {
     email_to: string[];
     subject: string;
     created: Date;
-}
 
-export interface IMailExtended extends IMail {
     pixelTrackCount: number;
 }
 
@@ -25,6 +23,7 @@ export interface ITrackMailSettings {
 }
 
 export interface IPixelTrack {
+    log_id: number;
     email_id: string;
     user_ip: string;
     log_date: Date;

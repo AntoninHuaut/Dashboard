@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { IRequestParams } from '../api/request';
 
 interface UseFetchParameter<T> {
     onError?: (servError: Error, statusCode: number) => any; // Error
@@ -20,7 +21,7 @@ export const useFetch = <T,>(params: UseFetchParameter<T>) => {
 
     useEffect(() => () => abortRequest(), []);
 
-    const makeRequest = async ({ url, options }: { url: string; options: RequestInit }) => {
+    const makeRequest = async ({ url, options }: IRequestParams) => {
         const freshAbortController = new AbortController();
         setAbortController(freshAbortController);
         setLoading(true);

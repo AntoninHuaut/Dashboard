@@ -1,12 +1,12 @@
 import { Context, helpers, Router, send, Status } from 'oak';
 import { z } from 'zod';
-import { TOKEN_STRING_LENGTH } from '/utils/db_helper.ts';
 
 import trackMailTokenGuard from '/middlewares/app/trackmailtokenguard_middleware.ts';
 import userGuard from '/middlewares/userguard_middleware.ts';
 import * as trackMailService from '/services/app/trackmail_service.ts';
-import { ICreateMail, IMailExtended, IPagination, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, IMail, IPagination, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { UserRole } from '/types/user_model.ts';
+import { TOKEN_STRING_LENGTH } from '/utils/db_helper.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
 
 const trackMailRouter = new Router();
@@ -70,7 +70,7 @@ const getMails = async (ctx: Context) => {
     const mailCount = await trackMailService.getMailsCount(user.id);
     const mails = await trackMailService.getMails(user.id, page);
 
-    const bodyResponse: { data: IMailExtended[]; pagination: IPagination } = {
+    const bodyResponse: { data: IMail[]; pagination: IPagination } = {
         data: mails,
         pagination: {
             numberPerPage: trackMailService.NUMBER_OF_MAILS_PER_PAGE,
@@ -83,6 +83,16 @@ const getMails = async (ctx: Context) => {
     ctx.response.body = bodyResponse;
 };
 
+const getMailById = async (ctx: Context) => {
+    const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const emailId = validMailId.parse(emailIdStr);
+
+    const mail = await trackMailService.getMailById(emailId);
+
+    ctx.response.body = mail;
+};
+
+// TODO respect user settings for saving subject, emailTo/emailFrom ; update validation
 const createMail = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
     const createMailBody = validCreateMail.parse(body);
@@ -144,7 +154,8 @@ trackMailRouter.get('/settings', trackMailTokenGuard(), getSettings);
 trackMailRouter.put('/settings', trackMailTokenGuard(), updateSettings);
 
 trackMailRouter.get('/mail/count', trackMailTokenGuard(), getMailsCount);
-trackMailRouter.get('/mail/:pageStr?', trackMailTokenGuard(), getMails);
+trackMailRouter.get('/mail/all/:pageStr?', trackMailTokenGuard(), getMails);
+trackMailRouter.get('/mail/:emailIdStr', trackMailTokenGuard(), getMailById);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
 
 trackMailRouter.get('/pixelTrack/image/:emailIdStr?', imagePixelTrack);

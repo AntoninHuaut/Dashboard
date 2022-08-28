@@ -85,7 +85,7 @@ export function AppNavbar(props: AppNavbarProps) {
 
     useEffect(() => {
         const path = location.pathname;
-        const active = data.find(({ link }) => link === path);
+        const active = data.find(({ link }) => path.startsWith(link));
         setActive(active ? active.label : '');
     }, [location.pathname]);
 

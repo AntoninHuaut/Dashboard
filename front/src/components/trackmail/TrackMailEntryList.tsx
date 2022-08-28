@@ -1,51 +1,27 @@
 import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table } from '@mantine/core';
 import dayjs from 'dayjs';
-import { forwardRef, Ref, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, Ref } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Check, InfoCircle, X } from 'tabler-icons-react';
 
 import { mailsRequest } from '../../api/trackmail_request';
-import { useFetch } from '../../hooks/useFetch';
-import { errorNoDataFetchNotif, errorNotif } from '../../services/notification.services';
-import { IMailExtended, IMailResponse, IPagination } from '../../types/TrackMailType';
+import { usePaginationFetch } from '../../hooks/usePaginationFetch';
+import { IPaginationDataRef } from '../../types/PaginationData';
+import { IMail } from '../../types/TrackMailType';
 
-interface TrackMailListProps {
+interface TrackMailEntryListProps {
     token: string;
 }
 
-export interface TrackMailListRef {
-    refreshTable: () => void;
-}
-
-export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref<TrackMailListRef>) => {
-    const [targetPage, setTargetPage] = useState(0);
-    const [paginationData, setPaginationData] = useState<IPagination>({
-        numberPerPage: 0,
-        offset: 0,
-        page: 0,
-        total: 0,
+export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps, ref: Ref<IPaginationDataRef>) => {
+    const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IMail>({
+        token,
+        dataRequest: mailsRequest,
+        ref,
     });
-    const [mails, setMails] = useState<IMailExtended[]>([]);
-    const mailFetch = useFetch<IMailResponse>({
-        onError(err) {
-            errorNotif({ title: 'Failed to get mails', message: err.message });
-        },
-        onSuccess(servData) {
-            if (!servData) return errorNoDataFetchNotif();
+    const navigate = useNavigate();
 
-            setMails(servData.data);
-            setPaginationData(servData.pagination);
-        },
-    });
-
-    const refreshTable = () => mailFetch.makeRequest(mailsRequest(targetPage, token));
-
-    useEffect(() => {
-        refreshTable();
-    }, [targetPage]);
-
-    useImperativeHandle(ref, () => ({ refreshTable }));
-
-    const rows = mails.map((row: IMailExtended) => (
+    const rows = data.map((row: IMail) => (
         <tr key={row.email_id}>
             <td>{dayjs(row.created).format('DD/MM/YYYY [at] HH[h]mm')}</td>
             <td>{row.subject}</td>
@@ -55,7 +31,7 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
                 {row.pixelTrackCount > 0 ? (
                     <Group>
                         <Check color="green" />
-                        <ActionIcon color="blue">
+                        <ActionIcon color="blue" onClick={() => navigate(`/app/track-mail/${row.email_id}/pixelTrack`)}>
                             <InfoCircle />
                         </ActionIcon>
                     </Group>
@@ -68,10 +44,10 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
 
     return (
         <div style={{ position: 'relative' }}>
-            <LoadingOverlay visible={mailFetch.isLoading} overlayBlur={2} />
+            <LoadingOverlay visible={dataFetch.isLoading} overlayBlur={2} />
 
             <Stack>
-                {mails.length > 0 ? (
+                {data.length > 0 ? (
                     <>
                         <Table highlightOnHover sx={{ backgroundColor: 'white' }}>
                             <thead>
