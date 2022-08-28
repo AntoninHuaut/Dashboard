@@ -1,4 +1,4 @@
-import { Button, Center, LoadingOverlay, Pagination, Stack, Table } from '@mantine/core';
+import { Center, LoadingOverlay, Pagination, Table, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
 
@@ -6,8 +6,6 @@ import { pixelTracksRequest } from '../../api/trackmail_request';
 import { usePaginationFetch } from '../../hooks/usePaginationFetch';
 import { IPaginationDataRef } from '../../types/PaginationData';
 import { IPixelTrack } from '../../types/TrackMailType';
-import { useNavigate } from 'react-router-dom';
-import { TrackMailEntryDetail } from './TrackMailEntryDetail';
 
 interface TrackMailPixelTrackListProps {
     token: string;
@@ -15,7 +13,6 @@ interface TrackMailPixelTrackListProps {
 }
 
 export const TrackMailPixelTrackList = forwardRef(({ token, emailId }: TrackMailPixelTrackListProps, ref: Ref<IPaginationDataRef>) => {
-    const navigate = useNavigate();
     const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IPixelTrack>({
         token,
         dataRequest: (targetPage: number, token: string) => pixelTracksRequest(targetPage, emailId, token),
@@ -33,33 +30,33 @@ export const TrackMailPixelTrackList = forwardRef(({ token, emailId }: TrackMail
         <div style={{ position: 'relative' }}>
             <LoadingOverlay visible={dataFetch.isLoading} overlayBlur={2} />
 
-            <Stack>
-                <Button onClick={() => navigate(-1)}>Back</Button>
+            <Title order={4} weight={400} align="center" mb="sm">
+                List of email openings
+            </Title>
 
-                {data.length > 0 ? (
-                    <>
-                        <Table highlightOnHover sx={{ backgroundColor: 'white' }}>
-                            <thead>
-                                <tr>
-                                    <th>Log date</th>
-                                    <th>Viewer IP</th>
-                                </tr>
-                            </thead>
-                            <tbody>{rows}</tbody>
-                        </Table>
+            {data.length > 0 ? (
+                <>
+                    <Table highlightOnHover sx={{ backgroundColor: 'white' }}>
+                        <thead>
+                            <tr>
+                                <th>Log date</th>
+                                <th>Viewer IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>{rows}</tbody>
+                    </Table>
 
-                        <Center>
-                            <Pagination
-                                page={paginationData.page + 1}
-                                onChange={(newPage) => setTargetPage(newPage - 1)}
-                                total={Math.ceil(paginationData.total / paginationData.numberPerPage)}
-                            />
-                        </Center>
-                    </>
-                ) : (
-                    <Center>No pixel track to display</Center>
-                )}
-            </Stack>
+                    <Center mt="md">
+                        <Pagination
+                            page={paginationData.page + 1}
+                            onChange={(newPage) => setTargetPage(newPage - 1)}
+                            total={Math.ceil(paginationData.total / paginationData.numberPerPage)}
+                        />
+                    </Center>
+                </>
+            ) : (
+                <Center>No pixel track to display</Center>
+            )}
         </div>
     );
 });

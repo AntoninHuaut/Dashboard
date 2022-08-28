@@ -79,9 +79,8 @@ export function TrackMailPage() {
                     emailId && (
                         <>
                             <TrackMailEntryDetail emailId={emailId} token={token} />
-                            {subTypeLocation === 'pixel-track' && <TrackMailPixelTrackList emailId={emailId} ref={paginationChildRef} token={token} />}
-                            {subTypeLocation === 'link-track' && <TrackMailPixelTrackList emailId={emailId} ref={paginationChildRef} token={token} />}{' '}
-                            {/* TODO */}
+                            {subTypeLocation == 'pixelTrack' && <TrackMailPixelTrackList emailId={emailId} ref={paginationChildRef} token={token} />}
+                            {subTypeLocation === 'linkTrack' && <TrackMailPixelTrackList emailId={emailId} ref={paginationChildRef} token={token} /> /* TODO */}
                         </>
                     )
                 )}
