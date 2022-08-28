@@ -1,6 +1,6 @@
 import { httpErrors } from 'oak';
 
-import { ICreateMail, IMail, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_MAILS_PER_PAGE = 15;
@@ -83,4 +83,22 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
     }
 
     return await trackMailRepo.pixelTrack(emailId, userIp);
+};
+
+export const getPixelTracksCount = async (emailId: string): Promise<number> => {
+    const result = await trackMailRepo.getPixelTracksCount(emailId);
+    if (result == undefined) {
+        throw new httpErrors.InternalServerError('Could not get pixel tracks count');
+    }
+
+    return result;
+};
+
+export const getPixelTracks = async (emailId: string, page: number): Promise<IPixelTrack[]> => {
+    const result = await trackMailRepo.getPixelTracks(emailId, page, NUMBER_OF_MAILS_PER_PAGE);
+    if (!result) {
+        throw new httpErrors.InternalServerError('Could not get pixel tracks');
+    }
+
+    return result;
 };

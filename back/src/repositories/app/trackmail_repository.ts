@@ -1,4 +1,4 @@
-import { ICreateMail, IMail, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { sql } from '/external/db.ts';
 import { createToken } from '/utils/db_helper.ts';
 
@@ -88,4 +88,21 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
         VALUES ( ${emailId}, ${userIp}, ${new Date()} ); `;
 
     return result.count > 0;
+};
+
+export const getPixelTracksCount = async (email_id: string): Promise<number> => {
+    const result = await sql` SELECT COUNT(*) 
+        FROM "app_trackmail_log" 
+        WHERE "email_id" = ${email_id}; `;
+
+    return result.length ? +result[0].count : 0;
+};
+
+export const getPixelTracks = async (emailId: string, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IPixelTrack[]> => {
+    const result = await sql` SELECT * FROM "app_trackmail_log" 
+        WHERE "email_id" = ${emailId}
+        ORDER BY "log_date" DESC
+        LIMIT ${NUMBER_OF_MAILS_PER_PAGE} OFFSET ${page * NUMBER_OF_MAILS_PER_PAGE}; `;
+
+    return result.length > 0 && result[0].email_id ? (result as unknown as IPixelTrack[]) : [];
 };

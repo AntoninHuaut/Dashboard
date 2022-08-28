@@ -22,7 +22,7 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
         numberPerPage: 0,
         offset: 0,
         page: 0,
-        totalMail: 0,
+        total: 0,
     });
     const [mails, setMails] = useState<IMail[]>([]);
     const mailFetch = useFetch<IMailResponse>({
@@ -89,7 +89,7 @@ export const TrackMailList = forwardRef(({ token }: TrackMailListProps, ref: Ref
                             <Pagination
                                 page={paginationData.page + 1}
                                 onChange={(newPage) => setTargetPage(newPage - 1)}
-                                total={Math.ceil(paginationData.totalMail / paginationData.numberPerPage)}
+                                total={Math.ceil(paginationData.total / paginationData.numberPerPage)}
                             />
                         </Center>
                     </>

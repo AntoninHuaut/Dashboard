@@ -12,7 +12,7 @@ export interface IPagination {
     numberPerPage: number;
     offset: number;
     page: number;
-    totalMail: number;
+    total: number;
 }
 
 export interface IMailResponse {
