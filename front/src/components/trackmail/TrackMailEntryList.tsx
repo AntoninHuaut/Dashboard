@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table } from '@mantine/core';
+import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table, useMantineTheme } from '@mantine/core';
 import { IconCheck, IconInfoCircle, IconX } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
@@ -14,6 +14,7 @@ interface TrackMailEntryListProps {
 }
 
 export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps, ref: Ref<IPaginationDataRef>) => {
+    const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IMail>({
         token,
         dataRequest: mailsRequest,
@@ -49,7 +50,7 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
             <Stack>
                 {data.length > 0 ? (
                     <>
-                        <Table highlightOnHover sx={{ backgroundColor: 'white' }}>
+                        <Table highlightOnHover sx={{ backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : 'white' }}>
                             <thead>
                                 <tr>
                                     <th>Creation date</th>

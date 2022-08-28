@@ -1,4 +1,4 @@
-import { Center, LoadingOverlay, Pagination, Table, Title } from '@mantine/core';
+import { Center, LoadingOverlay, Pagination, Table, Title, useMantineTheme } from '@mantine/core';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
 
@@ -13,6 +13,7 @@ interface TrackMailPixelTrackListProps {
 }
 
 export const TrackMailPixelTrackList = forwardRef(({ token, emailId }: TrackMailPixelTrackListProps, ref: Ref<IPaginationDataRef>) => {
+    const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IPixelTrack>({
         token,
         dataRequest: (targetPage: number, token: string) => pixelTracksRequest(targetPage, emailId, token),
@@ -36,7 +37,7 @@ export const TrackMailPixelTrackList = forwardRef(({ token, emailId }: TrackMail
 
             {data.length > 0 ? (
                 <>
-                    <Table highlightOnHover sx={{ backgroundColor: 'white' }}>
+                    <Table highlightOnHover sx={{ backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : 'white' }}>
                         <thead>
                             <tr>
                                 <th>Log date</th>
