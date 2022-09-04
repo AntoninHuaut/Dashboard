@@ -1,5 +1,5 @@
-import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar } from '@mantine/core';
-import { IconAdjustments, IconHome, IconLogout, IconMail, IconUserCircle } from '@tabler/icons';
+import { Avatar, Code, createStyles, Divider, Group, MantineNumberSize, Navbar } from '@mantine/core';
+import { IconAdjustments, IconHome, IconLogout, IconMail, IconUserCircle, TablerIcon } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -61,10 +61,28 @@ const useStyles = createStyles((theme, _params, getRef) => {
     };
 });
 
-const data = [
+interface ILinkData {
+    link: string;
+    label: string;
+    icon: TablerIcon;
+    roles?: UserRole[];
+    elements?: { pre?: React.ReactNode; post?: React.ReactNode };
+}
+
+interface ILinkCreateParams {
+    item: ILinkData;
+    active: string;
+    user: IUser;
+    classes: Record<'header' | 'footer' | 'link' | 'linkIcon' | 'linkActive', string>;
+    cx: (...args: any) => string;
+    setOpened: (v: boolean) => any;
+    navigate: (v: string) => any;
+}
+
+const data: ILinkData[] = [
+    { link: '/app/admin', label: 'Admin', icon: IconAdjustments, roles: [UserRole.ADMIN], elements: { post: <Divider mt="sm" mb="sm" /> } },
     { link: '/app/home', label: 'Home', icon: IconHome },
     { link: '/app/profile', label: 'Profile', icon: IconUserCircle },
-    { link: '/app/admin', label: 'Admin', icon: IconAdjustments, roles: [UserRole.ADMIN] },
     { link: '/app/track-mail', label: 'TrackMail', icon: IconMail },
 ];
 
@@ -72,6 +90,32 @@ interface AppNavbarProps {
     setOpened: (v: boolean) => any;
     opened: boolean;
     hiddenBreakpoint: MantineNumberSize;
+}
+
+function createLink({ item, active, user, classes, cx, setOpened, navigate }: ILinkCreateParams) {
+    const requireRoles = item.roles ?? [];
+    if (requireRoles.length > 0 && !user.roles.some((role) => requireRoles.includes(role as UserRole))) {
+        return null;
+    }
+
+    return (
+        <>
+            {item.elements?.pre}
+            <a
+                className={cx(classes.link, { [classes.linkActive]: item.label === active })}
+                href={item.link}
+                key={item.label}
+                onClick={(evt) => {
+                    evt.preventDefault();
+                    setOpened(false);
+                    navigate(item.link);
+                }}>
+                <item.icon className={classes.linkIcon} />
+                <span>{item.label}</span>
+            </a>
+            {item.elements?.post}
+        </>
+    );
 }
 
 export function AppNavbar(props: AppNavbarProps) {
@@ -90,29 +134,7 @@ export function AppNavbar(props: AppNavbarProps) {
         setActive(active ? active.label : '');
     }, [location.pathname]);
 
-    const links = data
-        .map((item) => {
-            const requireRoles = item.roles ?? [];
-            if (requireRoles.length > 0 && !user.roles.some((role) => requireRoles.includes(role as UserRole))) {
-                return null;
-            }
-
-            return (
-                <a
-                    className={cx(classes.link, { [classes.linkActive]: item.label === active })}
-                    href={item.link}
-                    key={item.label}
-                    onClick={(evt) => {
-                        evt.preventDefault();
-                        setOpened(false);
-                        navigate(item.link);
-                    }}>
-                    <item.icon className={classes.linkIcon} />
-                    <span>{item.label}</span>
-                </a>
-            );
-        })
-        .filter((item) => item !== null);
+    const links = data.map((item) => createLink({ item, active, user, classes, cx, setOpened, navigate })).filter((item) => item !== null);
 
     return (
         <Navbar width={{ sm: 200, lg: 250 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
