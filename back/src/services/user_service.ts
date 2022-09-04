@@ -3,12 +3,28 @@ import { httpErrors } from 'oak';
 import { sendRegistrationEmail, sendResetPasswordEmail } from '/external/smtp.ts';
 import * as userRepo from '/repositories/user_repository.ts';
 import * as tokenRepo from '/repositories/user_token_repository.ts';
-import { ICreateUser, IResetUserPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
+import { ICreateUser, IResetUserPassword, IUpdateUser, UserRole, IUser } from '/types/user_model.ts';
 import { createToken } from '/utils/db_helper.ts';
 import { compare, hash } from '/utils/hash_helper.ts';
 
-export const getUsers = async () => {
-    return await userRepo.getUsers();
+export const NUMBER_OF_USERS_PER_PAGE = 15;
+
+export const getUsers = async (page: number): Promise<IUser[]> => {
+    const users = await userRepo.getUsers(page, NUMBER_OF_USERS_PER_PAGE);
+    if (!users) {
+        throw new httpErrors.InternalServerError('Could not get users');
+    }
+
+    return users;
+};
+
+export const getUsersCount = async (): Promise<number> => {
+    const result = await userRepo.getUsersCount();
+    if (result == undefined) {
+        throw new httpErrors.InternalServerError('Could not get users count');
+    }
+
+    return result;
 };
 
 export const getUserById = async (id: number) => {

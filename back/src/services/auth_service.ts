@@ -3,12 +3,12 @@ import { httpErrors } from 'oak';
 import * as userRepo from '/repositories/user_repository.ts';
 import * as tokenRepo from '/repositories/user_token_repository.ts';
 import { GeneratedToken, JWTUser } from '/types/auth_model.ts';
-import { User } from '/types/user_model.ts';
+import { IUser } from '/types/user_model.ts';
 import { compare } from '/utils/hash_helper.ts';
 import { getAuthToken, getJWTUser, getRefreshToken } from '/utils/jwt_helper.ts';
 
 export const loginUser = async (email: string, password: string): Promise<GeneratedToken> => {
-    const user: User | null = await userRepo.getUserByEmail(email);
+    const user: IUser | null = await userRepo.getUserByEmail(email);
 
     if (user) {
         if (!user.is_active) {
@@ -37,7 +37,7 @@ export const refreshToken = async (token: string) => {
         const payload: JWTUser | null = await getJWTUser(token);
         if (payload) {
             const userId: number = payload.id;
-            const user: User | null = await userRepo.getUserById(userId);
+            const user: IUser | null = await userRepo.getUserById(userId);
 
             if (user) {
                 if (!user.is_active) {

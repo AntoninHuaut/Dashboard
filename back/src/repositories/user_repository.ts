@@ -1,6 +1,6 @@
 import { deleteToken, getTokenByTokenTypeAndUserId, getTokenColumnByType, insertToken, TOKEN_TYPE } from './user_token_repository.ts';
 import { sql } from '/external/db.ts';
-import { User, UserRole } from '/types/user_model.ts';
+import { IUser, UserRole } from '/types/user_model.ts';
 import { IToken } from '/utils/db_helper.ts';
 
 function toUser(user: any) {
@@ -11,23 +11,31 @@ function toUser(user: any) {
     return user;
 }
 
-export const getUsers = async (): Promise<User[]> => {
+export const getUsers = async (page: number, NUMBER_OF_USERS_PER_PAGE: number): Promise<IUser[]> => {
     const result = await sql`
     SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
-    FROM "users";
-    `;
+    FROM "users"
+    ORDER BY "created_at" DESC
+    LIMIT ${NUMBER_OF_USERS_PER_PAGE} OFFSET ${page * NUMBER_OF_USERS_PER_PAGE}; `;
 
     return result.map((user: any) => toUser(user));
 };
 
-export const getUserById = async (id: number): Promise<User | null> => {
+export const getUsersCount = async (): Promise<number> => {
+    const result = await sql` SELECT COUNT(*)::int 
+        FROM "users"; `;
+
+    return result.length ? result[0].count : 0;
+};
+
+export const getUserById = async (id: number): Promise<IUser | null> => {
     const result = await sql` SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
         FROM "users" WHERE "id" = ${id}; `;
 
     return result.length ? toUser(result[0]) : null;
 };
 
-export const getUserByEmail = async (email: string): Promise<User | null> => {
+export const getUserByEmail = async (email: string): Promise<IUser | null> => {
     const result = await sql` SELECT "id", "email", "username", "roles", "is_active", "created_at", "updated_at"
         FROM "users" WHERE "email" = ${email}; `;
 
@@ -46,7 +54,7 @@ export const createUser = async (
     registrationToken: IToken | null,
     hashPassword: string,
     rolesArray: UserRole[]
-): Promise<User | null> => {
+): Promise<IUser | null> => {
     const rolesStr = rolesArray.join(',');
     const { value, exp } = registrationToken !== null ? registrationToken : { value: null, exp: null };
     const isActive = registrationToken === null;
