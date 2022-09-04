@@ -15,8 +15,7 @@ interface TrackMailPixelTrackListProps {
 export const TrackMailPixelTrackList = forwardRef(({ token, emailId }: TrackMailPixelTrackListProps, ref: Ref<IPaginationDataRef>) => {
     const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IPixelTrack>({
-        token,
-        dataRequest: (targetPage: number, token: string) => pixelTracksRequest(targetPage, emailId, token),
+        dataRequest: (targetPage: number) => pixelTracksRequest(targetPage, emailId, token),
         ref,
     });
 

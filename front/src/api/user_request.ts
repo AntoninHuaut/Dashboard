@@ -51,3 +51,12 @@ export const deleteRequest = (userId: number, captcha: string) => {
         }),
     };
 };
+
+export const usersRequest = (targetPage: number) => {
+    return {
+        url: `${USER_API_URL}/${targetPage}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.GET,
+        }),
+    };
+};

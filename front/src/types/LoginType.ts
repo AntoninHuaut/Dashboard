@@ -1,6 +1,6 @@
 export enum UserRole {
     USER = 'USER',
-    ADMIN = ' ADMIN',
+    ADMIN = 'ADMIN',
 }
 
 export interface IUser {
@@ -8,6 +8,9 @@ export interface IUser {
     email: string;
     username: string;
     roles: string[];
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
 }
 
 export interface ILoginRequest {

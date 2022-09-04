@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Container, Group, Loader, Space, Stack, Tooltip } from '@mantine/core';
+import { ActionIcon, Center, Container, Group, Loader, Space, Stack, Title, Tooltip } from '@mantine/core';
 import { IconRefresh } from '@tabler/icons';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -66,6 +66,12 @@ export function TrackMailPage() {
 
     return (
         <>
+            <Title order={1} align="center">
+                TrackMail
+            </Title>
+
+            <Space h="xl" />
+
             <Stack align="center">
                 <TrackMailToken token={token} setToken={setToken} rightElement={trackMailTokenRightElement} />
             </Stack>

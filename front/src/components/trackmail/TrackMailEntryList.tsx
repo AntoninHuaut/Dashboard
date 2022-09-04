@@ -16,8 +16,7 @@ interface TrackMailEntryListProps {
 export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps, ref: Ref<IPaginationDataRef>) => {
     const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IMail>({
-        token,
-        dataRequest: mailsRequest,
+        dataRequest: (targetPage: number) => mailsRequest(targetPage, token),
         ref,
     });
     const navigate = useNavigate();

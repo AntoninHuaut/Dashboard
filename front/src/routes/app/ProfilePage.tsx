@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { deleteRequest } from '../../api/user_request';
 import { UpdateFieldProfile } from '../../components/user/UpdateFieldsProfile';
 import { UpdatePasswordProfile } from '../../components/user/UpdatePasswordProfile';
+import { UserRolesComponent } from '../../components/user/UserRolesComponent';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { useFetch } from '../../hooks/useFetch';
@@ -13,15 +14,6 @@ import { getGravatarUrl } from '../../services/form.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IUser } from '../../types/LoginType';
-
-const ROLES_COLOR: { [key: string]: MantineColor } = {
-    USER: 'blue',
-    ADMIN: 'red',
-};
-
-function getRoleColor(role: string): MantineColor {
-    return ROLES_COLOR[role] ?? 'gray';
-}
 
 export function ProfilePage() {
     const auth = useAuth();
@@ -98,12 +90,7 @@ export function ProfilePage() {
                     </Text>
 
                     <Group spacing="xs" mb="md" align="center" mx="auto">
-                        {user.roles.length > 0 &&
-                            user.roles.sort().map((role: string) => (
-                                <Badge key={role} color={getRoleColor(role)}>
-                                    {role}
-                                </Badge>
-                            ))}
+                        <UserRolesComponent user={user} />
                     </Group>
 
                     {!isDeleted && !displayPasswordUpdate && (

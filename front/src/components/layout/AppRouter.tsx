@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { ProtectedLayout } from '../../layouts/ProtectedLayout';
 import { UnProtectedLayout } from '../../layouts/UnProtectedLayout';
+import { AdminPage } from '../../routes/app/AdminPage';
 import { HomePage } from '../../routes/app/HomePage';
 import { LogoutPage } from '../../routes/app/LogoutPage';
 import { ProfilePage } from '../../routes/app/ProfilePage';
@@ -44,6 +45,7 @@ export function AppRouter() {
                         { path: 'linkTrack', element: <TrackMailPage /> },
                     ],
                 },
+                { path: 'admin', element: <AdminPage /> },
                 { path: 'logout', element: <LogoutPage /> },
             ],
         },

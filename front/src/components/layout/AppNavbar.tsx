@@ -1,11 +1,11 @@
 import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar } from '@mantine/core';
-import { IconHome, IconLogout, IconMail, IconUserCircle } from '@tabler/icons';
+import { IconAdjustments, IconHome, IconLogout, IconMail, IconUserCircle } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
-import { IUser } from '../../types/LoginType';
+import { IUser, UserRole } from '../../types/LoginType';
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon = getRef('icon');
@@ -64,6 +64,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const data = [
     { link: '/app/home', label: 'Home', icon: IconHome },
     { link: '/app/profile', label: 'Profile', icon: IconUserCircle },
+    { link: '/app/admin', label: 'Admin', icon: IconAdjustments, roles: [UserRole.ADMIN] },
     { link: '/app/track-mail', label: 'TrackMail', icon: IconMail },
 ];
 
@@ -89,20 +90,29 @@ export function AppNavbar(props: AppNavbarProps) {
         setActive(active ? active.label : '');
     }, [location.pathname]);
 
-    const links = data.map((item) => (
-        <a
-            className={cx(classes.link, { [classes.linkActive]: item.label === active })}
-            href={item.link}
-            key={item.label}
-            onClick={(evt) => {
-                evt.preventDefault();
-                setOpened(false);
-                navigate(item.link);
-            }}>
-            <item.icon className={classes.linkIcon} />
-            <span>{item.label}</span>
-        </a>
-    ));
+    const links = data
+        .map((item) => {
+            const requireRoles = item.roles ?? [];
+            if (requireRoles.length > 0 && !user.roles.some((role) => requireRoles.includes(role as UserRole))) {
+                return null;
+            }
+
+            return (
+                <a
+                    className={cx(classes.link, { [classes.linkActive]: item.label === active })}
+                    href={item.link}
+                    key={item.label}
+                    onClick={(evt) => {
+                        evt.preventDefault();
+                        setOpened(false);
+                        navigate(item.link);
+                    }}>
+                    <item.icon className={classes.linkIcon} />
+                    <span>{item.label}</span>
+                </a>
+            );
+        })
+        .filter((item) => item !== null);
 
     return (
         <Navbar width={{ sm: 200, lg: 250 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>

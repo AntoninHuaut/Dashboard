@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Input, LoadingOverlay, Menu, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Group, Input, LoadingOverlay, Menu, Text, Tooltip } from '@mantine/core';
 import { useClipboard, useHover } from '@mantine/hooks';
 import { IconCopy, IconEye, IconEyeOff, IconTrashX } from '@tabler/icons';
 import { useEffect, useState } from 'react';
@@ -15,7 +15,6 @@ interface TrackMailTokenProps {
 }
 
 export function TrackMailToken({ token, setToken, rightElement }: TrackMailTokenProps) {
-    const theme = useMantineTheme();
     const clipboard = useClipboard();
 
     const [showToken, setShowToken] = useState(false);
@@ -46,8 +45,8 @@ export function TrackMailToken({ token, setToken, rightElement }: TrackMailToken
 
     return (
         <>
-            <Text color={theme.primaryColor} weight={600} size="lg">
-                TrackMail Token
+            <Text weight={600} size="xl">
+                Token
             </Text>
             <Group position="center">
                 <Menu shadow="md">

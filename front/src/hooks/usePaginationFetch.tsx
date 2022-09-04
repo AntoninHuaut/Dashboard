@@ -6,12 +6,11 @@ import { IPagination, IPaginationDataRef, IPaginationDataResponse } from '../typ
 import { useFetch } from './useFetch';
 
 interface UseFetchParameter {
-    token: string;
-    dataRequest: (targetPage: number, token: string) => IRequestParams;
+    dataRequest: (targetPage: number) => IRequestParams;
     ref: Ref<IPaginationDataRef>;
 }
 
-export const usePaginationFetch = <T,>({ token, dataRequest, ref }: UseFetchParameter) => {
+export const usePaginationFetch = <T,>({ dataRequest, ref }: UseFetchParameter) => {
     const [targetPage, setTargetPage] = useState(0);
     const [paginationData, setPaginationData] = useState<IPagination>({
         numberPerPage: 0,
@@ -32,7 +31,7 @@ export const usePaginationFetch = <T,>({ token, dataRequest, ref }: UseFetchPara
         },
     });
 
-    const refreshData = () => dataFetch.makeRequest(dataRequest(targetPage, token));
+    const refreshData = () => dataFetch.makeRequest(dataRequest(targetPage));
 
     useEffect(() => {
         refreshData();
