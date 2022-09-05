@@ -9,6 +9,6 @@
         "postgres": "https://deno.land/x/postgresjs@v3.2.4/mod.js",
         "bcrypt": "https://deno.land/x/bcrypt@v0.4.0/mod.ts",
         "zod": "https://deno.land/x/zod@v3.17.3/mod.ts",
-        "denomailer": "https://deno.land/x/denomailer@1.2.0/mod.ts"
+        "denomailer": "https://deno.land/x/denomailer@1.3.0/mod.ts"
     }
 }

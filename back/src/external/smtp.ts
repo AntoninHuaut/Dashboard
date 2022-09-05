@@ -18,6 +18,7 @@ async function sendEmail(to: string, subject: string, html: string) {
                 username: config.SMTP_LOGIN,
                 password: config.SMTP_PASSWORD,
             },
+            tls: true,
         },
     });
 
