@@ -39,5 +39,5 @@ export const usePaginationFetch = <T,>({ dataRequest, ref }: UseFetchParameter) 
 
     useImperativeHandle(ref, () => ({ refreshData }));
 
-    return { data, dataFetch, paginationData, setTargetPage };
+    return { data, dataFetch, paginationData, setTargetPage, refreshData };
 };
