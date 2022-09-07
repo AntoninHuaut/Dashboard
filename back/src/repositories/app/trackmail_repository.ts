@@ -50,9 +50,25 @@ export const updateSettings = async (userId: number, logEmailFrom: boolean, logE
 
 /* */
 
+function convertDBMailsToObject(mails: Array<IMail & { email_to: string }>): IMail[] {
+    return mails.map(convertDBMailToObject);
+}
+
+function convertDBMailToObject(mail: IMail & { email_to: string }): IMail {
+    return {
+        user_id: mail.user_id,
+        email_id: mail.email_id,
+        email_from: mail.email_from,
+        email_to: mail.email_to.split(','),
+        subject: mail.subject,
+        created: mail.created,
+        logsTrackCount: mail.logsTrackCount,
+    };
+}
+
 export const insertMail = async (userId: number, body: ICreateMail): Promise<IMail | null> => {
     const result = await sql` INSERT INTO "app_trackmail_mail" ( "user_id", "email_id", "email_from", "email_to", "subject", "created" ) 
-        VALUES ( ${userId}, ${createToken().value}, ${body.email_from}, ${body.email_to}, ${body.subject}, ${new Date()} ) 
+        VALUES ( ${userId}, ${createToken().value}, ${body.email_from}, ${body.email_to.join(',')}, ${body.subject}, ${new Date()} ) 
         RETURNING *; `;
 
     return result.length > 0 && result[0].email_id ? (result[0] as IMail) : null;
@@ -71,7 +87,7 @@ export const getMailById = async (userId: number, emailId: string): Promise<IMai
         WHERE "email_id" = ${emailId} and "user_id" = ${userId}
         GROUP BY "email_id"; `;
 
-    return result.length > 0 ? (result[0] as IMail) : null;
+    return result.length > 0 ? convertDBMailToObject(result[0] as IMail & { email_to: string }) : null;
 };
 
 export const existMailById = async (emailId: string): Promise<boolean> => {
@@ -98,7 +114,7 @@ export const getMails = async (userId: number, page: number, NUMBER_OF_ITEMS_PER
         ORDER BY "created" DESC
         LIMIT ${NUMBER_OF_ITEMS_PER_PAGE} OFFSET ${page * NUMBER_OF_ITEMS_PER_PAGE}; `;
 
-    return result.length > 0 && result[0].email_id ? (result as unknown as IMail[]) : [];
+    return result.length > 0 && result[0].email_id ? convertDBMailsToObject(result as unknown as (IMail & { email_to: string })[]) : [];
 };
 
 /* */

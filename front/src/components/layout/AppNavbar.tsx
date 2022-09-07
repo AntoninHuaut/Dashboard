@@ -99,12 +99,11 @@ function createLink({ item, active, user, classes, cx, setOpened, navigate }: IL
     }
 
     return (
-        <>
+        <div key={item.label}>
             {item.elements?.pre}
             <a
                 className={cx(classes.link, { [classes.linkActive]: item.label === active })}
                 href={item.link}
-                key={item.label}
                 onClick={(evt) => {
                     evt.preventDefault();
                     setOpened(false);
@@ -114,7 +113,7 @@ function createLink({ item, active, user, classes, cx, setOpened, navigate }: IL
                 <span>{item.label}</span>
             </a>
             {item.elements?.post}
-        </>
+        </div>
     );
 }
 
