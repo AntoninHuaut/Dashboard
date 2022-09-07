@@ -7,7 +7,6 @@ import { useAuth } from '../../hooks/useAuth';
 interface AppHeaderProps {
     opened: boolean;
     setOpened: Dispatch<SetStateAction<boolean>>;
-    headerRef: React.RefObject<HTMLDivElement>;
 }
 
 export function AppHeader(props: AppHeaderProps) {
@@ -16,7 +15,7 @@ export function AppHeader(props: AppHeaderProps) {
     const { opened, setOpened } = props;
 
     return (
-        <Header ref={props.headerRef} height={56} px="md">
+        <Header height={56} px="md">
             <div style={{ height: 56, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 {auth.user && (
                     <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
