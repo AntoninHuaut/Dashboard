@@ -93,7 +93,6 @@ const getMailById = async (ctx: Context) => {
     ctx.response.body = mail;
 };
 
-// TODO respect user settings for saving subject, emailTo/emailFrom ; update validation
 const createMail = async (ctx: Context) => {
     const body = await safeParseBody(ctx);
     const createMailBody = validCreateMail.parse(body);

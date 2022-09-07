@@ -50,6 +50,11 @@ export const updateSettings = async (userId: number, newSettings: ITrackMailSett
 };
 
 export const createMail = async (userId: number, body: ICreateMail): Promise<IMail> => {
+    const userSettings: ITrackMailSettings = await getSettings(userId);
+    if (!userSettings.log_email_from) body.email_from = '-';
+    if (!userSettings.log_email_to) body.email_to = [];
+    if (!userSettings.log_subject) body.subject = '-';
+
     const mail = await trackMailRepo.insertMail(userId, body);
     if (!mail) {
         throw new httpErrors.InternalServerError('Could not create mail');
