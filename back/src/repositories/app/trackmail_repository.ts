@@ -67,7 +67,7 @@ export const deleteMail = async (userId: number, emailId: string): Promise<boole
 
 export const getMailById = async (userId: number, emailId: string): Promise<IMail | null> => {
     const result = await sql` SELECT mail.*, COUNT(log.*)::int as "pixelTrackCount" FROM "app_trackmail_mail" mail 
-        LEFT JOIN app_trackmail_log log USING("email_id")
+        LEFT JOIN app_trackmail_pixel_log log USING("email_id")
         WHERE "email_id" = ${emailId} and "user_id" = ${userId}
         GROUP BY "email_id"; `;
 
@@ -92,7 +92,7 @@ export const getMailsCount = async (userId: number): Promise<number> => {
 
 export const getMails = async (userId: number, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IMail[]> => {
     const result = await sql` SELECT mail.*, COUNT(log.*)::int as "pixelTrackCount" FROM "app_trackmail_mail" mail 
-        LEFT JOIN "app_trackmail_log" log USING("email_id")
+        LEFT JOIN "app_trackmail_pixel_log" log USING("email_id")
         WHERE "user_id" = ${userId}
         GROUP BY "email_id"
         ORDER BY "created" DESC
@@ -104,7 +104,7 @@ export const getMails = async (userId: number, page: number, NUMBER_OF_MAILS_PER
 /* */
 
 export const pixelTrack = async (emailId: string, userIp: string): Promise<boolean> => {
-    const result = await sql` INSERT INTO "app_trackmail_log" ( "email_id", "user_ip", "log_date" ) 
+    const result = await sql` INSERT INTO "app_trackmail_pixel_log" ( "email_id", "user_ip", "log_date" ) 
         VALUES ( ${emailId}, ${userIp}, ${new Date()} ); `;
 
     return result.count > 0;
@@ -112,7 +112,7 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
 
 export const getPixelTracksCount = async (userId: number, emailId: string): Promise<number> => {
     const result = await sql` SELECT COUNT(*)::int 
-        FROM "app_trackmail_log" 
+        FROM "app_trackmail_pixel_log" 
         JOIN "app_trackmail_mail" USING("email_id")
         WHERE "email_id" = ${emailId} AND "user_id" = ${userId}; `;
 
@@ -121,7 +121,7 @@ export const getPixelTracksCount = async (userId: number, emailId: string): Prom
 
 export const getPixelTracks = async (userId: number, emailId: string, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IPixelTrack[]> => {
     const result = await sql` SELECT log.* 
-        FROM "app_trackmail_log" log
+        FROM "app_trackmail_pixel_log" log
         JOIN "app_trackmail_mail" USING("email_id")
         WHERE "email_id" = ${emailId} AND "user_id" = ${userId}
         ORDER BY "log_date" DESC

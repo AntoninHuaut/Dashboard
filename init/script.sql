@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS "app_trackmail_mail" (
     CONSTRAINT app_trackmail_mail_user_id_fk FOREIGN KEY("user_id") REFERENCES users("id") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "app_trackmail_log" (
+CREATE TABLE IF NOT EXISTS "app_trackmail_pixel_log" (
     "log_id"                 serial,
     "email_id"               varchar(255) not null,
     "user_ip"                varchar(48)  not null,
