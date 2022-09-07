@@ -1,4 +1,5 @@
 import { ActionIcon, Button, Center, Group, LoadingOverlay, Menu, Pagination, Stack, Table, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconInfoCircle, IconTrashX, IconX } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
@@ -6,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { deleteMailRequest, mailsRequest } from '../../api/trackmail_request';
 import { useFetch } from '../../hooks/useFetch';
+import { useMailFormatter } from '../../hooks/useMailFormatter';
 import { usePaginationFetch } from '../../hooks/usePaginationFetch';
 import { errorNotif, successNotif } from '../../services/notification.services';
 import { IPaginationDataRef } from '../../types/PaginationData';
@@ -16,6 +18,9 @@ interface TrackMailEntryListProps {
 }
 
 export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps, ref: Ref<IPaginationDataRef>) => {
+    const displayEmailData = useMediaQuery('(min-width: 1200px)');
+    const mailFormatter = useMailFormatter(false);
+
     const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage, refreshData } = usePaginationFetch<IMail>({
         dataRequest: (targetPage: number) => mailsRequest(targetPage, token),
@@ -35,48 +40,55 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
         deleteMailFetch.makeRequest(deleteMailRequest(mail.email_id, token));
     };
 
-    const rows = data.map((row: IMail) => (
-        <tr key={row.email_id}>
-            <td>{dayjs(row.created).format('DD/MM/YYYY [at] HH[h]mm')}</td>
-            <td>{row.subject}</td>
-            <td>{row.email_from}</td>
-            <td>{row.email_to}</td>
-            <td>
-                <Group>
-                    {row.logsTrackCount > 0 ? (
-                        <ActionIcon color="green" onClick={() => navigate(`/app/track-mail/${row.email_id}/logsTrack`)}>
-                            <IconInfoCircle />
-                        </ActionIcon>
-                    ) : (
-                        <IconX width={28} color="red" />
-                    )}
-                    <Menu shadow="md" width={205}>
-                        <Menu.Target>
-                            <Tooltip label="Delete">
-                                <ActionIcon color="red">
-                                    <IconTrashX />
-                                </ActionIcon>
-                            </Tooltip>
-                        </Menu.Target>
+    const rows = data.map((row: IMail) => {
+        const { subject, emailFrom, emailTo } = mailFormatter.formatEmail(row);
+        return (
+            <tr key={row.email_id}>
+                <td>{dayjs(row.created).format('DD/MM/YYYY [at] HH[h]mm')}</td>
+                {displayEmailData && (
+                    <>
+                        <td>{subject}</td>
+                        <td>{emailFrom}</td>
+                        <td>{emailTo}</td>
+                    </>
+                )}
+                <td>
+                    <Group>
+                        {row.logsTrackCount > 0 ? (
+                            <ActionIcon color="green" onClick={() => navigate(`/app/track-mail/${row.email_id}/logsTrack`)}>
+                                <IconInfoCircle />
+                            </ActionIcon>
+                        ) : (
+                            <IconX width={28} color="red" />
+                        )}
+                        <Menu shadow="md" width={205}>
+                            <Menu.Target>
+                                <Tooltip label="Delete">
+                                    <ActionIcon color="red">
+                                        <IconTrashX />
+                                    </ActionIcon>
+                                </Tooltip>
+                            </Menu.Target>
 
-                        <Menu.Dropdown>
-                            <Menu.Item>
-                                <Text size="md" align="center" mb="xs">
-                                    Can't be revert!
-                                </Text>
-                                <Group spacing="xs" position="center">
-                                    <Button color="blue">Cancel</Button>
-                                    <Button color="red" onClick={() => deleteMailAction(row)}>
-                                        Delete
-                                    </Button>
-                                </Group>
-                            </Menu.Item>
-                        </Menu.Dropdown>
-                    </Menu>
-                </Group>
-            </td>
-        </tr>
-    ));
+                            <Menu.Dropdown>
+                                <Menu.Item>
+                                    <Text size="md" align="center" mb="xs">
+                                        Can't be revert!
+                                    </Text>
+                                    <Group spacing="xs" position="center">
+                                        <Button color="blue">Cancel</Button>
+                                        <Button color="red" onClick={() => deleteMailAction(row)}>
+                                            Delete
+                                        </Button>
+                                    </Group>
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    </Group>
+                </td>
+            </tr>
+        );
+    });
 
     return (
         <div style={{ position: 'relative' }}>
@@ -89,9 +101,13 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
                             <thead>
                                 <tr>
                                     <th>Creation date</th>
-                                    <th>Subject</th>
-                                    <th>Sender email</th>
-                                    <th>Recipients email</th>
+                                    {displayEmailData && (
+                                        <>
+                                            <th>Subject</th>
+                                            <th>Sender email</th>
+                                            <th>Recipients email</th>
+                                        </>
+                                    )}
                                     <th>Opened</th>
                                 </tr>
                             </thead>

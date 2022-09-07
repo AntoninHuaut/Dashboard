@@ -1,4 +1,5 @@
 import { ActionIcon, Button, Center, Group, LoadingOverlay, Menu, Pagination, Stack, Table, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconCheck, IconTrashX, IconX } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { forwardRef, Ref, useEffect, useState } from 'react';
@@ -17,6 +18,10 @@ import { UserRolesComponent } from '../user/UserRolesComponent';
 export const UserEntryList = forwardRef((_: {}, ref: Ref<IPaginationDataRef>) => {
     const auth = useAuth();
     const user = auth.user as IUser; // Protected route
+
+    const displayUserDate = useMediaQuery('(min-width: 1200px)');
+    const displayUserIdName = useMediaQuery('(min-width: 800px)');
+
     const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage, refreshData } = usePaginationFetch<IUser>({
         dataRequest: (targetPage: number) => usersRequest(targetPage),
@@ -49,16 +54,20 @@ export const UserEntryList = forwardRef((_: {}, ref: Ref<IPaginationDataRef>) =>
 
     const rows = data.map((row: IUser) => (
         <tr key={row.id}>
-            <td>{row.id}</td>
+            {displayUserIdName && <td>{row.id}</td>}
             <td>{row.email}</td>
-            <td>{row.username}</td>
+            {displayUserIdName && <td>{row.username}</td>}
             <td>
                 <Group spacing={2} align="center" mx="auto">
                     <UserRolesComponent user={row} />
                 </Group>
             </td>
-            <td>{dayjs(row.created_at).format('DD/MM/YYYY [at] HH[h]mm')}</td>
-            <td>{dayjs(row.updated_at).format('DD/MM/YYYY [at] HH[h]mm')}</td>
+            {displayUserDate && (
+                <>
+                    <td>{dayjs(row.created_at).format('DD/MM/YYYY [at] HH[h]mm')}</td>
+                    <td>{dayjs(row.updated_at).format('DD/MM/YYYY [at] HH[h]mm')}</td>
+                </>
+            )}
             <td>{row.is_active ? <IconCheck color="green" /> : <IconX color="red" />}</td>
             <td>
                 {user.id !== row.id && (
@@ -100,12 +109,16 @@ export const UserEntryList = forwardRef((_: {}, ref: Ref<IPaginationDataRef>) =>
                         <Table highlightOnHover sx={{ backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : 'white' }}>
                             <thead>
                                 <tr>
-                                    <th>Id</th>
+                                    {displayUserIdName && <th>Id</th>}
                                     <th>Email</th>
-                                    <th>Username</th>
+                                    {displayUserIdName && <th>Username</th>}
                                     <th>Roles</th>
-                                    <th>Creation date</th>
-                                    <th>Update date</th>
+                                    {displayUserDate && (
+                                        <>
+                                            <th>Creation date</th>
+                                            <th>Update date</th>
+                                        </>
+                                    )}
                                     <th>Active</th>
                                     <th></th>
                                 </tr>
