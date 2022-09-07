@@ -6,7 +6,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { trackMailTokenRequest } from '../../api/trackmail_request';
 import { TrackMailEntryDetail } from '../../components/trackmail/TrackMailEntryDetail';
 import { TrackMailEntryList } from '../../components/trackmail/TrackMailEntryList';
-import { TrackMailPixelTrackList } from '../../components/trackmail/TrackMailPixelTrackList';
+import { TrackMailLogsTrackList } from '../../components/trackmail/TrackMailLogsTrackList';
 import { TrackMailSettings } from '../../components/trackmail/TrackMailSettings';
 import { TrackMailToken } from '../../components/trackmail/TrackMailToken';
 import { useFetch } from '../../hooks/useFetch';
@@ -85,8 +85,7 @@ export function TrackMailPage() {
                     emailId && (
                         <>
                             <TrackMailEntryDetail emailId={emailId} token={token} />
-                            {subTypeLocation == 'pixelTrack' && <TrackMailPixelTrackList emailId={emailId} ref={paginationChildRef} token={token} />}
-                            {subTypeLocation === 'linkTrack' && <TrackMailPixelTrackList emailId={emailId} ref={paginationChildRef} token={token} /> /* TODO */}
+                            <TrackMailLogsTrackList emailId={emailId} ref={paginationChildRef} token={token} />
                         </>
                     )
                 )}

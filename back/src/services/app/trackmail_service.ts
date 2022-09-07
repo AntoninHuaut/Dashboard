@@ -1,9 +1,9 @@
 import { httpErrors } from 'oak';
 
-import { ICreateMail, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, ILinkTrack, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
-export const NUMBER_OF_MAILS_PER_PAGE = 15;
+export const NUMBER_OF_ITEMS_PER_PAGE = 15;
 
 export const getUserIdByToken = async (token: string): Promise<number> => {
     const userId = await trackMailRepo.getUserIdByToken(token);
@@ -82,7 +82,7 @@ export const getMailsCount = async (userId: number): Promise<number> => {
 };
 
 export const getMails = async (userId: number, page: number): Promise<IMail[]> => {
-    const result = await trackMailRepo.getMails(userId, page, NUMBER_OF_MAILS_PER_PAGE);
+    const result = await trackMailRepo.getMails(userId, page, NUMBER_OF_ITEMS_PER_PAGE);
     if (!result) {
         throw new httpErrors.InternalServerError('Could not get mails');
     }
@@ -108,19 +108,28 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
     return await trackMailRepo.pixelTrack(emailId, userIp);
 };
 
-export const getPixelTracksCount = async (userId: number, emailId: string): Promise<number> => {
-    const result = await trackMailRepo.getPixelTracksCount(userId, emailId);
+export const linkTrack = async (emailId: string, userIp: string, linkUrl: string): Promise<boolean> => {
+    const isMailExist = await trackMailRepo.existMailById(emailId);
+    if (!isMailExist) {
+        throw new httpErrors.BadRequest('Invalid email id');
+    }
+
+    return await trackMailRepo.linkTrack(emailId, userIp, linkUrl);
+};
+
+export const getLogsTrackCount = async (userId: number, emailId: string): Promise<number> => {
+    const result = await trackMailRepo.getLogsTrackCount(userId, emailId);
     if (result == undefined) {
-        throw new httpErrors.InternalServerError('Could not get pixel tracks count');
+        throw new httpErrors.InternalServerError('Could not get logs track count');
     }
 
     return result;
 };
 
-export const getPixelTracks = async (userId: number, emailId: string, page: number): Promise<IPixelTrack[]> => {
-    const result = await trackMailRepo.getPixelTracks(userId, emailId, page, NUMBER_OF_MAILS_PER_PAGE);
+export const getLogsTrack = async (userId: number, emailId: string, page: number): Promise<(IPixelTrack | ILinkTrack)[]> => {
+    const result = await trackMailRepo.getLogsTrack(userId, emailId, page, NUMBER_OF_ITEMS_PER_PAGE);
     if (!result) {
-        throw new httpErrors.InternalServerError('Could not get pixel tracks');
+        throw new httpErrors.InternalServerError('Could not get logs track');
     }
 
     return result;

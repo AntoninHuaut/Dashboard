@@ -82,9 +82,9 @@ export const deleteMailRequest = (emailId: string, token: string) => {
     };
 };
 
-export const pixelTracksRequest = (targetPage: number, emailId: string, token: string) => {
+export const logsTrackRequest = (targetPage: number, emailId: string, token: string) => {
     return {
-        url: `${TRACKMAIL_API_URL}/pixelTrack/${emailId}/${targetPage}`,
+        url: `${TRACKMAIL_API_URL}/logsTrack/${emailId}/${targetPage}`,
         options: mergeFetchOptions({
             method: HttpMethod.GET,
             headers: {

@@ -13,7 +13,7 @@ export interface IMail {
     subject: string;
     created: Date;
 
-    pixelTrackCount: number;
+    logsTrackCount: number;
 }
 
 export interface ITrackMailSettings {
@@ -27,6 +27,10 @@ export interface IPixelTrack {
     email_id: string;
     user_ip: string;
     log_date: Date;
+}
+
+export interface ILinkTrack extends IPixelTrack {
+    link_url: string;
 }
 
 export interface IPagination {

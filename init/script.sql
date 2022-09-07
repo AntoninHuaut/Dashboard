@@ -51,3 +51,7 @@ CREATE TABLE IF NOT EXISTS "app_trackmail_pixel_log" (
     PRIMARY KEY ("log_id"),
     CONSTRAINT app_trackmail_log_email_id_fk FOREIGN KEY("email_id") REFERENCES app_trackmail_mail("email_id") ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS "app_trackmail_link_log" (
+    "link_url"               text         not null
+) INHERITS ("app_trackmail_pixel_log");

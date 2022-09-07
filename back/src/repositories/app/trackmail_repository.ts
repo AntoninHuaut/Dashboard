@@ -1,5 +1,5 @@
 import { sql } from '/external/db.ts';
-import { ICreateMail, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { ICreateMail, ILinkTrack, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import { createToken } from '/utils/db_helper.ts';
 
 export const getTokenByUserId = async (userId: number): Promise<string | null> => {
@@ -66,7 +66,7 @@ export const deleteMail = async (userId: number, emailId: string): Promise<boole
 };
 
 export const getMailById = async (userId: number, emailId: string): Promise<IMail | null> => {
-    const result = await sql` SELECT mail.*, COUNT(log.*)::int as "pixelTrackCount" FROM "app_trackmail_mail" mail 
+    const result = await sql` SELECT mail.*, COUNT(log.*)::int as "logsTrackCount" FROM "app_trackmail_mail" mail 
         LEFT JOIN app_trackmail_pixel_log log USING("email_id")
         WHERE "email_id" = ${emailId} and "user_id" = ${userId}
         GROUP BY "email_id"; `;
@@ -90,13 +90,13 @@ export const getMailsCount = async (userId: number): Promise<number> => {
     return result.length ? result[0].count : 0;
 };
 
-export const getMails = async (userId: number, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IMail[]> => {
-    const result = await sql` SELECT mail.*, COUNT(log.*)::int as "pixelTrackCount" FROM "app_trackmail_mail" mail 
+export const getMails = async (userId: number, page: number, NUMBER_OF_ITEMS_PER_PAGE: number): Promise<IMail[]> => {
+    const result = await sql` SELECT mail.*, COUNT(log.*)::int as "logsTrackCount" FROM "app_trackmail_mail" mail 
         LEFT JOIN "app_trackmail_pixel_log" log USING("email_id")
         WHERE "user_id" = ${userId}
         GROUP BY "email_id"
         ORDER BY "created" DESC
-        LIMIT ${NUMBER_OF_MAILS_PER_PAGE} OFFSET ${page * NUMBER_OF_MAILS_PER_PAGE}; `;
+        LIMIT ${NUMBER_OF_ITEMS_PER_PAGE} OFFSET ${page * NUMBER_OF_ITEMS_PER_PAGE}; `;
 
     return result.length > 0 && result[0].email_id ? (result as unknown as IMail[]) : [];
 };
@@ -110,22 +110,35 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
     return result.count > 0;
 };
 
-export const getPixelTracksCount = async (userId: number, emailId: string): Promise<number> => {
+export const linkTrack = async (emailId: string, userIp: string, linkUrl: string): Promise<boolean> => {
+    const result = await sql` INSERT INTO "app_trackmail_link_log" ( "email_id", "user_ip", "link_url", "log_date" )
+        VALUES ( ${emailId}, ${userIp}, ${linkUrl}, ${new Date()} ); `;
+
+    return result.count > 0;
+};
+
+export const getLogsTrackCount = async (userId: number, emailId: string): Promise<number> => {
     const result = await sql` SELECT COUNT(*)::int 
-        FROM "app_trackmail_pixel_log" 
+        FROM "app_trackmail_pixel_log"
         JOIN "app_trackmail_mail" USING("email_id")
         WHERE "email_id" = ${emailId} AND "user_id" = ${userId}; `;
 
     return result.length ? result[0].count : 0;
 };
 
-export const getPixelTracks = async (userId: number, emailId: string, page: number, NUMBER_OF_MAILS_PER_PAGE: number): Promise<IPixelTrack[]> => {
-    const result = await sql` SELECT log.* 
-        FROM "app_trackmail_pixel_log" log
-        JOIN "app_trackmail_mail" USING("email_id")
-        WHERE "email_id" = ${emailId} AND "user_id" = ${userId}
+export const getLogsTrack = async (userId: number, emailId: string, page: number, NUMBER_OF_ITEMS_PER_PAGE: number): Promise<(IPixelTrack | ILinkTrack)[]> => {
+    const result = await sql` SELECT * 
+        FROM (
+            SELECT log.* FROM "app_trackmail_link_log" log
+                JOIN "app_trackmail_mail" USING("email_id")
+                WHERE "email_id" = ${emailId} AND "user_id" = ${userId}
+            UNION
+            SELECT log.*, NULL as "link_url" FROM "app_trackmail_pixel_log" log
+                JOIN "app_trackmail_mail" USING("email_id")
+                WHERE "email_id" = ${emailId} AND "user_id" = ${userId} AND "log_id" not in (SELECT "log_id" FROM "app_trackmail_link_log")   
+        ) AS log
         ORDER BY "log_date" DESC
-        LIMIT ${NUMBER_OF_MAILS_PER_PAGE} OFFSET ${page * NUMBER_OF_MAILS_PER_PAGE}; `;
+        LIMIT ${NUMBER_OF_ITEMS_PER_PAGE} OFFSET ${page * NUMBER_OF_ITEMS_PER_PAGE}; `;
 
     return result.length > 0 && result[0].log_id ? (result as unknown as IPixelTrack[]) : [];
 };

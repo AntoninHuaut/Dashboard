@@ -43,8 +43,8 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
             <td>{row.email_to}</td>
             <td>
                 <Group>
-                    {row.pixelTrackCount > 0 ? (
-                        <ActionIcon color="green" onClick={() => navigate(`/app/track-mail/${row.email_id}/pixelTrack`)}>
+                    {row.logsTrackCount > 0 ? (
+                        <ActionIcon color="green" onClick={() => navigate(`/app/track-mail/${row.email_id}/logsTrack`)}>
                             <IconInfoCircle />
                         </ActionIcon>
                     ) : (

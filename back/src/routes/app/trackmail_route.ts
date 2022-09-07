@@ -13,6 +13,7 @@ const trackMailRouter = new Router();
 
 const validPage = z.number().min(0).default(0);
 const validMailId = z.string().min(TOKEN_STRING_LENGTH).max(TOKEN_STRING_LENGTH);
+const validLinkUrl = z.string().url();
 
 const validCreateMail: z.ZodType<ICreateMail> = z.object({
     email_from: z.string().min(1),
@@ -73,8 +74,8 @@ const getMails = async (ctx: Context) => {
     const bodyResponse: { data: IMail[]; pagination: IPagination } = {
         data: mails,
         pagination: {
-            numberPerPage: trackMailService.NUMBER_OF_MAILS_PER_PAGE,
-            offset: page * trackMailService.NUMBER_OF_MAILS_PER_PAGE,
+            numberPerPage: trackMailService.NUMBER_OF_ITEMS_PER_PAGE,
+            offset: page * trackMailService.NUMBER_OF_ITEMS_PER_PAGE,
             page: page,
             total: mailCount,
         },
@@ -116,45 +117,53 @@ const deleteMail = async (ctx: Context) => {
 
 const imagePixelTrack = async (ctx: Context) => {
     const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const emailId = validMailId.parse(emailIdStr);
+    const userIp = ctx.request.ips[0];
 
-    if (emailIdStr) {
-        const emailId = validMailId.parse(emailIdStr);
-        const userIp = ctx.request.ips[0];
-
-        await trackMailService.pixelTrack(emailId, userIp);
-    }
+    await trackMailService.pixelTrack(emailId, userIp);
 
     await send(ctx, 'trackmail_pixel.png', {
         root: `${Deno.cwd()}/data`,
     });
 };
 
-const getPixelTracksCount = async (ctx: Context) => {
+const linkTrack = async (ctx: Context) => {
+    const { emailIdStr, linkUrlStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const emailId = validMailId.parse(emailIdStr);
+    const linkUrl = validLinkUrl.parse(linkUrlStr);
+    const userIp = ctx.request.ips[0];
+
+    await trackMailService.linkTrack(emailId, userIp, linkUrl);
+
+    ctx.response.redirect(linkUrl);
+};
+
+const getLogsTrackCount = async (ctx: Context) => {
     const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
     const emailId = validMailId.parse(emailIdStr);
 
     const user = ctx.state.me;
-    const pixelTrackCount = await trackMailService.getPixelTracksCount(user.id, emailId);
+    const logsTrackCount = await trackMailService.getLogsTrackCount(user.id, emailId);
 
-    ctx.response.body = { total: pixelTrackCount };
+    ctx.response.body = { total: logsTrackCount };
 };
 
-const getPixelTracks = async (ctx: Context) => {
+const getLogsTrack = async (ctx: Context) => {
     const { emailIdStr, pageStr } = helpers.getQuery(ctx, { mergeParams: true });
     const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
     const emailId = validMailId.parse(emailIdStr);
 
     const user = ctx.state.me;
-    const pixelTrackCount = await trackMailService.getPixelTracksCount(user.id, emailId);
-    const pixelTracks = await trackMailService.getPixelTracks(user.id, emailId, page);
+    const logsTrackCount = await trackMailService.getLogsTrackCount(user.id, emailId);
+    const logsTrack = await trackMailService.getLogsTrack(user.id, emailId, page);
 
     const bodyResponse: { data: IPixelTrack[]; pagination: IPagination } = {
-        data: pixelTracks,
+        data: logsTrack,
         pagination: {
-            numberPerPage: trackMailService.NUMBER_OF_MAILS_PER_PAGE,
-            offset: page * trackMailService.NUMBER_OF_MAILS_PER_PAGE,
+            numberPerPage: trackMailService.NUMBER_OF_ITEMS_PER_PAGE,
+            offset: page * trackMailService.NUMBER_OF_ITEMS_PER_PAGE,
             page: page,
-            total: pixelTrackCount,
+            total: logsTrackCount,
         },
     };
 
@@ -173,8 +182,9 @@ trackMailRouter.get('/mail/:emailIdStr', trackMailTokenGuard(), getMailById);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
 trackMailRouter.delete('/mail/:emailIdStr', trackMailTokenGuard(), deleteMail);
 
-trackMailRouter.get('/pixelTrack/image/:emailIdStr?', imagePixelTrack);
-trackMailRouter.get('/pixelTrack/:emailIdStr/count', trackMailTokenGuard(), getPixelTracksCount);
-trackMailRouter.get('/pixelTrack/:emailIdStr/:pageStr?', trackMailTokenGuard(), getPixelTracks);
+trackMailRouter.get('/pixelTrack/:emailIdStr', imagePixelTrack);
+trackMailRouter.get('/linkTrack/:emailIdStr/:linkUrlStr', linkTrack);
+trackMailRouter.get('/logsTrack/:emailIdStr/count', trackMailTokenGuard(), getLogsTrackCount);
+trackMailRouter.get('/logsTrack/:emailIdStr/:pageStr?', trackMailTokenGuard(), getLogsTrack);
 
 export default trackMailRouter;

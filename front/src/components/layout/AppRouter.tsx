@@ -38,13 +38,7 @@ export function AppRouter() {
                 { path: 'home', element: <HomePage /> },
                 { path: 'profile', element: <ProfilePage /> },
                 { path: 'track-mail', element: <TrackMailPage /> },
-                {
-                    path: 'track-mail/:emailIdParam/',
-                    children: [
-                        { path: 'pixelTrack', element: <TrackMailPage /> },
-                        { path: 'linkTrack', element: <TrackMailPage /> },
-                    ],
-                },
+                { path: 'track-mail/:emailIdParam/logsTrack', element: <TrackMailPage /> },
                 { path: 'admin', element: <AdminPage /> },
                 { path: 'logout', element: <LogoutPage /> },
             ],
