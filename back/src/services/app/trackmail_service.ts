@@ -52,7 +52,7 @@ export const updateSettings = async (userId: number, newSettings: ITrackMailSett
 export const createMail = async (userId: number, body: ICreateMail): Promise<IMail> => {
     const userSettings: ITrackMailSettings = await getSettings(userId);
     if (!userSettings.log_email_from) body.email_from = '-';
-    if (!userSettings.log_email_to) body.email_to = [];
+    if (!userSettings.log_email_to) body.email_to = ['-'];
     if (!userSettings.log_subject) body.subject = '-';
 
     const mail = await trackMailRepo.insertMail(userId, body);
@@ -61,6 +61,15 @@ export const createMail = async (userId: number, body: ICreateMail): Promise<IMa
     }
 
     return mail;
+};
+
+export const deleteMail = async (userId: number, emailId: string): Promise<boolean> => {
+    const testUser = await trackMailRepo.getMailById(userId, emailId);
+    if (!testUser) {
+        throw new httpErrors.NotFound('Email not found');
+    }
+
+    return await trackMailRepo.deleteMail(userId, emailId);
 };
 
 export const getMailsCount = async (userId: number): Promise<number> => {

@@ -70,6 +70,18 @@ export const mailRequest = (emailId: string, token: string) => {
     };
 };
 
+export const deleteMailRequest = (emailId: string, token: string) => {
+    return {
+        url: `${TRACKMAIL_API_URL}/mail/${emailId}`,
+        options: mergeFetchOptions({
+            method: HttpMethod.DELETE,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }),
+    };
+};
+
 export const pixelTracksRequest = (targetPage: number, emailId: string, token: string) => {
     return {
         url: `${TRACKMAIL_API_URL}/pixelTrack/${emailId}/${targetPage}`,

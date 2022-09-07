@@ -1,11 +1,13 @@
-import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table, useMantineTheme } from '@mantine/core';
-import { IconCheck, IconInfoCircle, IconX } from '@tabler/icons';
+import { ActionIcon, Button, Center, Group, LoadingOverlay, Menu, Pagination, Stack, Table, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { IconInfoCircle, IconTrashX, IconX } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { mailsRequest } from '../../api/trackmail_request';
+import { deleteMailRequest, mailsRequest } from '../../api/trackmail_request';
+import { useFetch } from '../../hooks/useFetch';
 import { usePaginationFetch } from '../../hooks/usePaginationFetch';
+import { errorNotif, successNotif } from '../../services/notification.services';
 import { IPaginationDataRef } from '../../types/PaginationData';
 import { IMail } from '../../types/TrackMailType';
 
@@ -15,11 +17,23 @@ interface TrackMailEntryListProps {
 
 export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps, ref: Ref<IPaginationDataRef>) => {
     const theme = useMantineTheme();
-    const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IMail>({
+    const { data, dataFetch, paginationData, setTargetPage, refreshData } = usePaginationFetch<IMail>({
         dataRequest: (targetPage: number) => mailsRequest(targetPage, token),
         ref,
     });
     const navigate = useNavigate();
+    const deleteMailFetch = useFetch({
+        onError(err) {
+            errorNotif({ title: 'Failed to delete mail', message: err.message });
+        },
+        onSuccess(_data) {
+            successNotif({ title: 'Success', message: 'Mail has been deleted' });
+            refreshData();
+        },
+    });
+    const deleteMailAction = (mail: IMail) => {
+        deleteMailFetch.makeRequest(deleteMailRequest(mail.email_id, token));
+    };
 
     const rows = data.map((row: IMail) => (
         <tr key={row.email_id}>
@@ -28,23 +42,45 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
             <td>{row.email_from}</td>
             <td>{row.email_to}</td>
             <td>
-                {row.pixelTrackCount > 0 ? (
-                    <Group>
-                        <IconCheck color="green" />
-                        <ActionIcon color="blue" onClick={() => navigate(`/app/track-mail/${row.email_id}/pixelTrack`)}>
+                <Group>
+                    {row.pixelTrackCount > 0 ? (
+                        <ActionIcon color="green" onClick={() => navigate(`/app/track-mail/${row.email_id}/pixelTrack`)}>
                             <IconInfoCircle />
                         </ActionIcon>
-                    </Group>
-                ) : (
-                    <IconX color="red" />
-                )}
+                    ) : (
+                        <IconX width={28} color="red" />
+                    )}
+                    <Menu shadow="md" width={205}>
+                        <Menu.Target>
+                            <Tooltip label="Delete">
+                                <ActionIcon color="red">
+                                    <IconTrashX />
+                                </ActionIcon>
+                            </Tooltip>
+                        </Menu.Target>
+
+                        <Menu.Dropdown>
+                            <Menu.Item>
+                                <Text size="md" align="center" mb="xs">
+                                    Can't be revert!
+                                </Text>
+                                <Group spacing="xs" position="center">
+                                    <Button color="blue">Cancel</Button>
+                                    <Button color="red" onClick={() => deleteMailAction(row)}>
+                                        Delete
+                                    </Button>
+                                </Group>
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                </Group>
             </td>
         </tr>
     ));
 
     return (
         <div style={{ position: 'relative' }}>
-            <LoadingOverlay visible={dataFetch.isLoading} overlayBlur={2} />
+            <LoadingOverlay visible={dataFetch.isLoading || deleteMailFetch.isLoading} overlayBlur={2} />
 
             <Stack>
                 {data.length > 0 ? (

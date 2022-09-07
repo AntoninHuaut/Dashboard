@@ -104,6 +104,16 @@ const createMail = async (ctx: Context) => {
     ctx.response.body = createdMail; // TODO: add path to track pixel & track link
 };
 
+const deleteMail = async (ctx: Context) => {
+    const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const emailId = validMailId.parse(emailIdStr);
+
+    const user = ctx.state.me;
+    await trackMailService.deleteMail(user.id, emailId);
+
+    ctx.response.status = Status.NoContent;
+};
+
 const imagePixelTrack = async (ctx: Context) => {
     const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
 
@@ -161,6 +171,7 @@ trackMailRouter.get('/mail/count', trackMailTokenGuard(), getMailsCount);
 trackMailRouter.get('/mail/all/:pageStr?', trackMailTokenGuard(), getMails);
 trackMailRouter.get('/mail/:emailIdStr', trackMailTokenGuard(), getMailById);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
+trackMailRouter.delete('/mail/:emailIdStr', trackMailTokenGuard(), deleteMail);
 
 trackMailRouter.get('/pixelTrack/image/:emailIdStr?', imagePixelTrack);
 trackMailRouter.get('/pixelTrack/:emailIdStr/count', trackMailTokenGuard(), getPixelTracksCount);

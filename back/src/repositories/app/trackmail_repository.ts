@@ -58,6 +58,13 @@ export const insertMail = async (userId: number, body: ICreateMail): Promise<IMa
     return result.length > 0 && result[0].email_id ? (result[0] as IMail) : null;
 };
 
+export const deleteMail = async (userId: number, emailId: string): Promise<boolean> => {
+    const result = await sql` DELETE FROM "app_trackmail_mail"
+        WHERE "user_id" = ${userId} AND "email_id" = ${emailId}; `;
+
+    return result.count > 0;
+};
+
 export const getMailById = async (userId: number, emailId: string): Promise<IMail | null> => {
     const result = await sql` SELECT mail.*, COUNT(log.*)::int as "pixelTrackCount" FROM "app_trackmail_mail" mail 
         LEFT JOIN app_trackmail_log log USING("email_id")
