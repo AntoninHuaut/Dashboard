@@ -75,8 +75,11 @@ export function TrackMailToken({ token, setToken, rightElement }: TrackMailToken
                         [theme.fn.largerThan('md')]: {
                             width: 300,
                         },
+                        [theme.fn.smallerThan('md')]: {
+                            width: 250,
+                        },
                         [theme.fn.smallerThan('xs')]: {
-                            width: 200,
+                            width: 150,
                         },
                     }}>
                     <LoadingOverlay visible={resetTokenFetch.isLoading} overlayBlur={2} />

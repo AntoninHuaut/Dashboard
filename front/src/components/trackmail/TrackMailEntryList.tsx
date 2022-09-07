@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { deleteMailRequest, mailsRequest } from '../../api/trackmail_request';
 import { useFetch } from '../../hooks/useFetch';
+import { useMailFormatter } from '../../hooks/useMailFormatter';
 import { usePaginationFetch } from '../../hooks/usePaginationFetch';
 import { errorNotif, successNotif } from '../../services/notification.services';
 import { IPaginationDataRef } from '../../types/PaginationData';
@@ -18,7 +19,7 @@ interface TrackMailEntryListProps {
 
 export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps, ref: Ref<IPaginationDataRef>) => {
     const displayEmailData = useMediaQuery('(min-width: 1200px)');
-    const displayReduceDataCutted = useMediaQuery('(min-width: 1500px)');
+    const mailFormatter = useMailFormatter(false);
 
     const theme = useMantineTheme();
     const { data, dataFetch, paginationData, setTargetPage, refreshData } = usePaginationFetch<IMail>({
@@ -40,22 +41,15 @@ export const TrackMailEntryList = forwardRef(({ token }: TrackMailEntryListProps
     };
 
     const rows = data.map((row: IMail) => {
-        const cutSize = displayReduceDataCutted ? 29 : 21;
-        const cutSizeExtend = cutSize + 8;
-        const cuttedSubject = row.subject.substring(0, cutSize) + (row.subject.length > cutSize ? '...' : '');
-        const cuttedEmailFrom = row.email_from.substring(0, cutSizeExtend) + (row.email_from.length > cutSizeExtend ? '...' : '');
-
-        const emailToStr = row.email_to.join(', ');
-        const cuttedEmailTo = emailToStr.substring(0, cutSizeExtend) + (emailToStr.length > cutSizeExtend ? '...' : '');
-
+        const { subject, emailFrom, emailTo } = mailFormatter.formatEmail(row);
         return (
             <tr key={row.email_id}>
                 <td>{dayjs(row.created).format('DD/MM/YYYY [at] HH[h]mm')}</td>
                 {displayEmailData && (
                     <>
-                        <td>{cuttedSubject}</td>
-                        <td>{cuttedEmailFrom}</td>
-                        <td>{cuttedEmailTo}</td>
+                        <td>{subject}</td>
+                        <td>{emailFrom}</td>
+                        <td>{emailTo}</td>
                     </>
                 )}
                 <td>

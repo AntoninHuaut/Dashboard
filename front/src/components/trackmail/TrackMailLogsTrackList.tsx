@@ -1,4 +1,5 @@
 import { Badge, Center, LoadingOverlay, Pagination, Table, Title, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { forwardRef, Ref } from 'react';
 
@@ -14,6 +15,7 @@ interface TrackMailLogsTrackListProps {
 
 export const TrackMailLogsTrackList = forwardRef(({ token, emailId }: TrackMailLogsTrackListProps, ref: Ref<IPaginationDataRef>) => {
     const theme = useMantineTheme();
+    const displayFullData = useMediaQuery('(min-width: 1000px)');
     const { data, dataFetch, paginationData, setTargetPage } = usePaginationFetch<IPixelTrack | ILinkTrack>({
         dataRequest: (targetPage: number) => logsTrackRequest(targetPage, emailId, token),
         ref,
@@ -21,16 +23,28 @@ export const TrackMailLogsTrackList = forwardRef(({ token, emailId }: TrackMailL
 
     const rows = data.map((row: IPixelTrack | ILinkTrack) => {
         const hasLink = 'link_url' in row && row.link_url;
+        let safeUrl: URL | null = null;
+        if (hasLink) {
+            try {
+                safeUrl = new URL(row.link_url);
+            } catch (_ignore) {}
+        }
 
         return (
             <tr key={row.log_id}>
-                <td>{hasLink ? <Badge color={'blue'}>Click on link</Badge> : <Badge color={'orange'}>Mail opening</Badge>}</td>
+                <td>
+                    {hasLink ? (
+                        <Badge color={'blue'}>{displayFullData ? 'Click on link' : 'Link'}</Badge>
+                    ) : (
+                        <Badge color={'orange'}>{displayFullData ? 'Mail opening' : 'Open'}</Badge>
+                    )}
+                </td>
                 <td>{dayjs(row.log_date).format('DD/MM/YYYY [at] HH[h]mm')}</td>
-                <td>{row.user_ip}</td>
-                {hasLink ? (
+                {displayFullData && <td>{row.user_ip}</td>}
+                {hasLink && safeUrl ? (
                     <td>
                         <a target={'_blank'} href={row.link_url}>
-                            {row.link_url}
+                            {displayFullData ? row.link_url : safeUrl.hostname}
                         </a>
                     </td>
                 ) : (
@@ -55,7 +69,7 @@ export const TrackMailLogsTrackList = forwardRef(({ token, emailId }: TrackMailL
                             <tr>
                                 <th>Type</th>
                                 <th>Log date</th>
-                                <th>Viewer IP</th>
+                                {displayFullData && <th>Viewer IP</th>}
                                 <th>Link</th>
                             </tr>
                         </thead>
