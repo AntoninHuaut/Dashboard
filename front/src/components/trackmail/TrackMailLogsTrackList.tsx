@@ -44,8 +44,8 @@ export const TrackMailLogsTrackList = forwardRef(({ token, emailId }: TrackMailL
         <div style={{ position: 'relative' }}>
             <LoadingOverlay visible={dataFetch.isLoading} overlayBlur={2} />
 
-            <Title order={4} weight={400} align="center" mb="sm">
-                List of logs
+            <Title order={3} weight={400} align="center" mb="sm">
+                Logs
             </Title>
 
             {data.length > 0 ? (
