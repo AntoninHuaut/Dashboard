@@ -27,7 +27,7 @@ function App() {
                 withNormalizeCSS
                 theme={{
                     colorScheme,
-                    primaryColor: 'yellow',
+                    primaryColor: 'indigo',
                     defaultRadius: 'lg',
                 }}>
                 <ModalsProvider>

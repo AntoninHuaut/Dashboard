@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Text } from '@mantine/core';
+import { ActionIcon, Button, Group, Text, useMantineTheme } from '@mantine/core';
 import { IconArrowLeft, IconClockHour2 } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ interface TrackMailEntryDetailProps {
 }
 
 export function TrackMailEntryDetail({ emailId, token }: TrackMailEntryDetailProps) {
+    const theme = useMantineTheme();
     const navigate = useNavigate();
     const [mail, setMail] = useState<IMail | undefined>();
     const mailFetch = useFetch<IMail>({
@@ -36,7 +37,7 @@ export function TrackMailEntryDetail({ emailId, token }: TrackMailEntryDetailPro
 
     return (
         <Group position="apart" mb="xl">
-            <ActionIcon size="lg" color="yellow" variant="light" onClick={() => navigate(-1)}>
+            <ActionIcon size="lg" color={theme.primaryColor} variant="light" onClick={() => navigate(-1)}>
                 <IconArrowLeft size={26} />
             </ActionIcon>
 
