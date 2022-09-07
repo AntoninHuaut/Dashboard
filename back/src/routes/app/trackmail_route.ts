@@ -123,7 +123,7 @@ const imagePixelTrack = async (ctx: Context) => {
     await trackMailService.pixelTrack(emailId, userIp);
 
     await send(ctx, 'trackmail_pixel.png', {
-        root: `${Deno.cwd()}/data`,
+        root: `${Deno.cwd()}/static`,
     });
 };
 
