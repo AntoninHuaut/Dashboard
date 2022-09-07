@@ -78,18 +78,16 @@ export function TrackMailPage() {
 
             <Space h="xl" />
 
-            <Container fluid>
-                {subTypeLocation === 'track-mail' ? (
-                    <TrackMailEntryList ref={paginationChildRef} token={token} />
-                ) : (
-                    emailId && (
-                        <>
-                            <TrackMailEntryDetail emailId={emailId} token={token} />
-                            <TrackMailLogsTrackList emailId={emailId} ref={paginationChildRef} token={token} />
-                        </>
-                    )
-                )}
-            </Container>
+            {subTypeLocation === 'track-mail' ? (
+                <TrackMailEntryList ref={paginationChildRef} token={token} />
+            ) : (
+                emailId && (
+                    <>
+                        <TrackMailEntryDetail emailId={emailId} token={token} />
+                        <TrackMailLogsTrackList emailId={emailId} ref={paginationChildRef} token={token} />
+                    </>
+                )
+            )}
         </>
     );
 }

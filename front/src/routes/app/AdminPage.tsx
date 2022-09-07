@@ -39,9 +39,7 @@ export function AdminPage() {
 
             <Space h="xl" />
 
-            <Container fluid>
-                <UserEntryList ref={paginationChildRef} />
-            </Container>
+            <UserEntryList ref={paginationChildRef} />
         </>
     );
 }
