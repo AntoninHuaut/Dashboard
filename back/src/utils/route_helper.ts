@@ -13,6 +13,8 @@ export const safeParseBody = async (ctx: Context): Promise<Record<string, any>> 
 };
 
 export const validCaptchaToken = async (token: string, userIpAdress: string) => {
+    if (config.ENV === 'dev') return;
+
     try {
         const json = await fetch('https://www.google.com/recaptcha/api/siteverify', {
             method: 'POST',

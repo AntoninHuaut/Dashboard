@@ -1,11 +1,11 @@
 import { Context, httpErrors, Middleware } from 'oak';
 
-import { User, UserRole } from '/types/user_model.ts';
+import { IUser, UserRole } from '/types/user_model.ts';
 import { hasSomeUserRole } from '/utils/role_helper.ts';
 
 const userGuard = (roles?: UserRole[]) => {
     const middleware: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
-        const user: User | null = ctx.state.me;
+        const user: IUser | null = ctx.state.me;
         if (!user) {
             throw new httpErrors.Unauthorized('Unauthorized guest user');
         }

@@ -1,19 +1,17 @@
 import { Button, Group, PasswordInput } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { Check, Key, Lock, X } from 'tabler-icons-react';
+import { IconCheck, IconKey, IconLock, IconX } from '@tabler/icons';
+import { useEffect, useState } from 'react';
 
-import { useFetch } from '../../hooks/useFetch';
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
+import { errorNotif, successNotif } from '../../services/notification.services';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IUpdatePasswordRequest, IUser } from '../../types/LoginType';
 import { ConfirmPassword } from '../form/ConfirmPassword';
 import { isValidPassword, PasswordStrength } from '../form/PasswordStength';
-import { errorNotif, successNotif } from '../../services/notification.services';
 
 interface UpdatePasswordProfileProps {
     closePasswordForm: () => any;
@@ -44,7 +42,6 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
     });
 
     const onSubmit = useCaptcha(CaptchaAction.UpdateProfile, async (captcha: string) => {
-        safeTrack(`update-password`, 'account');
         updatePasswordFetch.makeRequest(updateRequest(user.id, updatePass, captcha));
         onSubmit(false);
     });
@@ -64,7 +61,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
                 mt="sm"
                 label="Current password"
                 name="currentPassword"
-                icon={<Lock />}
+                icon={<IconLock />}
                 placeholder="Your current password"
                 value={updatePass.currentPassword}
                 disabled={updatePasswordFetch.isLoading}
@@ -76,7 +73,7 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
                 mt="md"
                 label="New password"
                 name="newPassword"
-                icon={<Key />}
+                icon={<IconKey />}
                 placeholder="Your new password"
                 value={updatePass.newPassword}
                 disabled={updatePasswordFetch.isLoading}
@@ -94,13 +91,13 @@ export function UpdatePasswordProfile(props: UpdatePasswordProfileProps) {
                 <Button
                     size="md"
                     color="lime"
-                    leftIcon={<Check />}
+                    leftIcon={<IconCheck />}
                     disabled={!isValidForm || updatePasswordFetch.isLoading}
                     loading={updatePasswordFetch.isLoading}
                     onClick={() => onSubmit(true)}>
                     Save
                 </Button>
-                <Button size="md" color="red" leftIcon={<X />} onClick={props.closePasswordForm} disabled={updatePasswordFetch.isLoading}>
+                <Button size="md" color="red" leftIcon={<IconX />} onClick={props.closePasswordForm} disabled={updatePasswordFetch.isLoading}>
                     Cancel
                 </Button>
             </Group>

@@ -22,7 +22,7 @@ export interface ContextUser {
     roles: roles;
 }
 
-export interface User extends ContextUser {
+export interface IUser extends ContextUser {
     is_active: is_active;
     created_at: created_at;
     updated_at: updated_at;

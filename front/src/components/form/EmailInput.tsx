@@ -1,6 +1,6 @@
 import { TextInput, TextInputProps } from '@mantine/core';
+import { IconMail } from '@tabler/icons';
 import { ChangeEventHandler, useEffect, useState } from 'react';
-import { Mail } from 'tabler-icons-react';
 
 interface EmailInputProps extends TextInputProps {
     value: string;
@@ -24,5 +24,5 @@ export function EmailInput(props: EmailInputProps) {
         return () => clearTimeout(timeOutId);
     }, [props.value]);
 
-    return <TextInput type="email" label="Email" name="email" placeholder="you@provider.com" icon={<Mail />} required error={error} {...props} />;
+    return <TextInput type="email" label="Email" name="email" placeholder="you@provider.com" icon={<IconMail />} required error={error} {...props} />;
 }

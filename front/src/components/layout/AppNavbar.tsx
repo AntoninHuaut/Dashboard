@@ -1,12 +1,11 @@
-import { Avatar, Code, createStyles, Group, MantineNumberSize, Navbar } from '@mantine/core';
+import { Avatar, Code, createStyles, Divider, Group, MantineNumberSize, Navbar } from '@mantine/core';
+import { IconAdjustments, IconHome, IconLogout, IconMail, IconUserCircle, TablerIcon } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Logout, UserCircle } from 'tabler-icons-react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { getGravatarUrl } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
-import { IUser } from '../../types/LoginType';
+import { IUser, UserRole } from '../../types/LoginType';
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon = getRef('icon');
@@ -62,15 +61,61 @@ const useStyles = createStyles((theme, _params, getRef) => {
     };
 });
 
-const data = [
-    { link: '/app/home', label: 'Home', icon: Home },
-    { link: '/app/profile', label: 'Profile', icon: UserCircle },
+interface ILinkData {
+    link: string;
+    label: string;
+    icon: TablerIcon;
+    roles?: UserRole[];
+    elements?: { pre?: React.ReactNode; post?: React.ReactNode };
+}
+
+interface ILinkCreateParams {
+    item: ILinkData;
+    active: string;
+    user: IUser;
+    classes: Record<'header' | 'footer' | 'link' | 'linkIcon' | 'linkActive', string>;
+    cx: (...args: any) => string;
+    setOpened: (v: boolean) => any;
+    navigate: (v: string) => any;
+}
+
+const data: ILinkData[] = [
+    { link: '/app/admin', label: 'Admin', icon: IconAdjustments, roles: [UserRole.ADMIN], elements: { post: <Divider mt="sm" mb="sm" /> } },
+    { link: '/app/home', label: 'Home', icon: IconHome },
+    { link: '/app/profile', label: 'Profile', icon: IconUserCircle },
+    { link: '/app/track-mail', label: 'TrackMail', icon: IconMail },
 ];
 
 interface AppNavbarProps {
     setOpened: (v: boolean) => any;
     opened: boolean;
     hiddenBreakpoint: MantineNumberSize;
+}
+
+function createLink({ item, active, user, classes, cx, setOpened, navigate }: ILinkCreateParams) {
+    const requireRoles = item.roles ?? [];
+    if (requireRoles.length > 0 && !user.roles.some((role) => requireRoles.includes(role as UserRole))) {
+        return null;
+    }
+
+    return (
+        <>
+            {item.elements?.pre}
+            <a
+                className={cx(classes.link, { [classes.linkActive]: item.label === active })}
+                href={item.link}
+                key={item.label}
+                onClick={(evt) => {
+                    evt.preventDefault();
+                    setOpened(false);
+                    navigate(item.link);
+                }}>
+                <item.icon className={classes.linkIcon} />
+                <span>{item.label}</span>
+            </a>
+            {item.elements?.post}
+        </>
+    );
 }
 
 export function AppNavbar(props: AppNavbarProps) {
@@ -85,25 +130,11 @@ export function AppNavbar(props: AppNavbarProps) {
 
     useEffect(() => {
         const path = location.pathname;
-        const active = data.find(({ link }) => link === path);
+        const active = data.find(({ link }) => path.startsWith(link));
         setActive(active ? active.label : '');
     }, [location.pathname]);
 
-    const links = data.map((item) => (
-        <a
-            className={cx(classes.link, { [classes.linkActive]: item.label === active })}
-            href={item.link}
-            key={item.label}
-            onClick={(evt) => {
-                evt.preventDefault();
-                safeTrack(`navbar-${item.label.toLowerCase()}`, 'click');
-                setOpened(false);
-                navigate(item.link);
-            }}>
-            <item.icon className={classes.linkIcon} />
-            <span>{item.label}</span>
-        </a>
-    ));
+    const links = data.map((item) => createLink({ item, active, user, classes, cx, setOpened, navigate })).filter((item) => item !== null);
 
     return (
         <Navbar width={{ sm: 200, lg: 250 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
@@ -121,11 +152,10 @@ export function AppNavbar(props: AppNavbarProps) {
                     className={classes.link}
                     onClick={(event) => {
                         event.preventDefault();
-                        safeTrack('navbar-logout', 'click');
                         setOpened(false);
                         navigate('/app/logout');
                     }}>
-                    <Logout className={classes.linkIcon} />
+                    <IconLogout className={classes.linkIcon} />
                     <span>Logout</span>
                 </a>
             </Navbar.Section>

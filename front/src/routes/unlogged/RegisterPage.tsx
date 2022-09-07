@@ -1,33 +1,33 @@
 import { Anchor, Button, Container, Paper, Text, Title } from '@mantine/core';
+import { IconKey } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Key } from 'tabler-icons-react';
 
-import { useFetch } from '../../hooks/useFetch';
 import { registerRequest } from '../../api/user_request';
 import { ConfirmPassword } from '../../components/form/ConfirmPassword';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { isValidPassword, PasswordStrength } from '../../components/form/PasswordStength';
 import { isValidUsername, UsernameInput } from '../../components/form/UsernameInput';
 import { useCaptcha } from '../../hooks/useCaptcha';
+import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
-import { safeTrack } from '../../services/umami.service';
+import { errorNoDataFetchNotif, errorNotif, successNotif } from '../../services/notification.services';
 import { CaptchaAction } from '../../types/CaptchaType';
-import { IRegisterRequest } from '../../types/LoginType';
-import { errorNotif, successNotif } from '../../services/notification.services';
+import { IRegisterRequest, IUser } from '../../types/LoginType';
 
 export function RegisterPage() {
     const navigate = useNavigate();
-    const registerFetch = useFetch({
+    const registerFetch = useFetch<IUser>({
         onError(error) {
             errorNotif({
                 title: 'An error occurred during register',
                 message: error.message,
             });
         },
-        onSuccess(_data) {
+        onSuccess(data) {
+            if (!data) return errorNoDataFetchNotif();
+
             setAccountCreated(true);
-            safeTrack('created', 'account');
             const autoCloseDelay = successNotif({
                 title: 'Your account has been created!',
                 message: "You will be redirected to the login page. Don't forget to check your email to activate your account.",
@@ -69,7 +69,6 @@ export function RegisterPage() {
                     size="sm"
                     onClick={(evt) => {
                         evt.preventDefault();
-                        safeTrack('sign-in', 'link');
                         navigate('/login');
                     }}>
                     Sign in
@@ -94,7 +93,7 @@ export function RegisterPage() {
                     mt="md"
                     label="Password"
                     name="password"
-                    icon={<Key />}
+                    icon={<IconKey />}
                     placeholder="Your password"
                     value={register.password}
                     disabled={registerFetch.isLoading || isAccountCreated}

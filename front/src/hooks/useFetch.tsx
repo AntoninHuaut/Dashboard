@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { IRequestParams } from '../api/request';
 
 interface UseFetchParameter<T> {
-    onError?: (servError: Error) => any; // Error
-    onSuccess?: (servData: T | null) => any; // No error with optional data
-    onAfterRequest?: () => any; // Always called after request
+    onError?: (servError: Error, statusCode: number) => any; // Error
+    onSuccess?: (servData: T | null, statusCode: number) => any; // No error with optional data
+    onAfterRequest?: (statusCode: number) => any; // Always called after request
 }
 
 export const useFetch = <T,>(params: UseFetchParameter<T>) => {
@@ -11,6 +12,7 @@ export const useFetch = <T,>(params: UseFetchParameter<T>) => {
     const [error, setError] = useState<Error | null>();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [abortController, setAbortController] = useState<AbortController>(new AbortController());
+    const [statusCode, setStatusCode] = useState<number>(0);
     const [nbRequest, setNbRequest] = useState<number>(0);
 
     const abortRequest = () => abortController.abort();
@@ -19,7 +21,7 @@ export const useFetch = <T,>(params: UseFetchParameter<T>) => {
 
     useEffect(() => () => abortRequest(), []);
 
-    const makeRequest = async ({ url, options }: { url: string; options: RequestInit }) => {
+    const makeRequest = async ({ url, options }: IRequestParams) => {
         const freshAbortController = new AbortController();
         setAbortController(freshAbortController);
         setLoading(true);
@@ -28,6 +30,7 @@ export const useFetch = <T,>(params: UseFetchParameter<T>) => {
 
         try {
             const response = await fetch(url, { ...options, signal: freshAbortController.signal });
+            setStatusCode(response.status);
 
             if (response.ok) {
                 if (response.status !== 204) {
@@ -64,15 +67,15 @@ export const useFetch = <T,>(params: UseFetchParameter<T>) => {
         if (cannotHandleResult()) return;
 
         if (error && params.onError) {
-            params.onError(error);
+            params.onError(error, statusCode);
         }
 
         if (params.onSuccess) {
-            params.onSuccess(data);
+            params.onSuccess(data, statusCode);
         }
 
         if (params.onAfterRequest) {
-            params.onAfterRequest();
+            params.onAfterRequest(statusCode);
         }
     }, [isLoading]);
 

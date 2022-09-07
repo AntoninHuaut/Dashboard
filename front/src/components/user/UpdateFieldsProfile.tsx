@@ -1,13 +1,12 @@
 import { ActionIcon, useMantineTheme } from '@mantine/core';
+import { IconCheck, IconEdit, IconX } from '@tabler/icons';
 import { ChangeEvent, useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { Check, Edit, X } from 'tabler-icons-react';
 
 import { updateRequest } from '../../api/user_request';
 import { useAuth } from '../../hooks/useAuth';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { useFetch } from '../../hooks/useFetch';
 import { errorNotif, successNotif } from '../../services/notification.services';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IUser } from '../../types/LoginType';
 import { EmailInput, isValidEmail } from '../form/EmailInput';
@@ -44,7 +43,6 @@ export function UpdateFieldProfile() {
     const editButton = useCallback(
         (fieldName: FieldNameType, fieldValue: string, setFieldValue: (value: string) => void) => {
             const validateChange = async (captcha: string) => {
-                safeTrack(`update-${fieldName.toLowerCase()}`, 'account');
                 setLoading(true);
                 await updateFetch.makeRequest(updateRequest(user.id, { [fieldName]: fieldValue }, captcha));
                 await auth.refreshUser();
@@ -70,17 +68,17 @@ export function UpdateFieldProfile() {
                             size="md"
                             onClick={() => setEditFieldName(fieldName)}
                             disabled={editFieldName.length > 0}>
-                            <Edit />
+                            <IconEdit />
                         </ActionIcon>
                     )}
 
                     {editFieldName === fieldName && !isLoading && (
                         <>
                             <ActionIcon color={'lime'} variant="filled" size="md" mr="2px" onClick={() => onSubmit(true)} disabled={isLoading || !isValidInput}>
-                                <Check />
+                                <IconCheck />
                             </ActionIcon>
                             <ActionIcon color={'red'} variant="filled" size="md" onClick={cancelChange} disabled={isLoading || !isValidInput}>
-                                <X />
+                                <IconX />
                             </ActionIcon>
                         </>
                     )}
@@ -88,7 +86,7 @@ export function UpdateFieldProfile() {
                     {editFieldName === fieldName && isLoading && (
                         <>
                             <ActionIcon color={'lime'} variant="filled" size="md" mr="2px" loading>
-                                <Check />
+                                <IconCheck />
                             </ActionIcon>
                         </>
                     )}

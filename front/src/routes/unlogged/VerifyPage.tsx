@@ -1,14 +1,13 @@
 import { Anchor, Button, Container, Paper, Text, TextInput, Title } from '@mantine/core';
+import { IconKey } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Key } from 'tabler-icons-react';
 
 import { verifyRequest } from '../../api/auth_request';
 import { useCaptcha } from '../../hooks/useCaptcha';
 import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
-import { safeTrack } from '../../services/umami.service';
 import { CaptchaAction } from '../../types/CaptchaType';
 import { IVerifyRequest } from '../../types/LoginType';
 
@@ -20,7 +19,6 @@ export function VerifyPage() {
             errorNotif({ title: 'An error occurred during verification', message: error.message });
         },
         onSuccess(_data) {
-            safeTrack('verify', 'account');
             setAccountVerified(true);
             const autoCloseDelay = successNotif({
                 title: 'Your account has been verified!',
@@ -68,7 +66,7 @@ export function VerifyPage() {
                     mt="md"
                     label="Verification token"
                     name="token"
-                    icon={<Key />}
+                    icon={<IconKey />}
                     placeholder="Verification token sent by email"
                     value={verify.token}
                     disabled

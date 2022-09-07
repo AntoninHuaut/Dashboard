@@ -2,7 +2,7 @@ import { create, getNumericDate, Header, Payload, verify } from 'djwt';
 
 import { config } from '/config.ts';
 import { JWTUser, TokenProperty } from '/types/auth_model.ts';
-import { User } from '/types/user_model.ts';
+import { IUser } from '/types/user_model.ts';
 
 const header: Header = {
     alg: 'HS512',
@@ -38,7 +38,7 @@ async function loadKey() {
 
 await loadKey();
 
-const getAuthToken = async (user: User): Promise<TokenProperty> => {
+const getAuthToken = async (user: IUser): Promise<TokenProperty> => {
     const payload: Payload = {
         iss: 'dashboard-api',
         id: user.id,
@@ -54,7 +54,7 @@ const getAuthToken = async (user: User): Promise<TokenProperty> => {
     };
 };
 
-const getRefreshToken = async (user: User): Promise<TokenProperty> => {
+const getRefreshToken = async (user: IUser): Promise<TokenProperty> => {
     const payload: Payload = {
         iss: 'deno-api',
         id: user.id,

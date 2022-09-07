@@ -1,6 +1,6 @@
 import { TextInput, TextInputProps } from '@mantine/core';
+import { IconUser } from '@tabler/icons';
 import { ChangeEventHandler, useEffect, useState } from 'react';
-import { User } from 'tabler-icons-react';
 
 interface UsernameInputProps extends TextInputProps {
     value: string;
@@ -24,5 +24,5 @@ export function UsernameInput(props: UsernameInputProps) {
         return () => clearTimeout(timeOutId);
     }, [props.value]);
 
-    return <TextInput label="Username" name="username" placeholder="Your username" icon={<User />} required error={error} {...props} />;
+    return <TextInput label="Username" name="username" placeholder="Your username" icon={<IconUser />} required error={error} {...props} />;
 }

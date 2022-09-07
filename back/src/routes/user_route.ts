@@ -6,7 +6,10 @@ import * as userService from '/services/user_service.ts';
 import { ICreateUser, IForgotUserPassword, IResetUserPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
 import { hasUserRole } from '/utils/role_helper.ts';
 import { safeParseBody, validCaptchaToken } from '/utils/route_helper.ts';
+import { IUser } from '/types/user_model.ts';
+import { IPagination } from '../types/app/trackmail_model.ts';
 
+const validPage = z.number().min(0).default(0);
 const validUserId = z.number().min(1);
 const validEmail = z.string().trim().email();
 const validUsername = z.string().trim().min(3);
@@ -37,7 +40,23 @@ const validResetPassword: z.ZodType<IResetUserPassword> = z.object({
 const userRouter = new Router();
 
 const getUsers = async (ctx: Context) => {
-    ctx.response.body = await userService.getUsers();
+    const { pageStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const page = validPage.parse(isNaN(+pageStr) ? undefined : +pageStr); // Use default value if NaN
+
+    const userCount = await userService.getUsersCount();
+    const users = await userService.getUsers(page);
+
+    const bodyResponse: { data: IUser[]; pagination: IPagination } = {
+        data: users,
+        pagination: {
+            numberPerPage: userService.NUMBER_OF_USERS_PER_PAGE,
+            offset: page * userService.NUMBER_OF_USERS_PER_PAGE,
+            page: page,
+            total: userCount,
+        },
+    };
+
+    ctx.response.body = bodyResponse;
 };
 
 const getUserById = async (ctx: Context) => {
@@ -112,7 +131,7 @@ const deleteUser = async (ctx: Context) => {
     }
 };
 
-userRouter.get('/', userGuard([UserRole.ADMIN]), getUsers);
+userRouter.get('/:pageStr?', userGuard([UserRole.ADMIN]), getUsers);
 userRouter.get('/:userIdStr', userGuard([UserRole.ADMIN]), getUserById);
 userRouter.post('/', createUser);
 userRouter.post('/forgotPassword', askForgotPassword);
