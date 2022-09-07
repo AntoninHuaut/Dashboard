@@ -1,4 +1,5 @@
 import { Avatar, Code, createStyles, Divider, Group, MantineNumberSize, Navbar } from '@mantine/core';
+import { useViewportSize } from '@mantine/hooks';
 import { IconAdjustments, IconHome, IconLogout, IconMail, IconUserCircle, TablerIcon } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -90,6 +91,7 @@ interface AppNavbarProps {
     setOpened: (v: boolean) => any;
     opened: boolean;
     hiddenBreakpoint: MantineNumberSize;
+    appHeaderHeight: number;
 }
 
 function createLink({ item, active, user, classes, cx, setOpened, navigate }: ILinkCreateParams) {
@@ -122,6 +124,7 @@ export function AppNavbar(props: AppNavbarProps) {
 
     const auth = useAuth();
     const user = auth.user as IUser; // Protected route
+    const { height } = useViewportSize();
     const navigate = useNavigate();
     const location = useLocation();
     const { classes, cx } = useStyles();
@@ -136,7 +139,7 @@ export function AppNavbar(props: AppNavbarProps) {
     const links = data.map((item) => createLink({ item, active, user, classes, cx, setOpened, navigate })).filter((item) => item !== null);
 
     return (
-        <Navbar width={{ sm: 200, lg: 250 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
+        <Navbar height={height - props.appHeaderHeight} width={{ sm: 200, lg: 250 }} p="md" hidden={!opened} hiddenBreakpoint={hiddenBreakpoint}>
             <Navbar.Section grow>
                 <Group className={classes.header} position="left">
                     <Avatar size={48} src={getGravatarUrl(user.email)} radius={48} />
