@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "app_trackmail" (
 CREATE TABLE IF NOT EXISTS "app_trackmail_mail" (
     "email_id"               varchar(255) not null UNIQUE,
     "user_id"                int          not null,
-    "email_from"             text null,
+    "email_from"             varchar(255) null,
     "email_to"               text null,
     "subject"                varchar(255) null,
     "created"                timestamptz  default now() not null,

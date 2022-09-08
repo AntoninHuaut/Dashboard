@@ -11,8 +11,8 @@ import { IPagination } from '../types/app/trackmail_model.ts';
 
 const validPage = z.number().min(0).default(0);
 const validUserId = z.number().min(1);
-const validEmail = z.string().trim().email();
-const validUsername = z.string().trim().min(3);
+const validEmail = z.string().trim().email().max(255);
+const validUsername = z.string().trim().min(3).max(64);
 const validPassword = z.string().min(8);
 
 const validCreateUser: z.ZodType<ICreateUser> = z.object({

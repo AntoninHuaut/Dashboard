@@ -13,12 +13,12 @@ const trackMailRouter = new Router();
 
 const validPage = z.number().min(0).default(0);
 const validMailId = z.string().min(TOKEN_STRING_LENGTH).max(TOKEN_STRING_LENGTH);
-const validLinkUrl = z.string().url();
+const validLinkUrl = z.string().url().max(512);
 
 const validCreateMail: z.ZodType<ICreateMail> = z.object({
-    email_from: z.string().min(1),
-    email_to: z.string().array().min(1),
-    subject: z.string(),
+    email_from: z.string().min(1).max(255),
+    email_to: z.string().array().min(1).max(2048),
+    subject: z.string().max(255),
 });
 
 const validUpdateSettings: z.ZodType<ITrackMailSettings> = z.object({
