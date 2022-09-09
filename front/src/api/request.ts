@@ -22,10 +22,13 @@ const getContentTypeHeader = (options: RequestInit): RequestInit => {
     return {};
 };
 
-export const mergeFetchOptions = (options: RequestInit): RequestInit => {
-    return {
+export const mergeFetchOptions = (options: RequestInit, widthCredentials = true): RequestInit => {
+    const opts: RequestInit = {
         ...options,
         ...getContentTypeHeader(options),
-        credentials: 'include',
     };
+
+    if (widthCredentials) return { ...opts, credentials: 'include' };
+
+    return opts;
 };

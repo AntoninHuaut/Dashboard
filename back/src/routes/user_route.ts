@@ -3,11 +3,10 @@ import { z } from 'zod';
 
 import userGuard from '/middlewares/userguard_middleware.ts';
 import * as userService from '/services/user_service.ts';
-import { ICreateUser, IForgotUserPassword, IResetUserPassword, IUpdateUser, UserRole } from '/types/user_model.ts';
+import { IPagination } from '/types/app/trackmail_model.ts';
+import { ICreateUser, IForgotUserPassword, IResetUserPassword, IUpdateUser, IUser, UserRole } from '/types/user_model.ts';
 import { hasUserRole } from '/utils/role_helper.ts';
 import { safeParseBody, validCaptchaToken } from '/utils/route_helper.ts';
-import { IUser } from '/types/user_model.ts';
-import { IPagination } from '../types/app/trackmail_model.ts';
 
 const validPage = z.number().min(0).default(0);
 const validUserId = z.number().min(1);
