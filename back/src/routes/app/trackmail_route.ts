@@ -187,6 +187,7 @@ trackMailRouter.get('/linkTrack/:emailIdStr/:linkUrlStr', linkTrack);
 trackMailRouter.get('/logsTrack/:emailIdStr/count', trackMailTokenGuard(), getLogsTrackCount);
 trackMailRouter.get('/logsTrack/:emailIdStr/:pageStr?', trackMailTokenGuard(), getLogsTrack);
 
-export const isAnyAccessControlAllowOrigin = (ctx: Context, apiRouteAppTrackMail: string) => ctx.request.url.pathname !== `${apiRouteAppTrackMail}/token`;
+export const isAnyAccessControlAllowOrigin = (ctx: Context, apiRouteAppTrackMail: string) =>
+    ctx.request.url.pathname.startsWith(apiRouteAppTrackMail) && ctx.request.url.pathname !== `${apiRouteAppTrackMail}/token`;
 
 export default trackMailRouter;
