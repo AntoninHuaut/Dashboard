@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import { httpErrors } from 'oak';
 
-import { ICreateMail, ILinkTrack, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
+import { ICreateMail, ILinkTrack, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 
 export const NUMBER_OF_ITEMS_PER_PAGE = 15;
 export const DELAY_SECOND_LOG_PIXEL_TRACK = 5;
