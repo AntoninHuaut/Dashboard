@@ -1,9 +1,11 @@
+import dayjs from 'dayjs';
 import { httpErrors } from 'oak';
 
 import { ICreateMail, ILinkTrack, IMail, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
 import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_ITEMS_PER_PAGE = 15;
+export const DELAY_SECOND_LOG_PIXEL_TRACK = 5;
 
 export const getUserIdByToken = async (token: string): Promise<number> => {
     const userId = await trackMailRepo.getUserIdByToken(token);
@@ -100,12 +102,18 @@ export const getMailById = async (userId: number, emailId: string): Promise<IMai
 };
 
 export const pixelTrack = async (emailId: string, userIp: string): Promise<boolean> => {
-    const isMailExist = await trackMailRepo.existMailById(emailId);
-    if (!isMailExist) {
+    const mailCreated = await trackMailRepo.getMailCreationDateById(emailId);
+    if (!mailCreated) {
         throw new httpErrors.BadRequest('Invalid email id');
     }
 
-    return await trackMailRepo.pixelTrack(emailId, userIp);
+    // Prevent selftracking when mail is sent by the TrackMail extension
+    const dateWithShift = dayjs(mailCreated).add(DELAY_SECOND_LOG_PIXEL_TRACK, 'second');
+    if (dateWithShift.isBefore(dayjs())) {
+        return await trackMailRepo.pixelTrack(emailId, userIp);
+    }
+
+    return false;
 };
 
 export const linkTrack = async (emailId: string, userIp: string, linkUrl: string): Promise<boolean> => {

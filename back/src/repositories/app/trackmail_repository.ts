@@ -90,6 +90,13 @@ export const getMailById = async (userId: number, emailId: string): Promise<IMai
     return result.length > 0 ? convertDBMailToObject(result[0] as IMail & { email_to: string }) : null;
 };
 
+export const getMailCreationDateById = async (emailId: string): Promise<Date | null> => {
+    const result = await sql` SELECT created FROM "app_trackmail_mail" 
+        WHERE "email_id" = ${emailId}; `;
+
+    return result.length > 0 ? result[0].created : null;
+};
+
 export const existMailById = async (emailId: string): Promise<boolean> => {
     const result = await sql` SELECT email_id 
         FROM "app_trackmail_mail" 
