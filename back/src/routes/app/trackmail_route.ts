@@ -5,9 +5,13 @@ import trackMailTokenGuard from '/middlewares/app/trackmailtokenguard_middleware
 import userGuard from '/middlewares/userguard_middleware.ts';
 import * as trackMailService from '/services/app/trackmail_service.ts';
 import { ICreateMail, IMail, IPagination, IPixelTrack, ITrackMailSettings } from '/types/app/trackmail_model.ts';
+import { API_ROUTE_APP_TRACKMAIL } from '/types/route_model.ts';
 import { UserRole } from '/types/user_model.ts';
 import { TOKEN_STRING_LENGTH } from '/utils/db_helper.ts';
 import { safeParseBody } from '/utils/route_helper.ts';
+
+const pixelTrackPathRoute = 'pixelTrack';
+const linkTrackPathRoute = 'linkTrack';
 
 const trackMailRouter = new Router();
 
@@ -102,7 +106,13 @@ const createMail = async (ctx: Context) => {
     const createdMail = await trackMailService.createMail(user.id, createMailBody);
 
     ctx.response.status = Status.Created;
-    ctx.response.body = createdMail; // TODO: add path to track pixel & track link
+    ctx.response.body = {
+        ...createdMail,
+        __paths: {
+            pixel: `${API_ROUTE_APP_TRACKMAIL}/${pixelTrackPathRoute}/${createdMail.email_id}`,
+            link: `${API_ROUTE_APP_TRACKMAIL}/${linkTrackPathRoute}/${createdMail.email_id}`,
+        },
+    };
 };
 
 const deleteMail = async (ctx: Context) => {
@@ -182,8 +192,8 @@ trackMailRouter.get('/mail/:emailIdStr', trackMailTokenGuard(), getMailById);
 trackMailRouter.post('/mail', trackMailTokenGuard(), createMail);
 trackMailRouter.delete('/mail/:emailIdStr', trackMailTokenGuard(), deleteMail);
 
-trackMailRouter.get('/pixelTrack/:emailIdStr', imagePixelTrack);
-trackMailRouter.get('/linkTrack/:emailIdStr/:linkUrlStr', linkTrack);
+trackMailRouter.get(`/${pixelTrackPathRoute}/:emailIdStr`, imagePixelTrack);
+trackMailRouter.get(`/${linkTrackPathRoute}/:emailIdStr/:linkUrlStr`, linkTrack);
 trackMailRouter.get('/logsTrack/:emailIdStr/count', trackMailTokenGuard(), getLogsTrackCount);
 trackMailRouter.get('/logsTrack/:emailIdStr/:pageStr?', trackMailTokenGuard(), getLogsTrack);
 

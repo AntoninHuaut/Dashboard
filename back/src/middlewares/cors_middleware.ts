@@ -2,7 +2,7 @@ import { Context, Middleware } from 'oak';
 
 import { config } from '/config.ts';
 import { isAnyAccessControlAllowOrigin } from '/routes/app/trackmail_route.ts';
-import { API_ROUTE, API_ROUTE_APP_TRACKMAIL } from '/routes/routes.ts';
+import { API_ROUTE, API_ROUTE_APP_TRACKMAIL } from '/types/route_model.ts';
 
 const cors: Middleware = async (ctx: Context, next: () => Promise<unknown>) => {
     if (ctx.request.url.pathname.startsWith(API_ROUTE)) {

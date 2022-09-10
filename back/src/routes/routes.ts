@@ -3,15 +3,7 @@ import { Router } from 'oak';
 import authRouter from './auth_route.ts';
 import userRouter from './user_route.ts';
 import trackMailRouter from './app/trackmail_route.ts';
-
-export enum RouteEnum {
-    AUTH = 'auth',
-    USER = 'user',
-    APP_TRACKMAIL = 'app/trackmail',
-}
-
-export const API_ROUTE = '/api/v1';
-export const API_ROUTE_APP_TRACKMAIL = `${API_ROUTE}/${RouteEnum.APP_TRACKMAIL}`;
+import { API_ROUTE, RouteEnum } from '/types/route_model.ts';
 
 export const router = new Router();
 const api = new Router();
