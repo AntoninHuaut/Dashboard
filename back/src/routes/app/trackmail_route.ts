@@ -180,6 +180,17 @@ const getLogsTrack = async (ctx: Context) => {
     ctx.response.body = bodyResponse;
 };
 
+export const deleteSelfTrack = async (ctx: Context) => {
+    const { emailIdStr } = helpers.getQuery(ctx, { mergeParams: true });
+    const emailId = validMailId.parse(emailIdStr);
+    const userIp = ctx.request.ips[0];
+    const user = ctx.state.me;
+
+    await trackMailService.deleteSelfTrack(user.id, emailId, userIp);
+
+    ctx.response.status = Status.NoContent;
+};
+
 trackMailRouter.get('/token', userGuard([UserRole.USER]), getToken);
 trackMailRouter.post('/token', userGuard([UserRole.USER]), resetToken);
 
@@ -196,6 +207,7 @@ trackMailRouter.get(`/${pixelTrackPathRoute}/:emailIdStr`, imagePixelTrack);
 trackMailRouter.get(`/${linkTrackPathRoute}/:emailIdStr/:linkUrlStr`, linkTrack);
 trackMailRouter.get('/logsTrack/:emailIdStr/count', trackMailTokenGuard(), getLogsTrackCount);
 trackMailRouter.get('/logsTrack/:emailIdStr/:pageStr?', trackMailTokenGuard(), getLogsTrack);
+trackMailRouter.delete('/selfPixelTrack/:emailIdStr', trackMailTokenGuard(), deleteSelfTrack);
 
 export const isAnyAccessControlAllowOrigin = (ctx: Context, apiRouteAppTrackMail: string) =>
     ctx.request.url.pathname.startsWith(apiRouteAppTrackMail) && ctx.request.url.pathname !== `${apiRouteAppTrackMail}/token`;

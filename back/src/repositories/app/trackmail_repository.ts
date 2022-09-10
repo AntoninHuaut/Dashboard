@@ -165,3 +165,11 @@ export const getLogsTrack = async (userId: number, emailId: string, page: number
 
     return result.length > 0 && result[0].log_id ? (result as unknown as IPixelTrack[]) : [];
 };
+
+export const deleteSelfTrack = async (emailId: string, userIp: string, startDate: Date, endDate: Date): Promise<boolean> => {
+    const result = await sql` DELETE FROM "app_trackmail_pixel_log" 
+        WHERE "email_id" = ${emailId} AND "user_ip" = ${userIp} 
+        AND "log_date" BETWEEN ${startDate} AND ${endDate}; `;
+
+    return result.count > 0;
+};

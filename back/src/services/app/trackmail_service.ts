@@ -6,6 +6,7 @@ import * as trackMailRepo from '/repositories/app/trackmail_repository.ts';
 
 export const NUMBER_OF_ITEMS_PER_PAGE = 15;
 export const DELAY_SECOND_LOG_PIXEL_TRACK = 5;
+export const DELAY_SECOND_LOG_SELF_PIXEL_TRACK = 10;
 
 export const getUserIdByToken = async (token: string): Promise<number> => {
     const userId = await trackMailRepo.getUserIdByToken(token);
@@ -104,7 +105,7 @@ export const getMailById = async (userId: number, emailId: string): Promise<IMai
 export const pixelTrack = async (emailId: string, userIp: string): Promise<boolean> => {
     const mailCreated = await trackMailRepo.getMailCreationDateById(emailId);
     if (!mailCreated) {
-        throw new httpErrors.BadRequest('Invalid email id');
+        throw new httpErrors.BadRequest('Email not found');
     }
 
     // Prevent selftracking when mail is sent by the TrackMail extension
@@ -119,7 +120,7 @@ export const pixelTrack = async (emailId: string, userIp: string): Promise<boole
 export const linkTrack = async (emailId: string, userIp: string, linkUrl: string): Promise<boolean> => {
     const isMailExist = await trackMailRepo.existMailById(emailId);
     if (!isMailExist) {
-        throw new httpErrors.BadRequest('Invalid email id');
+        throw new httpErrors.BadRequest('Email not found');
     }
 
     return await trackMailRepo.linkTrack(emailId, userIp, linkUrl);
@@ -141,4 +142,16 @@ export const getLogsTrack = async (userId: number, emailId: string, page: number
     }
 
     return result;
+};
+
+export const deleteSelfTrack = async (userId: number, emailId: string, userIp: string): Promise<boolean> => {
+    const testUser = await trackMailRepo.getMailById(userId, emailId);
+    if (!testUser) {
+        throw new httpErrors.NotFound('Email not found');
+    }
+
+    const startDate = dayjs().subtract(DELAY_SECOND_LOG_SELF_PIXEL_TRACK, 'second').toDate();
+    const endDate = dayjs().add(DELAY_SECOND_LOG_SELF_PIXEL_TRACK, 'second').toDate();
+
+    return await trackMailRepo.deleteSelfTrack(emailId, userIp, startDate, endDate);
 };
