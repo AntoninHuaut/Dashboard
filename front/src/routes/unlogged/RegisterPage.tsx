@@ -49,10 +49,7 @@ export function RegisterPage() {
     useEffect(
         () =>
             setRegisterEnable(
-                isValidEmail(register.email) &&
-                    isValidUsername(register.username) &&
-                    isValidPassword(register.password) &&
-                    register.password === register.confirmPassword
+                isValidEmail(register.email) && isValidUsername(register.username) && isValidPassword(register.password) && register.password === register.confirmPassword
             ),
         [register]
     );
@@ -109,7 +106,7 @@ export function RegisterPage() {
                 />
 
                 <Button
-                    className="umami--click--register"
+                    data-umami-event="register"
                     fullWidth
                     mt="xl"
                     onClick={() => onSubmit(true)}

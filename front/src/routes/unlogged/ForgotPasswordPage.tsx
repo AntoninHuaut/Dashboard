@@ -2,14 +2,14 @@ import { Anchor, Button, Container, Paper, Text, Title } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useFetch } from '../../hooks/useFetch';
 import { forgotPasswordRequest } from '../../api/user_request';
 import { EmailInput, isValidEmail } from '../../components/form/EmailInput';
 import { useCaptcha } from '../../hooks/useCaptcha';
-import { CaptchaAction } from '../../types/CaptchaType';
-import { IFogotPasswordRequest } from '../../types/LoginType';
+import { useFetch } from '../../hooks/useFetch';
 import { handleInputChange } from '../../services/form.service';
 import { errorNotif, successNotif } from '../../services/notification.services';
+import { CaptchaAction } from '../../types/CaptchaType';
+import { IFogotPasswordRequest } from '../../types/LoginType';
 
 export function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -62,14 +62,10 @@ export function ForgotPasswordPage() {
             </Text>
 
             <Paper mt={30} radius="xl" p="lg" shadow="xl">
-                <EmailInput
-                    value={forgotPassword.email}
-                    disabled={forgotPasswordFetch.isLoading}
-                    onChange={(evt) => handleInputChange(evt, setForgotPassword)}
-                />
+                <EmailInput value={forgotPassword.email} disabled={forgotPasswordFetch.isLoading} onChange={(evt) => handleInputChange(evt, setForgotPassword)} />
 
                 <Button
-                    className="umami--click--forgot-password"
+                    data-umami-event="forgot-password"
                     fullWidth
                     mt="xl"
                     onClick={() => onSubmit(true)}

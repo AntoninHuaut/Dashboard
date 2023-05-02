@@ -95,7 +95,7 @@ export function LoginPage() {
 
                 <Group position="apart" mt="md">
                     <Checkbox
-                        className="umami--click--remember-me"
+                        data-umami-event="remember-me"
                         label="Remember me"
                         checked={loginRemember.checked}
                         disabled={loginFetch.isLoading}
@@ -113,13 +113,7 @@ export function LoginPage() {
                         Forgot password?
                     </Anchor>
                 </Group>
-                <Button
-                    className="umami--click--sign-in"
-                    fullWidth
-                    mt="xl"
-                    onClick={() => onSubmit(true)}
-                    loading={loginFetch.isLoading}
-                    disabled={!isSignInEnable}>
+                <Button data-umami-event="sign-in" fullWidth mt="xl" onClick={() => onSubmit(true)} loading={loginFetch.isLoading} disabled={!isSignInEnable}>
                     Sign in
                 </Button>
 
